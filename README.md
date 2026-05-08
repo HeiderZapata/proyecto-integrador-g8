@@ -1,12 +1,12 @@
 # proyecto-integrador-g8
 
-# 🛒 Proyecto Integrador — Grupo 8
+# Proyecto Integrador — Grupo 8
 **Optimización de la conversión en E-commerce mediante Modelado de Propensión de Compra**  
 Maestría en Ciencia de Datos y Analítica — Universidad EAFIT
 
 ---
 
-## 🚀 Guía de configuración para integrantes del equipo
+## Guía de configuración para integrantes del equipo
 
 Sigue estos pasos **en orden** para quedar sincronizado con el repositorio y poder trabajar colaborativamente desde Databricks.
 
@@ -92,7 +92,7 @@ Necesitas un token para que Databricks pueda leer y escribir en el repositorio.
    ```
 
 4. El nombre de la carpeta se completa automáticamente
-5. Clic en **Create Git folder** ✅
+5. Clic en **Create Git folder** 
 
 Ahora verás la carpeta `proyecto-integrador-g8` en tu Workspace con todos los notebooks del proyecto sincronizados.
 
@@ -154,7 +154,7 @@ Abre el notebook `notebooks/01_EDA_Ecommerce.ipynb` desde tu carpeta Git en Data
 
 ---
 
-## 🔄 Flujo de trabajo diario
+##  Flujo de trabajo diario
 
 Una vez configurado, el flujo para trabajar en equipo es el siguiente:
 
@@ -171,11 +171,11 @@ Al terminar tu sesión de trabajo:
   → Clic en Commit & Push
 ```
 
-> 💡 **Buena práctica:** haz Pull siempre antes de empezar y Push siempre al terminar. Esto evita conflictos entre los cambios del equipo.
+>  **Buena práctica:** haz Pull siempre antes de empezar y Push siempre al terminar. Esto evita conflictos entre los cambios del equipo.
 
 ---
 
-## 📁 Estructura del repositorio
+##  Estructura del repositorio
 
 ```
 proyecto-integrador-g8/
@@ -191,7 +191,7 @@ proyecto-integrador-g8/
 
 ---
 
-## 👥 Integrantes
+##  Integrantes
 
 | Nombre | Usuario GitHub | Rol |
 |---|---|---|
@@ -203,7 +203,7 @@ proyecto-integrador-g8/
 
 ---
 
-## 📚 Dataset
+##  Dataset
 
 **Fuente:** REES46 Marketing Platform  
 **Referencia:** Kechinov, M. (2020). *eCommerce behavior data from multi category store*. Kaggle.  
