@@ -36,7 +36,7 @@ Sigue estos pasos **en orden** para quedar sincronizado con el repositorio y pod
 
 1. Ve a [databricks.com/try-databricks](https://www.databricks.com/try-databricks)
 2. Selecciona **Get started for free** → **Free Edition**
-3. Regístrate con tu correo de la universidad EAFIT
+3. Regístrate con tu correo personal o de la universidad EAFIT
 4. Confirma tu correo y accede al workspace
 
 ---
@@ -106,7 +106,10 @@ Cada integrante debe tener los datos en **su propio** Volume, ya que los Volumes
 2. Expande **workspace → default**
 3. Clic derecho en **default → Create → Volume**
 4. Nómbralo exactamente: `ecommerce_raw`
-5. Abre un nuevo notebook en tu workspace y ejecuta estas celdas para descargar el dataset:
+5. En tu workspace abre y ejecuta el notebook "01_sube_datos_kaggle_Databrick". 
+6. Recuerda reemplazar las credenciales por las tuyas
+
+Estas celdas descargarán el dataset:
 
 ```python
 # Celda 1 — Instalar Kaggle
@@ -150,7 +153,7 @@ Deberías ver:
 
 ### Paso 7 — Verificar que todo funciona
 
-Abre el notebook `notebooks/01_EDA_Ecommerce.ipynb` desde tu carpeta Git en Databricks y ejecuta la primera celda. Si corre sin errores, estás listo para colaborar. ✅
+Abre el notebook `02_Medallion_Y_EDA_Ecommerce` desde tu carpeta Git en Databricks y ejecuta la primera celda. Si corre sin errores, estás listo para colaborar. ✅
 
 ---
 
@@ -167,7 +170,7 @@ Antes de empezar a trabajar:
 Al terminar tu sesión de trabajo:
   → Clic en el ícono de Git → Commit & Push
   → Escribe un mensaje descriptivo, por ejemplo:
-    "feat: agrego análisis de precios por categoría"
+    "Agrego análisis de precios por categoría"
   → Clic en Commit & Push
 ```
 
@@ -179,14 +182,9 @@ Al terminar tu sesión de trabajo:
 
 ```
 proyecto-integrador-g8/
-├── README.md                          ← Este archivo
-├── notebooks/
-│   ├── 01_EDA_Ecommerce.ipynb         ← Análisis exploratorio (Semana 1)
-│   ├── 02_Feature_Engineering.ipynb   ← Preparación de datos (Semana 2)
-│   ├── 03_Modeling.ipynb              ← Modelos ML (Semana 3)
-│   └── 04_Dashboard.ipynb             ← Visualizaciones (Semana 4)
-└── docs/
-    └── arquitectura.md                ← Decisiones técnicas del proyecto
+├── README.md                                     ← Este archivo
+├── 01_sube_datos_kaggle_Databricks.ipynb         ← Carga datos
+├── 02_Medallion_Y_EDA_Ecommerce.ipynb            ← Estructuración de datos Bronce, Silver Gold y EDA (funnel)
 ```
 
 ---
@@ -195,10 +193,10 @@ proyecto-integrador-g8/
 
 | Nombre | Usuario GitHub | Rol |
 |---|---|---|
-| Sara | [@usuario] | Visualización |
-| Kelly | [@usuario] | Data Architect |
-| Yeison | [@usuario] | ML Engineer |
-| Heider | [@usuario] | Data Analyst / 
+| Sara | [@usuario] | Data Scientist |
+| Kelly | [@usuario] | Data Scientist |
+| Yeison | [@usuario] | Data Scientist |
+| Heider | [@usuario] | Data Scientist | 
 
 
 ---
