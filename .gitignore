@@ -1,0 +1,33 @@
+# --- Datos crudos y pesados (el repo NO es un data lake) ---
+/data/
+*.csv
+*.parquet
+*.tsv
+# Excepción: la Gold AGREGADA pequeña sí la versionamos para Power BI.
+# Si la guardas, ponla en reports/data/ y fuérzala con:  git add -f reports/data/gold_agg.parquet
+
+# --- Material del curso (peso + IP del profe) ---
+material_cursos/
+
+# --- Secretos y credenciales (NUNCA al repo) ---
+.env
+*.env
+kaggle.json
+*secret*
+*credential*
+*.key
+
+# --- Checkpoints de streaming / Spark ---
+checkpoint/
+_checkpoints/
+spark-warehouse/
+
+# --- Power BI: decidir en equipo si versionar el .pbix (es binario y pesado) ---
+# *.pbix
+
+# --- Basura del sistema y editores ---
+.DS_Store
+.ipynb_checkpoints/
+__pycache__/
+.vscode/
+.idea/
