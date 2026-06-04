@@ -72,7 +72,7 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 | Clustering de visitantes | Sara | Pendiente | Con metodología propia; el **cruce clasificador × clustering** es el insight |
 | Tablero Power BI ejecutivo | Kelly | Pendiente | Sobre la Gold **agregada** (no 69M filas). Arranca con la Gold v1 (paso 3) |
 | Diseño del A/B test | Yeison | Pendiente | Cierre: medir un incentivo sobre el segmento de mayor intención |
-| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3). Yeison deja el insumo listo; Heider arma los diagramas |
+| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3): **S3 + Auto Loader = referencia; Volume = implementada** (decisión firme, §7). Yeison deja el insumo listo; Heider arma los diagramas |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
 | Documento consolidado del PI | Equipo | Pendiente | |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
@@ -178,6 +178,7 @@ Opcional, como una diapositiva. Demuestra que 0.5 es erróneo bajo desbalanceo, 
 
 - **De referencia (producción, solo enunciada):** Kafka/Kinesis → Structured Streaming/Flink → Delta sobre S3/GCS → warehouse/Athena → serving en tiempo real.
 - **Implementada (Databricks Free):** ingesta batch → **replay de streaming** (Auto Loader + `Trigger.AvailableNow()` + checkpoint, estilo Kappa) → Medallion en Delta → Spark SQL → MLflow + scoring batch → Power BI.
+- **Ingesta: Volume de Databricks, NO bucket S3 externo (DECISIÓN FIRME — 4-jun).** El crudo se queda en el Volume `ecommerce_raw` y Databricks ingesta desde ahí. Por qué: (1) un Volume **ya está respaldado por object storage** —leer del Volume *es* ingestar desde un almacén de objetos—, y Auto Loader (`cloudFiles`) puede apuntar al path del Volume, así que el replay de streaming/Kappa se demuestra **sin** bucket externo; (2) S3 agregaría una cuenta AWS y credenciales que gestionar (choca con *no exponer secretos* y con la reproducibilidad del repo) y las *external locations / storage credentials* son limitadas en Free Edition; (3) re-subir y re-ingestar 14 GB quema tiempo y cuota a pocos días de entregar, sin resolver ningún problema actual. S3 solo valdría la pena si herramientas **fuera** de Databricks tuvieran que leer el crudo, si hubiera un *landing zone* multi-fuente real, o si el Volume no aguantara el tamaño —nada de eso aplica aquí. **En la Ilustración 2:** S3 + Auto Loader van dibujados como la arquitectura **de referencia** productiva; el **Volume respaldado por object storage** es la **implementada**. Esta es también la respuesta de Q&A a «¿por qué no S3?».
 - **Streaming liviano aprobado:** convertir Bronze a `readStream`. Cubre la Unidad 4, da sustancia a la narrativa Kappa. Correr con checkpoint, no en bucle. Nada de broker/productor/AWS.
 - **Particionamiento por capa (doc 02 §3):** Bronze por fecha de evento; Silver/Gold por fecha (+ categoría); `ZORDER` por columnas selectivas; tamaños 128 MB–1 GB; nunca por alta cardinalidad. Cuida la cuota y deja visible la frontera train/test.
 
