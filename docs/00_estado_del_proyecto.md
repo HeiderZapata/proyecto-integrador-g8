@@ -57,7 +57,7 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 |---|---|---|---|
 | **Expirar la credencial de Kaggle expuesta** | Heider | **Hecho** | Notebook lee del Volume + `.gitignore` (Hecho); Heider con instrucción de expirar la llave en Kaggle → riesgo cerrado (ver banner). Falta solo su "hecho" explícito |
 | Confirmar roles | Equipo | **Hecho** | **Aceptados en la reunión del 3-jun.** §11 pasó de PROPUESTO a firme |
-| Congelar los tres contratos | Yeison (Gold) / Equipo | En curso | §13. **El esquema Gold lo congela Yeison** como una de sus primeras tareas; salida del modelo y datos del dashboard se enuncian para que la Gold ya nazca sirviéndolos |
+| Congelar los tres contratos | Yeison (Gold) / Equipo | En curso | §13. **El esquema Gold se congela HOY** al cerrar la secuencia §2.3.1 (no hay consumidor en paralelo hoy); salida del modelo y datos del dashboard se enuncian para que la Gold ya nazca sirviéndolos |
 | Cronograma mié 3 → mar 9 con fecha y dueño | Equipo | Ajustado (4-jun) | §15. La reunión movió el arranque: jue 4 = onboarding del equipo + Yeison propone plan a Heider |
 | Ordenar el repo (estructura de código + protocolo Git + `.gitignore`) | Heider/Yeison (Claude Code) | Hecho | §12. Estructura creada, notebooks movidos a `pipeline/`, `.gitignore` en la raíz (baseline en `main`) |
 | Doc de convenciones Git — `CONTRIBUTING.md` (ramas, PRs, evitar conflictos) | Heider/Yeison | Hecho | §14.1. En la raíz del repo (baseline en `main`) |
@@ -67,21 +67,30 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | Frente / Tarea | Responsable | Estado | Notas |
 |---|---|---|---|
-| Pipeline Medallion (Bronze/Silver/Gold) — **todos los ajustes de la capa** | **Heider/Yeison** | Revisión | v1 corrió sobre 14 GB; **validar `join` Gold (posible sesgo)** + particionamiento por capa + **reconstruir Bronze como `readStream`** (replay Kappa). **Ruta crítica — ver §3** |
-| Revisar detalle del `join` en Gold | Heider/Yeison (Sara consultada por el sesgo) | Pendiente | Posible sesgo de selección; compuerta del esquema Gold |
-| **Definir qué del EDA-descubrimiento se promueve a Silver/Gold** | **Heider/Yeison** | Pendiente | §12.3. Es *el* paso más importante: dejar la tabla Gold **completa y robusta** (alimenta EDA-entregable y modelos) |
-| Streaming replay (`readStream` + `AvailableNow`) | Heider | Pendiente | Liviano · con checkpoint, no en bucle (doc 02 §4) |
-| Spark SQL + MLflow + scoring batch | Heider/Sara | Pendiente | Cierra el ciclo batch |
-| **Refactor `EDA.ipynb` (notebook oficial del EDA) + separar de Medallion** | **Heider/Yeison (Claude Code)** | Pendiente | §12.3. Nuevo notebook (el EDA *real* del taller de Viz, sobre muestra) subido provisionalmente a `pipeline/`. Hay que reubicarlo en `analysis/`, conectarlo a Silver/Gold, retitularlo (era "taller 2" → ahora EDA del PI) y revisar análisis faltantes |
-| EDA / funnel (entregable analítico) | Heider/Yeison → alinear con Kelly (Viz) | Revisión | Fuente real = `EDA.ipynb` (no el funnel delgado de `02_Medallion_Y_EDA`). Alinear a la Pregunta de Oro y a nombres de variables claros. **Vive en `analysis/`, lee de Silver/Gold.** Es insumo de diseño del tablero y de features |
-| Entrenamiento + evaluación del modelo | Sara | Pendiente | PR-AUC, calibración (no accuracy) |
+| Pipeline Medallion (Bronze/Silver/Gold) — **todos los ajustes de la capa** | **Heider/Yeison** | Revisión | v1 corrió sobre 14 GB. Se ataca en la secuencia ordenada de §2.3.1. **Ruta crítica — ver §3** |
+| Entrenamiento + evaluación del modelo | Sara | Pendiente | PR-AUC, calibración (no accuracy). Arranca con la Gold v1 (paso 3) |
 | Clustering de visitantes | Sara | Pendiente | Con metodología propia; el **cruce clasificador × clustering** es el insight |
-| Tablero Power BI ejecutivo | Kelly | Pendiente | Sobre la Gold **agregada** (no 69M filas) |
+| Tablero Power BI ejecutivo | Kelly | Pendiente | Sobre la Gold **agregada** (no 69M filas). Arranca con la Gold v1 (paso 3) |
 | Diseño del A/B test | Yeison | Pendiente | Cierre: medir un incentivo sobre el segmento de mayor intención |
 | Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3). Yeison deja el insumo listo; Heider arma los diagramas |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
 | Documento consolidado del PI | Equipo | Pendiente | |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
+
+#### 2.3.1 Tratamiento de datos — secuencia ordenada (Heider/Yeison · hoy en adelante)
+
+**Por qué este orden:** primero el *esqueleto* correcto de la Gold (grano + `join` + anti-fuga), después la *carne* (limpieza y variables informadas por el EDA). Limpiar o crear variables sobre un `join` con sesgo es retrabajo. Dos pasadas sobre la Gold, con el EDA en medio; la pasada 2 es **solo aditiva** para no romper el contrato (ver ⚠️). Es el bloque que **tú y Yeison hacen hoy** con Claude Code; Heider apoya el track paralelo (paso 6) o la Ilustración 2.
+
+| # | Paso | Responsable | Estado | Notas |
+|---|---|---|---|---|
+| 1 | **Separar Medallion ↔ EDA** | Heider/Yeison (Claude Code) | Pendiente | §12.3. Desconflar `02_Medallion_Y_EDA`; el EDA real es `EDA.ipynb`. Prerrequisito para razonar sobre cualquiera de los dos |
+| 2 | **Validar la estructura de la Gold** (`join`/sesgo, reconstrucción de sesión, grano, corte anti-fuga) | Heider/Yeison (Sara consultada por el sesgo) | Pendiente | El **esqueleto** va primero. Posible sesgo de selección; compuerta del esquema Gold (§3) |
+| 3 | **Complementar Medallion — pasada 1** (con el EDA *actual*): limpieza completa, tipado, dedup, nulos/outliers de precio, sesiones-bot; construir/eliminar/transformar variables que el EDA actual ya justifique | Heider/Yeison | Pendiente | §12.3. Produce la **Gold v1 robusta** (insumo del EDA oficial). *El contrato NO se congela aquí: se congela al cierre del día, tras la pasada 2 (paso 5)* |
+| 4 | **Organizar el `EDA.ipynb` oficial** sobre la Gold v1 (reubicar en `analysis/`, conectar a Silver/Gold, retitular, revisar completitud vs. Pregunta de Oro) | Heider/Yeison (Claude Code) → alinear con Kelly | Pendiente | §12.3. Insumo de diseño del tablero (Kelly) y de features (Sara) |
+| 5 | **Pasada 2 sobre la Gold** (según el EDA pulido): correlación/multicolinealidad, variables para ML, métricas/tablas agregadas para el tablero | Heider/Yeison | Pendiente | Cierra "Gold completa y robusta". **Al terminar se congela el contrato del esquema Gold COMPLETO (§13)**, hoy mismo, antes de que Sara/Kelly arranquen mañana |
+| 6 | **Track paralelo/posterior** (no gatea la correctitud de la Gold): Bronze→`readStream` (Kappa) · Spark SQL · MLflow setup · scoring batch | Heider (readStream/SQL) · Heider/Sara (MLflow/scoring) | Pendiente | `readStream` con checkpoint, no en bucle (doc 02 §4). **Scoring batch es de los últimos pasos: requiere modelo entrenado** |
+
+> **Nota de congelación (4-jun):** como **Sara y Kelly no trabajan hoy**, no hay consumidor en paralelo que proteger: hacemos **las dos pasadas hoy** y congelamos el esquema Gold **completo una sola vez, al cierre del día** (paso 5). La regla "aditivo, nunca renombra ni elimina" queda solo como **red de seguridad** por si la pasada 2 se desborda a mañana: en ese caso se discute con el equipo antes de tocar el contrato ya congelado.
 
 ---
 
@@ -280,11 +289,11 @@ El EDA de descubrimiento *informa* las transformaciones, pero estas se **codific
 
 ## 13. Contratos a congelar (compuerta de Fase 3)
 
-Para trabajar en paralelo sin pisarse, congelar las tres interfaces. Estado: **pendiente** (se congelan en la reunión).
+Para trabajar en paralelo sin pisarse, congelar las tres interfaces. Estado: **el esquema Gold se congela HOY (4-jun) al cierre de la secuencia §2.3.1**; los otros dos se enuncian para que la Gold ya nazca sirviéndolos.
 
-1. **Esquema de la tabla Gold** — columnas, tipos, grano (por sesión), particionamiento. *Depende de validar antes el `join` de Gold (§3).*
-2. **Salida del modelo** — qué entrega el scoring (id de sesión, score/probabilidad, segmento), formato y dónde se persiste.
-3. **Datos que consume el dashboard** — la Gold **agregada** que alimenta Power BI (no las 69M filas crudas).
+1. **Esquema de la tabla Gold** — columnas, tipos, grano (por sesión), particionamiento. *Se congela completo tras la pasada 2 (§2.3.1 paso 5), una vez validado el `join` (§3). Como Sara/Kelly no consumen hoy, se hacen las dos pasadas y se congela una sola vez.*
+2. **Salida del modelo** — qué entrega el scoring (id de sesión, score/probabilidad, segmento), formato y dónde se persiste. *Lo cierra Sara al definir el modelo; se enuncia hoy.*
+3. **Datos que consume el dashboard** — la Gold **agregada** que alimenta Power BI (no las 69M filas crudas). *Las tablas/métricas agregadas salen de la pasada 2 (§2.3.1 paso 5).*
 
 ---
 
@@ -309,19 +318,19 @@ Para que cuatro personas trabajen en paralelo sin conflictos de versiones, el re
 
 ## 15. Plan con fechas y dueños (mié 3 → mar 9) — AJUSTADO el 4-jun
 
-Ajustado tras la reunión del 3-jun. Respeta la ruta crítica (§3) y la regla de cuota de no correr cargas pesadas la víspera (doc 02 §4). **Cambio clave:** la reunión decidió que **jue 4 es día de onboarding** (Kelly, Sara y Heider entienden el repo y estudian su tema); Sara y Kelly **esperan a que Yeison y Heider dejen lista la Silver/Gold + el EDA** para arrancar. Eso corre el HITO de la Gold a vie 5 y comprime aguas abajo — **ver riesgo al pie de la tabla.**
+Ajustado tras la reunión del 3-jun. Respeta la ruta crítica (§3) y la regla de cuota de no correr cargas pesadas la víspera (doc 02 §4). **Cambio clave:** la reunión decidió que **jue 4 es día de onboarding** para Kelly, Sara y Heider (entienden el repo y estudian su tema); **no trabajan en sus frentes hoy**. Como nadie consume la Gold hoy, **Yeison + Claude Code dejan la Gold completa y el EDA oficial listos hoy mismo** (secuencia §2.3.1), de modo que Sara y Kelly arrancan el viernes sobre una Gold ya congelada.
 
 | Día | Foco | Quién / qué |
 |---|---|---|
 | **mié 3** | Reunión — Fase 3 cerrada | **HECHO.** Roles aceptados (§11 firme), avances y pasos a seguir presentados. Heider con instrucción de expirar la credencial Kaggle. |
-| **jue 4** (hoy) | Onboarding + arranque de la Gold | **Kelly, Sara, Heider:** entender repo + docs y estudiar su tema (ML, Viz, ingeniería). **Yeison:** (a) **propone a Heider el plan** para dejar Silver/Gold + EDA; (b) **empieza a congelar el contrato del esquema Gold** (§13); (c) lanza con Claude Code el **refactor del `EDA.ipynb` + separación Medallion/EDA** (§12.3). **Heider** se suma a la Gold al terminar su onboarding. |
-| **vie 5** | **Gold completa y robusta (HITO) + EDA oficial** | **Heider + Yeison:** Gold validada (`join` sin sesgo) + Bronze→`readStream` (checkpoint, `AvailableNow`); **congelar el esquema Gold** y exportar la Gold agregada; dejar `EDA.ipynb` oficial leyendo de Silver/Gold. **Sara y Kelly arrancan en cuanto la Gold y el EDA estén disponibles** (features sobre muestra anti-fuga / andamiaje del tablero). |
-| **sáb 6** | Modelo + tablero v1 | **Sara:** features + entrenar (logística → GBM), PR-AUC + calibración; iniciar clustering. **Heider:** Spark SQL sobre Gold + MLflow + scoring batch; **diagramas de arquitectura (Ilustración 2)**. **Kelly:** Power BI v1 sobre la Gold agregada. **Yeison:** liberado de la Gold → diseño del A/B test + documento. |
-| **dom 7** | Insight + consolidar + ensayar | **Sara:** **cruce clasificador × clustering** (el insight). **Kelly:** tablero v2 + narrativa. **Yeison/Equipo:** documento consolidado + PPTX; ensayo de defensa (filtrado en vivo); Q&A por profesor (doc 08 §5). |
+| **jue 4** (hoy) | Onboarding del equipo + **Gold completa y EDA oficial (HITO, hoy)** | **Kelly, Sara, Heider:** entender repo + docs y estudiar su tema (ML, Viz, ingeniería) — **no trabajan en sus frentes hoy**. **Yeison + Claude Code:** ejecutar la secuencia §2.3.1 completa — separar Medallion/EDA, validar `join`, pasada 1, organizar `EDA.ipynb`, pasada 2 — y **congelar el esquema Gold completo + exportar la Gold agregada** al cierre del día. **Heider:** al terminar onboarding, apoya con la **Ilustración 2** (autónoma, no toca la Gold). |
+| **vie 5** | Modelo + tablero arrancan sobre Gold congelada | **Sara:** features (anti-fuga, split temporal) + entrenar (logística → GBM), PR-AUC + calibración; iniciar clustering. **Kelly:** Power BI v1 sobre la Gold agregada + narrativa, usando el EDA oficial como guía de diseño. **Heider:** Bronze→`readStream` (Kappa) + Spark SQL + MLflow setup. **Yeison:** diseño del A/B test + documento. |
+| **sáb 6** | Insight + integración | **Sara:** cerrar clustering + perfilado; **cruce clasificador × clustering** (el insight). **Heider:** scoring batch + métricas de optimización. **Kelly:** tablero v2. **Yeison:** documento consolidado integrando resultados. |
+| **dom 7** | Consolidar + ensayar | Documento consolidado + PPTX. Ensayo de defensa (filtrado en vivo). Q&A por profesor (doc 08 §5). |
 | **lun 8** | **ENTREGA** | Buffer, revisión final, subir productos. **No correr cargas pesadas hoy** (regla de cuota). |
 | **mar 9** (5–9 pm) | **EXPOSICIÓN** | Ante los tres profesores. |
 
-> **⚠️ Riesgo de cronograma (4-jun):** invertir el jueves completo en onboarding mientras Sara y Kelly **esperan** la Gold deja el camino crítico muy ajustado (Gold hasta vie 5 → modelo/tablero arrancan vie–sáb → entrega lun 8). Mitigaciones: (1) Yeison **no espera** — hoy mismo avanza contrato Gold + refactor EDA con Claude Code, para que el viernes sea cierre y no arranque; (2) Sara y Kelly pueden adelantar **sin la Gold final** trabajando sobre **muestra** (Sara: pipeline de features anti-fuga; Kelly: andamiaje del tablero y narrativa con datos de muestra), enchufando a la Gold cuando se congele; (3) si el viernes la Gold no cierra, priorizar **esquema congelado + Gold agregada exportada** sobre perfección del `join`, para desbloquear aguas abajo.
+> **Nota de cronograma (4-jun):** dejar la Gold lista **hoy** (Yeison + Claude Code, en paralelo al onboarding del equipo) **resuelve** la compresión que preocupaba: Sara y Kelly arrancan el viernes sobre una Gold ya congelada, no esperando. Riesgo residual: la secuencia §2.3.1 es larga para un día; si la pasada 2 (paso 5) no alcanza a cerrar hoy, priorizar **`join` validado + limpieza (pasada 1) + esquema congelado + Gold agregada exportada** —eso ya desbloquea aguas abajo— y dejar la pasada 2 (variables ML/agregados del tablero) como ajuste aditivo del viernes temprano, avisando al equipo.
 
 ---
 
