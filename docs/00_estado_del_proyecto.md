@@ -11,10 +11,10 @@
 
 ---
 
-> ## ⚠️ SEGURIDAD — ACCIÓN URGENTE PENDIENTE
+> ## ⚠️ SEGURIDAD — ACCIÓN PENDIENTE (Heider)
 >
-> **Credencial de Kaggle expuesta en el repo.** Responsable: **Heider**. Estado: **pendiente**.
-> Borrar el archivo NO basta: una vez expuesta, la llave se asume comprometida. Hay que **(1) revocar/rotar la llave desde la cuenta de Kaggle**, y solo después **(2) eliminarla del repo y del historial de Git**. Es uno de los criterios para cerrar Fase 3 (§4). *Este banner se elimina cuando la credencial quede rotada y limpia del historial.*
+> **La credencial de Kaggle ya NO está hardcodeada.** El notebook `notebooks/pipeline/01_sube_datos_kaggle_Databricks.ipynb` ahora lee la llave desde el Volume (`kaggle.json`, sin ningún valor escrito en el código) y el `.gitignore` cubre `kaggle.json` para que no vuelva a subirse al repo.
+> **Único pendiente — responsable: Heider:** la llave que estuvo expuesta quedó en el historial de Git, así que se asume comprometida. Hay que **expirar/rotar esa llave desde la cuenta de Kaggle** — eso es lo que la neutraliza (borrarla del archivo no basta). Es uno de los criterios para cerrar Fase 3 (§4). *Este banner se elimina cuando Heider confirme que la llave quedó expirada.*
 
 ---
 
@@ -56,12 +56,12 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | Frente / Tarea | Responsable | Estado | Notas |
 |---|---|---|---|
-| **Rotar credencial de Kaggle expuesta** | Heider | **URGENTE — pendiente** | Ver banner de seguridad. Criterio de cierre de Fase 3 |
+| **Expirar la credencial de Kaggle expuesta** | Heider | **Pendiente** | El notebook ya lee del Volume y el `.gitignore` la cubre (Hecho); falta que Heider **expire la llave en Kaggle** (ver banner). Criterio de cierre de Fase 3 |
 | Confirmar roles | Equipo | Pendiente | §11 sigue como PROPUESTO hasta la reunión |
 | Congelar los tres contratos | Equipo | Pendiente | §13: esquema Gold · salida modelo · datos dashboard |
 | Cronograma mié 3 → mar 9 con fecha y dueño | Equipo | Pendiente | §15 (borrador propuesto, por confirmar) |
-| Ordenar el repo (estructura de código + protocolo Git + `.gitignore`) | Heider/Yeison (Claude Code) | Pendiente | §12. Criterio de cierre de Fase 3 |
-| Doc de convenciones Git — `CONTRIBUTING.md` (ramas, PRs, evitar conflictos) | Heider/Yeison | Pendiente | §14.1. Para trabajar en paralelo sin conflictos de versiones |
+| Ordenar el repo (estructura de código + protocolo Git + `.gitignore`) | Heider/Yeison (Claude Code) | Hecho | §12. Estructura creada, notebooks movidos a `pipeline/`, `.gitignore` en la raíz (baseline en `main`) |
+| Doc de convenciones Git — `CONTRIBUTING.md` (ramas, PRs, evitar conflictos) | Heider/Yeison | Hecho | §14.1. En la raíz del repo (baseline en `main`) |
 | Investigar comunidad del dataset (Kaggle) | Todos (transversal) | Pendiente | Cada dueño contrasta su fase con la comunidad REES46 |
 
 ### 2.3 Ejecución — Fase 4 (pendiente; arranca al cerrar Fase 3)
@@ -312,6 +312,8 @@ Borrador para confirmar y rebalancear en la reunión. Respeta la ruta crítica (
 ## 16. Qué subirle a tu IA para tener contexto
 
 Cada integrante usa su propia IA (Claude o Gemini). Súbele estos documentos de `docs/`. **No subas la transcripción de chats ni el código** —eso vive en el repo y cambia seguido—; sube documentos de referencia estables. Si tu IA necesita ver un notebook o archivo puntual, adjúntalo solo en ese chat; no lo cargues como contexto permanente.
+
+> **Puesta en marcha del entorno:** los pasos para configurarte (crear cuenta en Databricks, vincular GitHub, clonar el Git folder, crear el Volume, subir tu `kaggle.json` y correr el notebook de ingesta) **no se duplican aquí**: viven en el `README.md` de la raíz, que es la guía de configuración del entorno. Este doc 00 da el *qué* y el estado; el `README.md` da el *cómo* del setup.
 
 **Mínimo, para cualquiera del equipo:**
 - `00_estado_del_proyecto.md` (este maestro): siempre, el primero que debe leer.
