@@ -161,39 +161,7 @@ La **estrategia de particionamiento se define por capa** según los patrones de 
 El **consumo y despliegue**, en el alcance académico, consiste en consultas analíticas con **Spark SQL** sobre la Gold, la persistencia del modelo y su *scoring* batch a una tabla Delta (gestionados con MLflow), y un tablero en **Power BI** conectado a la **Gold agregada** (no a las decenas de millones de filas crudas), que materializa el diagnóstico para la decisión de negocio. La gobernanza se apoya en Unity Catalog y Volumes, con separación de las zonas cruda (Bronze), curada (Silver) y de consumo (Gold). Todo el diseño está pensado para escalar: el mismo código Spark/Delta operaría sobre cómputo mayor y una fuente en streaming, de modo que la arquitectura implementada es una versión acotada —no distinta— de la de referencia.
 
 *Ilustración 2. Arquitectura de datos para e-commerce.*
-
-*Ilustración 2. Arquitectura de datos implementada para E-commerce (Estilo Kappa en Databricks Free).*
-
-```mermaid
-graph TD
-    classDef storage fill:#1A5A98,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef process fill:#FDB515,stroke:#fff,stroke-width:2px,color:#333;
-    classDef bi fill:#F2C811,stroke:#fff,stroke-width:2px,color:#333;
-    classDef databricks fill:#FF3621,stroke:#fff,stroke-width:2px,color:#fff;
-    classDef mlflow fill:#0194E2,stroke:#fff,stroke-width:2px,color:#fff;
-
-    subgraph Arquitectura Implementada Databricks Free
-        direction TB
-        I_Ingesta[Datos Kaggle: CSVs] -->|Descarga manual| I_Volume[(Volume: ecommerce_raw)]:::storage
-        I_Volume -->|Auto Loader Kappa| I_Proceso(Spark Structured Streaming<br/>Trigger.AvailableNow):::databricks
-        
-        subgraph Lakehouse Medallion
-            I_Proceso --> I_Bronze[(🥉 Bronze: Delta)]:::storage
-            I_Bronze --> I_Silver[(🥈 Silver: Delta)]:::storage
-            I_Silver --> I_Gold[(🥇 Gold: Delta)]:::storage
-            I_Gold -.-> I_TrainData[Train: Octubre]
-            I_Gold -.-> I_TestData[Test: Noviembre]
-        end
-        
-        I_TrainData --> I_Train(Modelos de Árboles):::databricks
-        I_Train <--> I_MLflow[MLflow]:::mlflow
-        I_TestData --> I_Scoring[(Predicciones Delta)]:::storage
-        I_Gold --> I_GoldAgg[(🥇 Gold Agregada)]:::storage
-        
-        I_GoldAgg --> I_BI[Power BI Desktop]:::bi
-        I_Scoring -.-> I_BI
-        I_BI --> I_BIService[Power BI Service]:::bi
-    end
+(aqui, poner la imagen del diagrama desarrollado segun 02)
 
 ### Curso 3: SI7007/SI6004 Visualización de Datos
 
