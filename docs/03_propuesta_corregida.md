@@ -162,6 +162,39 @@ El **consumo y despliegue**, en el alcance académico, consiste en consultas ana
 
 *Ilustración 2. Arquitectura de datos para e-commerce.*
 
+*Ilustración 2. Arquitectura de datos implementada para E-commerce (Estilo Kappa en Databricks Free).*
+
+```mermaid
+graph TD
+    classDef storage fill:#1A5A98,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef process fill:#FDB515,stroke:#fff,stroke-width:2px,color:#333;
+    classDef bi fill:#F2C811,stroke:#fff,stroke-width:2px,color:#333;
+    classDef databricks fill:#FF3621,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef mlflow fill:#0194E2,stroke:#fff,stroke-width:2px,color:#fff;
+
+    subgraph Arquitectura Implementada Databricks Free
+        direction TB
+        I_Ingesta[Datos Kaggle: CSVs] -->|Descarga manual| I_Volume[(Volume: ecommerce_raw)]:::storage
+        I_Volume -->|Auto Loader Kappa| I_Proceso(Spark Structured Streaming<br/>Trigger.AvailableNow):::databricks
+        
+        subgraph Lakehouse Medallion
+            I_Proceso --> I_Bronze[(🥉 Bronze: Delta)]:::storage
+            I_Bronze --> I_Silver[(🥈 Silver: Delta)]:::storage
+            I_Silver --> I_Gold[(🥇 Gold: Delta)]:::storage
+            I_Gold -.-> I_TrainData[Train: Octubre]
+            I_Gold -.-> I_TestData[Test: Noviembre]
+        end
+        
+        I_TrainData --> I_Train(Modelos de Árboles):::databricks
+        I_Train <--> I_MLflow[MLflow]:::mlflow
+        I_TestData --> I_Scoring[(Predicciones Delta)]:::storage
+        I_Gold --> I_GoldAgg[(🥇 Gold Agregada)]:::storage
+        
+        I_GoldAgg --> I_BI[Power BI Desktop]:::bi
+        I_Scoring -.-> I_BI
+        I_BI --> I_BIService[Power BI Service]:::bi
+    end
+
 ### Curso 3: SI7007/SI6004 Visualización de Datos
 
 El componente de visualización opera en **dos niveles**, cada uno con un público y un objetivo comunicativo definidos —principio rector del curso: una visualización exploratoria sirve al analista para descubrir, una aclaratoria sirve al tomador de decisiones para actuar—.
