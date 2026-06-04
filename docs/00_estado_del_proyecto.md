@@ -296,6 +296,13 @@ Para trabajar en paralelo sin pisarse, congelar las tres interfaces. Estado: **e
 2. **Salida del modelo** — qué entrega el scoring (id de sesión, score/probabilidad, segmento), formato y dónde se persiste. *Lo cierra Sara al definir el modelo; se enuncia hoy.*
 3. **Datos que consume el dashboard** — la Gold **agregada** que alimenta Power BI (no las 69M filas crudas). *Las tablas/métricas agregadas salen de la pasada 2 (§2.3.1 paso 5).*
 
+> **Gold v1 — esquema actual (estado 4-jun; aún NO congelado, se cierra en el paso 5).**
+> Grano: **1 fila = 1 `user_session`** · **22.99M** sesiones · tasa de etiqueta (purchase) **0.0610**.
+> Columnas: `user_session`, `target_purchase` (Y, 0/1), `user_id`, `total_views`, `distinct_products_viewed`, `brands_compared`, `categories_explored`, `browsing_duration_sec`, `sin_navegacion_previa` (bool).
+> Particionamiento: pendiente de aplicar (doc 02 §3: por fecha/categoría + `ZORDER`).
+>
+> **⚠️ Decisión pendiente para Sara (modelado) — flag `sin_navegacion_previa`.** Marca **34,144 sesiones (~0.15%)** que "abren" con `cart`/`purchase`: por el corte anti-fuga tienen **todas las features de navegación en 0** y son **mayormente positivas** (en la muestra, ~55% vs 6% global). El `inner join` viejo las descartaba en silencio (sesgo de selección); la Gold v1 las conserva con el flag. Sara debe decidir cómo tratarlas: **(A)** mantenerlas usando `sin_navegacion_previa` como variable; **(B)** excluirlas del entrenamiento (el clasificador predice desde el comportamiento *previo*, que aquí no existe); o **(C)** tratarlas como segmento aparte. Impacto chico (0.15%) pero a definir antes de entrenar. Cierra el *"Sara consultada por el sesgo"* de §2.3.1 paso 2.
+
 ---
 
 ## 14. Operación: Claude + Git
