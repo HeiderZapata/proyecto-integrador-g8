@@ -25,6 +25,9 @@ spark-warehouse/
 # --- Power BI: decidir en equipo si versionar el .pbix (es binario y pesado) ---
 # *.pbix
 
+# --- Andamiaje local del refactor del EDA (cell sources + backups, no es entregable) ---
+notebooks/analysis/_build/
+
 # --- Basura del sistema y editores ---
 .DS_Store
 .ipynb_checkpoints/

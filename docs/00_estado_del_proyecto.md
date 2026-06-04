@@ -67,12 +67,12 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | Frente / Tarea | Responsable | Estado | Notas |
 |---|---|---|---|
-| Pipeline Medallion (Bronze/Silver/Gold) — **todos los ajustes de la capa** | **Heider/Yeison** | Revisión | v1 corrió sobre 14 GB. Se ataca en la secuencia ordenada de §2.3.1. **Ruta crítica — ver §3** |
+| Pipeline Medallion (Bronze/Silver/Gold) — **todos los ajustes de la capa** | **Heider/Yeison** | En curso | v1 corrió sobre 14 GB. Secuencia §2.3.1: **pasos 1–3 Hechos (4-jun)** — Gold v1 corregida y validada; faltan pasos 4–5. **Ruta crítica — ver §3** |
 | Entrenamiento + evaluación del modelo | Sara | Pendiente | PR-AUC, calibración (no accuracy). Arranca con la Gold v1 (paso 3) |
 | Clustering de visitantes | Sara | Pendiente | Con metodología propia; el **cruce clasificador × clustering** es el insight |
 | Tablero Power BI ejecutivo | Kelly | Pendiente | Sobre la Gold **agregada** (no 69M filas). Arranca con la Gold v1 (paso 3) |
 | Diseño del A/B test | Yeison | Pendiente | Cierre: medir un incentivo sobre el segmento de mayor intención |
-| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3). Yeison deja el insumo listo; Heider arma los diagramas |
+| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3): **S3 + Auto Loader = referencia; Volume = implementada** (decisión firme, §7). Yeison deja el insumo listo; Heider arma los diagramas |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
 | Documento consolidado del PI | Equipo | Pendiente | |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
@@ -83,14 +83,14 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | # | Paso | Responsable | Estado | Notas |
 |---|---|---|---|---|
-| 1 | **Separar Medallion ↔ EDA** | Heider/Yeison (Claude Code) | Pendiente | §12.3. Desconflar `02_Medallion_Y_EDA`; el EDA real es `EDA.ipynb`. Prerrequisito para razonar sobre cualquiera de los dos |
-| 2 | **Validar la estructura de la Gold** (`join`/sesgo, reconstrucción de sesión, grano, corte anti-fuga) | Heider/Yeison (Sara consultada por el sesgo) | Pendiente | El **esqueleto** va primero. Posible sesgo de selección; compuerta del esquema Gold (§3) |
-| 3 | **Complementar Medallion — pasada 1** (con el EDA *actual*): limpieza completa, tipado, dedup, nulos/outliers de precio, sesiones-bot; construir/eliminar/transformar variables que el EDA actual ya justifique | Heider/Yeison | Pendiente | §12.3. Produce la **Gold v1 robusta** (insumo del EDA oficial). *El contrato NO se congela aquí: se congela al cierre del día, tras la pasada 2 (paso 5)* |
-| 4 | **Organizar el `EDA.ipynb` oficial** sobre la Gold v1 (reubicar en `analysis/`, conectar a Silver/Gold, retitular, revisar completitud vs. Pregunta de Oro) | Heider/Yeison (Claude Code) → alinear con Kelly | Pendiente | §12.3. Insumo de diseño del tablero (Kelly) y de features (Sara) |
-| 5 | **Pasada 2 sobre la Gold** (según el EDA pulido): correlación/multicolinealidad, variables para ML, métricas/tablas agregadas para el tablero | Heider/Yeison | Pendiente | Cierra "Gold completa y robusta". **Al terminar se congela el contrato del esquema Gold COMPLETO (§13)**, hoy mismo, antes de que Sara/Kelly arranquen mañana |
+| 1 | **Separar Medallion ↔ EDA** | Heider/Yeison (Claude Code) | **Hecho (4-jun)** | §12.3. `02_Medallion_Ecommerce.ipynb` queda solo Medallion (funnel-EDA retirado); `EDA.ipynb` movido a `analysis/`, retitulado a "EDA del PI" y con TODO de re-fuente a Silver/Gold. Commit `9f09a8b` |
+| 2 | **Validar la estructura de la Gold** (`join`/sesgo, reconstrucción de sesión, grano, corte anti-fuga) | Heider/Yeison (Sara consultada por el sesgo) | **Hecho (4-jun)** | Diagnóstico (`02b_diagnostico_gold_join.ipynb`) confirmó: sesgo de selección real pero pequeño (descartes 9× positivos, ~0.1%), grano roto (`user_session` con >1 `user_id`) y gotcha del frame RANGE. Commit `27b66b6` |
+| 3 | **Complementar Medallion — pasada 1** (con el EDA *actual*): limpieza completa, tipado, dedup, nulos/outliers de precio, sesiones-bot; construir/eliminar/transformar variables que el EDA actual ya justifique | Heider/Yeison | **Hecho (4-jun)** | Gold corregida (corte determinista, LEFT join sin sesgo, grano 1 fila = 1 sesión + flag `sin_navegacion_previa`) + Silver con `dropDuplicates` y `price>0`. **Gold v1 validada: 22.99M sesiones, tasa etiqueta 0.0610, 0 duplicados.** Pendiente (sin umbral acordado): outliers de precio y sesiones-bot. Commit `3f66e6a`. *El contrato se congela tras la pasada 2 (paso 5)* |
+| 4 | **Organizar el `EDA.ipynb` oficial** sobre la Gold v1 (reubicar en `analysis/`, conectar a Silver/Gold, retitular, revisar completitud vs. Pregunta de Oro) | Heider/Yeison (Claude Code) → alinear con Kelly | **Hecho (4-jun)** | §12.3. **EDA re-fuenteado a Silver/Gold v1 (capa de agregados Spark→pandas; ningún gráfico re-escanea Silver), corriendo entero en Databricks.** Se añadieron **§5 (perfilado Gold v1)** y **§6 (temporal/Black Friday, curva de intención, tipología de visitantes)** + §7 diagnóstico. Insumo de Kelly (tablero) y Sara (features). **Ver §17 para los hallazgos y decisiones que salieron.** Andamiaje local en `notebooks/analysis/_build/` (gitignored). |
+| 5 | **Pasada 2 sobre la Gold** (según el EDA): correlación/multicolinealidad, variables para ML, métricas/tablas agregadas para el tablero, **calidad de datos** | Heider/Yeison | Pendiente | Cierra "Gold completa y robusta". **Informado por el EDA (§17):** (a) **cuarentenar la ventana corrupta 15–17 nov** (etiqueta de noviembre rota); (b) auditar categóricas/`"Unknown"`, outliers de precio y sesiones-bot; (c) **enriquecer features** (señal lineal débil/negativa; multicolinealidad `total_views`≈`distinct_products` 0.92). **Al terminar se congela el contrato del esquema Gold COMPLETO (§13).** |
 | 6 | **Track paralelo/posterior** (no gatea la correctitud de la Gold): Bronze→`readStream` (Kappa) · Spark SQL · MLflow setup · scoring batch | Heider (readStream/SQL) · Heider/Sara (MLflow/scoring) | Pendiente | `readStream` con checkpoint, no en bucle (doc 02 §4). **Scoring batch es de los últimos pasos: requiere modelo entrenado** |
 
-> **Nota de congelación (4-jun):** como **Sara y Kelly no trabajan hoy**, no hay consumidor en paralelo que proteger: hacemos **las dos pasadas hoy** y congelamos el esquema Gold **completo una sola vez, al cierre del día** (paso 5). La regla "aditivo, nunca renombra ni elimina" queda solo como **red de seguridad** por si la pasada 2 se desborda a mañana: en ese caso se discute con el equipo antes de tocar el contrato ya congelado.
+> **Nota de congelación (4-jun, actualizada):** el **paso 4 (EDA oficial) quedó Hecho** y destapó hallazgos que **deben entrar a la pasada 2 antes de congelar** (calidad de datos de noviembre, features con señal débil — ver §17). Por eso el esquema Gold **NO se congeló hoy**: la pasada 2 (paso 5) se hace mañana temprano, junto con la decisión de split con Sara (§17), y **ahí** se congela el contrato (§13). La regla "aditivo, nunca renombra ni elimina" sigue como red de seguridad para no romper a quien ya consuma la Gold v1.
 
 ---
 
@@ -178,6 +178,7 @@ Opcional, como una diapositiva. Demuestra que 0.5 es erróneo bajo desbalanceo, 
 
 - **De referencia (producción, solo enunciada):** Kafka/Kinesis → Structured Streaming/Flink → Delta sobre S3/GCS → warehouse/Athena → serving en tiempo real.
 - **Implementada (Databricks Free):** ingesta batch → **replay de streaming** (Auto Loader + `Trigger.AvailableNow()` + checkpoint, estilo Kappa) → Medallion en Delta → Spark SQL → MLflow + scoring batch → Power BI.
+- **Ingesta: Volume de Databricks, NO bucket S3 externo (DECISIÓN FIRME — 4-jun).** El crudo se queda en el Volume `ecommerce_raw` y Databricks ingesta desde ahí. Por qué: (1) un Volume **ya está respaldado por object storage** —leer del Volume *es* ingestar desde un almacén de objetos—, y Auto Loader (`cloudFiles`) puede apuntar al path del Volume, así que el replay de streaming/Kappa se demuestra **sin** bucket externo; (2) S3 agregaría una cuenta AWS y credenciales que gestionar (choca con *no exponer secretos* y con la reproducibilidad del repo) y las *external locations / storage credentials* son limitadas en Free Edition; (3) re-subir y re-ingestar 14 GB quema tiempo y cuota a pocos días de entregar, sin resolver ningún problema actual. S3 solo valdría la pena si herramientas **fuera** de Databricks tuvieran que leer el crudo, si hubiera un *landing zone* multi-fuente real, o si el Volume no aguantara el tamaño —nada de eso aplica aquí. **En la Ilustración 2:** S3 + Auto Loader van dibujados como la arquitectura **de referencia** productiva; el **Volume respaldado por object storage** es la **implementada**. Esta es también la respuesta de Q&A a «¿por qué no S3?».
 - **Streaming liviano aprobado:** convertir Bronze a `readStream`. Cubre la Unidad 4, da sustancia a la narrativa Kappa. Correr con checkpoint, no en bucle. Nada de broker/productor/AWS.
 - **Particionamiento por capa (doc 02 §3):** Bronze por fecha de evento; Silver/Gold por fecha (+ categoría); `ZORDER` por columnas selectivas; tamaños 128 MB–1 GB; nunca por alta cardinalidad. Cuida la cuota y deja visible la frontera train/test.
 
@@ -295,6 +296,13 @@ Para trabajar en paralelo sin pisarse, congelar las tres interfaces. Estado: **e
 2. **Salida del modelo** — qué entrega el scoring (id de sesión, score/probabilidad, segmento), formato y dónde se persiste. *Lo cierra Sara al definir el modelo; se enuncia hoy.*
 3. **Datos que consume el dashboard** — la Gold **agregada** que alimenta Power BI (no las 69M filas crudas). *Las tablas/métricas agregadas salen de la pasada 2 (§2.3.1 paso 5).*
 
+> **Gold v1 — esquema actual (estado 4-jun; aún NO congelado, se cierra en el paso 5).**
+> Grano: **1 fila = 1 `user_session`** · **22.99M** sesiones · tasa de etiqueta (purchase) **0.0610**.
+> Columnas: `user_session`, `target_purchase` (Y, 0/1), `user_id`, `total_views`, `distinct_products_viewed`, `brands_compared`, `categories_explored`, `browsing_duration_sec`, `sin_navegacion_previa` (bool).
+> Particionamiento: pendiente de aplicar (doc 02 §3: por fecha/categoría + `ZORDER`).
+>
+> **⚠️ Decisión pendiente para Sara (modelado) — flag `sin_navegacion_previa`.** Marca **34,144 sesiones (~0.15%)** que "abren" con `cart`/`purchase`: por el corte anti-fuga tienen **todas las features de navegación en 0** y son **mayormente positivas** (en la muestra, ~55% vs 6% global). El `inner join` viejo las descartaba en silencio (sesgo de selección); la Gold v1 las conserva con el flag. Sara debe decidir cómo tratarlas: **(A)** mantenerlas usando `sin_navegacion_previa` como variable; **(B)** excluirlas del entrenamiento (el clasificador predice desde el comportamiento *previo*, que aquí no existe); o **(C)** tratarlas como segmento aparte. Impacto chico (0.15%) pero a definir antes de entrenar. Cierra el *"Sara consultada por el sesgo"* de §2.3.1 paso 2.
+
 ---
 
 ## 14. Operación: Claude + Git
@@ -355,3 +363,34 @@ Cada integrante usa su propia IA (Claude o Gemini). Súbele estos documentos de 
 ---
 
 *Recordatorio: reconfirmar límites de Databricks Free Edition cerca de la entrega (la plataforma cambia rápido).*
+
+---
+
+## 17. Hallazgos y decisiones del EDA oficial (4-jun) — insumo para Sara, Kelly y la pasada 2
+
+El EDA (`notebooks/analysis/EDA.ipynb`) quedó re-fuenteado a **Silver/Gold v1** y corriendo en Databricks (§2.3.1 paso 4 Hecho). Esto resume lo que salió y lo que hay que decidir/hacer. **Es el puente para abrir los siguientes frentes.**
+
+### 17.1 Hallazgos sobre data completa (Oct+Nov, 109.5M eventos / 69.6M unidades producto-en-sesión)
+- **Funnel por unidad:** cart 4.61%, conv **2.23%** (≈ el 2.22% histórico), cierre 48.3%, **abandono 51.7%**. El negocio es **electrónica**: 75.6% del revenue, top-3 categorías 87%, y el mayor pool de carritos abandonados ($349.5M de $489.8M en juego).
+- **Dos palancas (síntesis §4.9):** (A) recuperar carritos de alta intención que no cierran (electronics; Samsung/Apple ≈68%); (B) retener al núcleo recurrente (**36.8%** de compradores = **73.8%** del revenue; vuelven en ~2.7 días, 82.5% a la misma categoría).
+- **El precio no es el freno**; la decisión es casi inmediata (mediana **2.2 min**).
+- **Perfilado Gold (§5) — contraintuitivo y clave para Sara:** las features tienen correlación **débil y NEGATIVA** con la compra; los compradores **navegan menos** (deciden rápido). Son features **pre-carrito** (anti-fuga). **Multicolinealidad** alta (`total_views`≈`distinct_products_viewed` 0.92). → el poder predictivo está en no-linealidades/interacciones; **enriquecer features** en la pasada 2.
+- **Flag `sin_navegacion_previa`:** 34.144 sesiones (0.15%), **tasa 55.2%** vs 6.0% global → decisión de Sara (§13): mantener con flag / excluir / segmento aparte.
+
+### 17.2 Calidad de datos de noviembre (DIAGNOSTICADO — §6.1/§7.1) ⚠️
+- **La ventana 15–17 nov está corrupta en `purchase`** (15-nov = **0 compras** pese a 467k carritos; volcado del backlog el 16–17; **no** es duplicación). Coincide con un problema reportado por la comunidad del dataset (REES46). → **Cuarentenar 15–17 nov en la pasada 2** (corrompe la etiqueta de noviembre).
+- **La divergencia Oct→Nov es mayormente REAL:** excluir la ventana baja el abandono de Nov de 60.9% → 52.0%, pero **no** lo reconcilia con octubre (31.9%). Es estacionalidad pre-fiestas + posible cambio en la captura de `cart` (a confirmar).
+- **Black Friday (29-nov)** es pico **real pero modesto** (~+30%); el pico ×6 del 17-nov era el artefacto, no BF.
+- **Contexto dataset (consenso comunidad, no oficial — REES46 bajo NDA):** tienda Rusia/CIS, precios en USD, `event_time` en UTC.
+
+### 17.3 Decisión de split train/test — A CERRAR con Sara/equipo (documento en EDA §6.1·bis)
+- **Aclaración:** la estratificación va en la **CV interna** (`StratifiedKFold`), **no** en la frontera temporal; la diferencia de tasa Oct↔Nov es **drift**, se maneja con calibración (doc 05 §1.4).
+- **Recomendado: Opción C** — train = octubre + noviembre hasta ~23 / test = nov 24–30 (mismo régimen, *out-of-time*, alto volumen) → aísla *skill* del *drift* sin renunciar a noviembre. **Opción A** (train Oct / test Nov-sin-15–17) como **sensibilidad**. **Octubre-solo descartado** (renuncia al out-of-time). Invariante en todas: cuarentena 15–17, `StratifiedKFold`, calibración+Brier, `is_black_friday` solo para estratificar evaluación.
+- **Preguntas abiertas para mañana:** ¿el shift es conductual o de medición (captura de `cart`)?; punto de corte exacto de C; ¿C sola o híbrida C+A?; tasa de etiqueta a nivel sesión por mes.
+
+### 17.4 Pendientes para el paso 5 (también listados en la última celda del EDA)
+1. **Pasada 2 + calidad:** cuarentenar 15–17 nov; auditar categóricas/`"Unknown"`/outliers/bots; enriquecer features; resolver multicolinealidad.
+2. **Cerrar el split con Sara** (doc §6.1·bis) y la decisión del flag `sin_navegacion_previa`.
+3. **Congelar contrato Gold (§13)** + particionamiento (doc 02 §3) + exportar la Gold agregada para Power BI.
+4. **Limpiar** el Delta temporal de trabajo del EDA (`_tmp_eda_units`).
+5. **Alinear con Kelly** (las dos palancas y el mapa pregunta→gráfico, doc 07) y **coordinar la actualización de §6** (los números full-data difieren de los allí citados).
