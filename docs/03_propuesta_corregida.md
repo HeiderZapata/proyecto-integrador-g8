@@ -160,8 +160,70 @@ La **estrategia de particionamiento se define por capa** según los patrones de 
 
 El **consumo y despliegue**, en el alcance académico, consiste en consultas analíticas con **Spark SQL** sobre la Gold, la persistencia del modelo y su *scoring* batch a una tabla Delta (gestionados con MLflow), y un tablero en **Power BI** conectado a la **Gold agregada** (no a las decenas de millones de filas crudas), que materializa el diagnóstico para la decisión de negocio. La gobernanza se apoya en Unity Catalog y Volumes, con separación de las zonas cruda (Bronze), curada (Silver) y de consumo (Gold). Todo el diseño está pensado para escalar: el mismo código Spark/Delta operaría sobre cómputo mayor y una fuente en streaming, de modo que la arquitectura implementada es una versión acotada —no distinta— de la de referencia.
 
-*Ilustración 2. Arquitectura de datos para e-commerce.*
-(aqui, poner la imagen del diagrama desarrollado segun 02)
+*Ilustración 2. Arquitectura de datos implementada para E-commerce (Estilo Kappa en Databricks Free).*
+
+```mermaid
+---
+config:
+  layout: fixed
+  theme: neo
+---
+flowchart TB
+ subgraph subGraph0["1. Ingesta Batch"]
+        B[("fa:fa-database Volume: ecommerce_raw<br>Unity Catalog")]
+        A["fa:fa-database Datos Kaggle: Oct y Nov CSVs"]
+  end
+ subgraph subGraph1["2. Procesamiento Replay Kappa"]
+        C("fa:fa-gears Spark Structured Streaming<br>Trigger.AvailableNow")
+  end
+ subgraph subGraph2["3. Almacenamiento Lakehouse & ELT Medallion"]
+        D[("🥉 Bronze: Delta<br>Partición: fecha")]
+        E[("🥈 Silver: Delta<br>Eventos limpios/sesiones<br>Partición: fecha+categoría")]
+        F[("🥇 Gold: Delta<br>Matriz por sesión y Agregados")]
+        F1["Train: Datos Octubre"]
+        F2["Test: Datos Noviembre"]
+  end
+ subgraph subGraph3["4. Consumo y Analítica"]
+        G("fa:fa-tree Modelos de Árboles<br>XGBoost/LightGBM")
+        H["fa:fa-flask MLflow"]
+        I[("fa:fa-chart-line Predicciones Delta")]
+        J[("fa:fa-table 🥇 Gold Agregada<br>Exportada pequeña")]
+  end
+ subgraph subGraph4["5. Visualización"]
+        K["fa:fa-chart-bar Power BI Desktop"]
+        L["fa:fa-cloud Power BI Service<br>Tablero Ejecutivo"]
+  end
+    A -- Descarga manual/script --> B
+    B -- Auto Loader + cloudFiles --> C
+    C -- Escritura --> D
+    D -- ELT PySpark Serverless --> E
+    E -- Ingeniería de Features --> F
+    F -. Split Temporal visible .-> F1 & F2
+    F1 -- Entrenamiento --> G
+    G <-- Gestión de ciclo de vida --> H
+    F2 -- Scoring Batch --> I
+    F -- Spark SQL --> J
+    K -- Publicación --> L
+    J -- Import --> K
+    I -.-> K
+
+     B:::storage
+     C:::process
+     D:::storage
+     E:::storage
+     F:::storage
+     G:::process
+     H:::mlflow
+     I:::storage
+     J:::storage
+     K:::bi
+     L:::bi
+    classDef databricks fill:#FF3621,stroke:#fff,stroke-width:2px,color:#fff
+    classDef storage fill:#1A5A98,stroke:#fff,stroke-width:2px,color:#fff
+    classDef process fill:#FDB515,stroke:#fff,stroke-width:2px,color:#333
+    classDef bi fill:#F2C811,stroke:#fff,stroke-width:2px,color:#333
+    classDef mlflow fill:#0194E2,stroke:#fff,stroke-width:2px,color:#fff
+```
 
 ### Curso 3: SI7007/SI6004 Visualización de Datos
 
