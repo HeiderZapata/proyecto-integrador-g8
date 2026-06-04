@@ -1,6 +1,6 @@
 # 00 — Estado del Proyecto · PI Grupo 8 (documento maestro)
 
-**Última actualización:** miércoles 3 de junio de 2026
+**Última actualización:** jueves 4 de junio de 2026
 **Entrega de productos:** lunes 8 de junio · **Exposición:** martes 9 de junio (5–9 pm)
 **Equipo:** Kelly, Sara, Heider y Yeison
 **Repositorio:** `HeiderZapata/proyecto-integrador-g8` · este archivo vive en `docs/`
@@ -11,10 +11,9 @@
 
 ---
 
-> ## ⚠️ SEGURIDAD — ACCIÓN PENDIENTE (Heider)
+> ## ✔ SEGURIDAD — RESUELTO (4-jun)
 >
-> **La credencial de Kaggle ya NO está hardcodeada.** El notebook `notebooks/pipeline/01_sube_datos_kaggle_Databricks.ipynb` ahora lee la llave desde el Volume (`kaggle.json`, sin ningún valor escrito en el código) y el `.gitignore` cubre `kaggle.json` para que no vuelva a subirse al repo.
-> **Único pendiente — responsable: Heider:** la llave que estuvo expuesta quedó en el historial de Git, así que se asume comprometida. Hay que **expirar/rotar esa llave desde la cuenta de Kaggle** — eso es lo que la neutraliza (borrarla del archivo no basta). Es uno de los criterios para cerrar Fase 3 (§4). *Este banner se elimina cuando Heider confirme que la llave quedó expirada.*
+> La credencial de Kaggle ya NO está hardcodeada (el notebook de ingesta lee la llave desde el Volume; el `.gitignore` cubre `kaggle.json`) y **Heider recibió la instrucción de expirar/rotar la llave expuesta desde la cuenta de Kaggle**, que es lo que la neutraliza (la llave había quedado en el historial de Git y se daba por comprometida). Con eso, el riesgo se cierra. *Pendiente menor de confirmación: que Heider dé el "hecho" explícito de que la llave quedó expirada; mientras tanto, ninguna llave válida vive en el repo ni en su historial.*
 
 ---
 
@@ -56,10 +55,10 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | Frente / Tarea | Responsable | Estado | Notas |
 |---|---|---|---|
-| **Expirar la credencial de Kaggle expuesta** | Heider | **Pendiente** | El notebook ya lee del Volume y el `.gitignore` la cubre (Hecho); falta que Heider **expire la llave en Kaggle** (ver banner). Criterio de cierre de Fase 3 |
-| Confirmar roles | Equipo | Pendiente | §11 sigue como PROPUESTO hasta la reunión |
-| Congelar los tres contratos | Equipo | Pendiente | §13: esquema Gold · salida modelo · datos dashboard |
-| Cronograma mié 3 → mar 9 con fecha y dueño | Equipo | Pendiente | §15 (borrador propuesto, por confirmar) |
+| **Expirar la credencial de Kaggle expuesta** | Heider | **Hecho** | Notebook lee del Volume + `.gitignore` (Hecho); Heider con instrucción de expirar la llave en Kaggle → riesgo cerrado (ver banner). Falta solo su "hecho" explícito |
+| Confirmar roles | Equipo | **Hecho** | **Aceptados en la reunión del 3-jun.** §11 pasó de PROPUESTO a firme |
+| Congelar los tres contratos | Yeison (Gold) / Equipo | En curso | §13. **El esquema Gold lo congela Yeison** como una de sus primeras tareas; salida del modelo y datos del dashboard se enuncian para que la Gold ya nazca sirviéndolos |
+| Cronograma mié 3 → mar 9 con fecha y dueño | Equipo | Ajustado (4-jun) | §15. La reunión movió el arranque: jue 4 = onboarding del equipo + Yeison propone plan a Heider |
 | Ordenar el repo (estructura de código + protocolo Git + `.gitignore`) | Heider/Yeison (Claude Code) | Hecho | §12. Estructura creada, notebooks movidos a `pipeline/`, `.gitignore` en la raíz (baseline en `main`) |
 | Doc de convenciones Git — `CONTRIBUTING.md` (ramas, PRs, evitar conflictos) | Heider/Yeison | Hecho | §14.1. En la raíz del repo (baseline en `main`) |
 | Investigar comunidad del dataset (Kaggle) | Todos (transversal) | Pendiente | Cada dueño contrasta su fase con la comunidad REES46 |
@@ -73,12 +72,13 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 | **Definir qué del EDA-descubrimiento se promueve a Silver/Gold** | **Heider/Yeison** | Pendiente | §12.3. Es *el* paso más importante: dejar la tabla Gold **completa y robusta** (alimenta EDA-entregable y modelos) |
 | Streaming replay (`readStream` + `AvailableNow`) | Heider | Pendiente | Liviano · con checkpoint, no en bucle (doc 02 §4) |
 | Spark SQL + MLflow + scoring batch | Heider/Sara | Pendiente | Cierra el ciclo batch |
-| EDA / funnel (entregable analítico) | Yeison → alinear con Kelly (Viz) | Revisión | v1 reciclado del taller 2; alinear a la Pregunta de Oro y a nombres de variables claros. **Vive en `analysis/`, no en el pipeline (ver §12)** |
+| **Refactor `EDA.ipynb` (notebook oficial del EDA) + separar de Medallion** | **Heider/Yeison (Claude Code)** | Pendiente | §12.3. Nuevo notebook (el EDA *real* del taller de Viz, sobre muestra) subido provisionalmente a `pipeline/`. Hay que reubicarlo en `analysis/`, conectarlo a Silver/Gold, retitularlo (era "taller 2" → ahora EDA del PI) y revisar análisis faltantes |
+| EDA / funnel (entregable analítico) | Heider/Yeison → alinear con Kelly (Viz) | Revisión | Fuente real = `EDA.ipynb` (no el funnel delgado de `02_Medallion_Y_EDA`). Alinear a la Pregunta de Oro y a nombres de variables claros. **Vive en `analysis/`, lee de Silver/Gold.** Es insumo de diseño del tablero y de features |
 | Entrenamiento + evaluación del modelo | Sara | Pendiente | PR-AUC, calibración (no accuracy) |
 | Clustering de visitantes | Sara | Pendiente | Con metodología propia; el **cruce clasificador × clustering** es el insight |
 | Tablero Power BI ejecutivo | Kelly | Pendiente | Sobre la Gold **agregada** (no 69M filas) |
 | Diseño del A/B test | Yeison | Pendiente | Cierre: medir un incentivo sobre el segmento de mayor intención |
-| Rehacer Ilustración 2 (diagrama de arquitectura) | Heider/Yeison | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3) |
+| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3). Yeison deja el insumo listo; Heider arma los diagramas |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
 | Documento consolidado del PI | Equipo | Pendiente | |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
@@ -115,11 +115,13 @@ Salida del modelo  ──►  enriquece tablero + define el segmento del A/B
 
 **Definición de Hecho de Fase 3** — cruzamos a Fase 4 cuando se cumplan los cinco:
 
-1. **Roles confirmados** — §11 pasa de PROPUESTO a firme.
-2. **Cronograma** mié 3 → mar 9 con fecha y dueño por tarea (§15), confirmado por el equipo.
-3. **Tres contratos congelados** (§13): esquema de la Gold, salida del modelo, datos que consume el dashboard.
-4. **Repo ordenado** (§12): estructura de código definida, protocolo Git operativo, `.gitignore`, **credencial de Kaggle rotada y limpia del historial**.
+1. ~~**Roles confirmados**~~ — **HECHO** (aceptados en la reunión del 3-jun; §11 firme).
+2. **Cronograma** mié 3 → mar 9 con fecha y dueño por tarea (§15) — ajustado el 4-jun (la reunión movió el arranque).
+3. **Tres contratos congelados** (§13): esquema de la Gold (lo congela Yeison), salida del modelo, datos que consume el dashboard. *(En curso — compuerta para abrir los frentes de aguas abajo.)*
+4. **Repo ordenado** (§12): estructura de código definida (Hecho), protocolo Git operativo (Hecho), `.gitignore` (Hecho), **credencial de Kaggle neutralizada** — **HECHO** (llave en proceso de expiración por Heider; ninguna llave válida vive en el repo ni en su historial).
 5. **Kickoff por frente listo** — un prompt/encuadre por frente, para que los chats de Fase 4 abran limpios y heredando el knowledge.
+
+**Estado:** quedan vivos los puntos 3 (contratos, sobre todo el esquema Gold) y 5 (kickoff). El proyecto ya está pisando Fase 4 en la práctica: Yeison y Heider arrancan la capa Gold y el EDA en cuanto el equipo termine el onboarding de hoy.
 
 ---
 
@@ -209,7 +211,7 @@ Opcional, como una diapositiva. Demuestra que 0.5 es erróneo bajo desbalanceo, 
 
 ---
 
-## 11. Reparto de frentes (PROPUESTO — por confirmar en la reunión que cierra Fase 3)
+## 11. Reparto de frentes (FIRME — aceptado en la reunión del 3-jun)
 
 - **Heider (con Yeison en la capa Medallion) — Ingeniería de Datos:** pipeline, streaming, Delta, persistencia, salud del repo.
 - **Sara (Yeison acompaña) — ML/Modelado:** features, entrenamiento, evaluación, clustering.
@@ -252,10 +254,22 @@ reports/
 
 **Por qué separar (no es estética):** (1) **cuota** — si los gráficos vivieran dentro del pipeline, cada reconstrucción de una capa quemaría cómputo renderizando visualizaciones (doc 02 §4); (2) **anti-fuga** — el EDA de features debe respetar el corte temporal Oct/Nov; enredarlo con la ingesta facilita "espiar" datos de test.
 
-### 12.3 Qué del EDA va a Medallion (Heider/Yeison — tarea de §2.3)
-El EDA de descubrimiento *informa* las transformaciones, pero estas se **codifican en Silver/Gold**, no se quedan en el notebook de exploración. **Responsables: Heider y Yeison** (es parte de dejar la tabla Gold completa y robusta). A resolver abriendo los notebooks reales con Claude Code: **decidir qué transformaciones discoveradas en el EDA se promueven a la lógica determinista de Silver/Gold** (limpieza, tipado, dedup, reconstrucción de sesión, features) y qué se queda como análisis. La dirección de dependencia es de una sola vía: EDA-descubrimiento → transformaciones (pipeline) → EDA-entregable (consume). Esta tabla Gold alimenta **tanto el EDA-entregable como los modelos**: por eso es el paso más importante y se valida con cuidado.
+### 12.3 Separar Medallion del EDA + dejar el EDA oficial (Heider/Yeison — tarea de §2.3)
+El EDA de descubrimiento *informa* las transformaciones, pero estas se **codifican en Silver/Gold**, no se quedan en el notebook de exploración. **Co-responsables: Heider y Yeison** (es parte de dejar la tabla Gold completa y robusta). La dirección de dependencia es de una sola vía: EDA-descubrimiento → transformaciones (pipeline) → EDA-entregable (consume). Esta tabla Gold alimenta **tanto el EDA-entregable como los modelos**, y el EDA es **insumo directo de las decisiones de diseño del tablero (Kelly) y de features (Sara)** — el conocimiento del negocio que sale del EDA es crucial, no decorativo. Por eso es el paso más importante y se valida con cuidado.
 
-**Hallazgo concreto (jun):** hoy existe un solo notebook `02_Medallion_Y_EDA_Ecommerce` que **combina Medallion + EDA** en un mismo archivo — justo la conflación que evitamos. Se mueve provisionalmente a `notebooks/pipeline/`; **la primera tarea de Fase 4 es separarlo**: la lógica Medallion se queda en `pipeline/` y el EDA-funnel se extrae a `notebooks/analysis/`.
+**Situación a 4-jun — hay dos notebooks en juego:**
+- `02_Medallion_Y_EDA_Ecommerce` (en `pipeline/`): **combina Medallion + un EDA-funnel delgado** (reciclado, superficial) — justo la conflación que evitamos.
+- `EDA.ipynb` (recién subido a `pipeline/`, ubicación provisional): **es el EDA *real*** que el equipo desarrolló hace semanas para el taller de Visualización, sobre una **muestra**. Este será el **archivo oficial del EDA** del PI.
+
+**Tarea con Claude Code (abrir ambos notebooks reales; co-responsables Heider/Yeison):**
+1. **Entender** qué hay en `EDA.ipynb` (qué análisis trae, sobre qué muestra, qué supuestos).
+2. **Separar bien Medallion ↔ EDA en ambas direcciones:** qué del EDA debe promoverse a la lógica determinista de Silver/Gold (limpieza, tipado, dedup, reconstrucción de sesión, features) y qué del `02_Medallion_Y_EDA` es realmente análisis y debe salir del pipeline. `EDA.ipynb` queda como el EDA oficial y **debe alimentarse de Silver/Gold**.
+3. **Reubicar** `EDA.ipynb` en `notebooks/analysis/` (no en `pipeline/`).
+4. **Cambiar la fuente de datos:** que lea de **Silver/Gold** (ya no del archivo de muestra del taller) y **corra en Databricks**.
+5. **Retitular** el notebook: el título y la descripción aún aluden al *taller 2 de Visualización*; pasar a "EDA del PI".
+6. **Revisar completitud (no es la versión definitiva):** ver si al EDA le falta algún análisis relevante para la Pregunta de Oro; y al **Medallion**, verificar que haga una **limpieza completa** (aquí es útil contrastar aportes de la comunidad REES46 en Kaggle — §2.2 transversal).
+
+**Estrategia de cuota para este refactor (doc 02 §4):** el EDA oficial **no debe re-escanear los 14 GB**. Mientras se itera el refactor, trabajar sobre **muestra o sobre la Gold/Silver ya materializada**; una sola persona materializa las capas pesadas y exporta la **Gold agregada pequeña**, y el EDA-entregable lee de ahí. Nada de re-correr el Medallion completo solo para refrescar un gráfico; correr con checkpoint y `AvailableNow`, no en bucle. Así el nuevo `EDA.ipynb` añade valor sin quemar la cuota Free.
 
 ### 12.4 Convención de packs de contexto
 - `material_cursos/<curso>/` — material crudo. **Eliminado del repo** (los packs ya están destilados); si alguien lo necesita en local, mantenerlo fuera de Git.
@@ -293,19 +307,21 @@ Para que cuatro personas trabajen en paralelo sin conflictos de versiones, el re
 
 ---
 
-## 15. Plan con fechas y dueños (mié 3 → mar 9) — PROPUESTO, por confirmar
+## 15. Plan con fechas y dueños (mié 3 → mar 9) — AJUSTADO el 4-jun
 
-Borrador para confirmar y rebalancear en la reunión. Respeta la ruta crítica (§3) y la regla de cuota de no correr cargas pesadas la víspera (doc 02 §4). **Cambio clave vs. versión anterior:** Yeison se ancla a la tabla Gold con Heider los dos primeros días (es la compuerta); por eso su trabajo de A/B test y documento se concentra de viernes en adelante.
+Ajustado tras la reunión del 3-jun. Respeta la ruta crítica (§3) y la regla de cuota de no correr cargas pesadas la víspera (doc 02 §4). **Cambio clave:** la reunión decidió que **jue 4 es día de onboarding** (Kelly, Sara y Heider entienden el repo y estudian su tema); Sara y Kelly **esperan a que Yeison y Heider dejen lista la Silver/Gold + el EDA** para arrancar. Eso corre el HITO de la Gold a vie 5 y comprime aguas abajo — **ver riesgo al pie de la tabla.**
 
 | Día | Foco | Quién / qué |
 |---|---|---|
-| **mié 3** (hoy) | Cerrar Fase 3 | **Heider:** rotar credencial Kaggle (revocar → limpiar historial). **Equipo:** reunión — confirmar roles (§11), congelar contratos (§13), validar este doc. **Heider + Yeison:** abrir el trabajo de la Gold — revisar `join` (sesgo; Sara consultada) + decidir **qué del EDA se promueve a Silver/Gold** (§12.3) + particionamiento. **Claude Code:** ordenar repo (§12) + `CONTRIBUTING.md` (§14.1). |
-| **jue 4** | **Gold completa y robusta (HITO)** | **Heider + Yeison:** cerrar Gold validada + Bronze→`readStream` (checkpoint, `AvailableNow`); **congelar el esquema Gold** y exportar la Gold agregada. **Sara:** preparar el pipeline de features sobre muestra (anti-fuga, split temporal), listo para enchufar a la Gold. **Kelly:** andamiaje del EDA-funnel sobre Silver. |
-| **vie 5** | Modelo + tablero v1 (Gold ya congelada) | **Sara:** features + entrenar (logística → GBM), evaluar PR-AUC + calibración. **Heider:** Spark SQL sobre Gold + setup MLflow + scoring batch. **Kelly:** Power BI v1 sobre la Gold agregada. **Yeison:** liberado de la Gold → diseño del A/B test + Ilustración 2. |
-| **sáb 6** | Insight + integración | **Sara:** cerrar clustering + perfilado; **cruce clasificador × clustering**. **Heider:** scoring batch final + métricas de optimización (particiones escaneadas, tiempo). **Kelly:** tablero v2 + narrativa. **Yeison:** iniciar documento consolidado integrando resultados. |
-| **dom 7** | Consolidar + ensayar | Documento consolidado completo + PPTX. Ensayo de defensa (filtrado en vivo). Q&A por profesor (doc 08 §5). |
+| **mié 3** | Reunión — Fase 3 cerrada | **HECHO.** Roles aceptados (§11 firme), avances y pasos a seguir presentados. Heider con instrucción de expirar la credencial Kaggle. |
+| **jue 4** (hoy) | Onboarding + arranque de la Gold | **Kelly, Sara, Heider:** entender repo + docs y estudiar su tema (ML, Viz, ingeniería). **Yeison:** (a) **propone a Heider el plan** para dejar Silver/Gold + EDA; (b) **empieza a congelar el contrato del esquema Gold** (§13); (c) lanza con Claude Code el **refactor del `EDA.ipynb` + separación Medallion/EDA** (§12.3). **Heider** se suma a la Gold al terminar su onboarding. |
+| **vie 5** | **Gold completa y robusta (HITO) + EDA oficial** | **Heider + Yeison:** Gold validada (`join` sin sesgo) + Bronze→`readStream` (checkpoint, `AvailableNow`); **congelar el esquema Gold** y exportar la Gold agregada; dejar `EDA.ipynb` oficial leyendo de Silver/Gold. **Sara y Kelly arrancan en cuanto la Gold y el EDA estén disponibles** (features sobre muestra anti-fuga / andamiaje del tablero). |
+| **sáb 6** | Modelo + tablero v1 | **Sara:** features + entrenar (logística → GBM), PR-AUC + calibración; iniciar clustering. **Heider:** Spark SQL sobre Gold + MLflow + scoring batch; **diagramas de arquitectura (Ilustración 2)**. **Kelly:** Power BI v1 sobre la Gold agregada. **Yeison:** liberado de la Gold → diseño del A/B test + documento. |
+| **dom 7** | Insight + consolidar + ensayar | **Sara:** **cruce clasificador × clustering** (el insight). **Kelly:** tablero v2 + narrativa. **Yeison/Equipo:** documento consolidado + PPTX; ensayo de defensa (filtrado en vivo); Q&A por profesor (doc 08 §5). |
 | **lun 8** | **ENTREGA** | Buffer, revisión final, subir productos. **No correr cargas pesadas hoy** (regla de cuota). |
 | **mar 9** (5–9 pm) | **EXPOSICIÓN** | Ante los tres profesores. |
+
+> **⚠️ Riesgo de cronograma (4-jun):** invertir el jueves completo en onboarding mientras Sara y Kelly **esperan** la Gold deja el camino crítico muy ajustado (Gold hasta vie 5 → modelo/tablero arrancan vie–sáb → entrega lun 8). Mitigaciones: (1) Yeison **no espera** — hoy mismo avanza contrato Gold + refactor EDA con Claude Code, para que el viernes sea cierre y no arranque; (2) Sara y Kelly pueden adelantar **sin la Gold final** trabajando sobre **muestra** (Sara: pipeline de features anti-fuga; Kelly: andamiaje del tablero y narrativa con datos de muestra), enchufando a la Gold cuando se congele; (3) si el viernes la Gold no cierra, priorizar **esquema congelado + Gold agregada exportada** sobre perfección del `join`, para desbloquear aguas abajo.
 
 ---
 
