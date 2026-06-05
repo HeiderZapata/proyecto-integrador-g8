@@ -25,6 +25,48 @@ de los 14 GB).
 
 ---
 
+## Verificación en vivo (5-jun, post-auditoría estática)
+
+La auditoría original (§1–§9, abajo) fue **estática**: trazó la lógica del código de los notebooks sin
+conexión a Databricks. **Hoy 5-jun se corrió la verificación en vivo** sobre la Gold real
+`/Volumes/workspace/default/e_commerce/gold/features_session` (Databricks serverless, Free Edition; solo
+agregados sobre la Gold ~1.33 GB y metadata, **cero re-escaneo de los 14 GB**). Notebook usado:
+`notebooks/analysis/_verif_post_audit.ipynb`. **Todos los checks que dependían de números en vivo
+quedaron confirmados.**
+
+| Check | Esperado (estático) | Medido en vivo (5-jun) | Resultado |
+|---|---|---|:---:|
+| **6 — esquema** | 22 columnas del contrato §13 | **22 columnas exactas** al contrato | ✅ |
+| **2 — grano** | filas == sesiones distintas, 0 dup | **22.995.676 filas = sesiones distintas, 0 duplicados** | ✅ |
+| **1+3 — tasa de etiqueta** | full ~0.0610 / limpia ~0.0589 | **0.0610 full · 0.0589 base limpia** (`label_window_corrupt=0`) | ✅ |
+| **1 — flag `sin_navegacion_previa`** | ~34.144 sesiones, ~55% positivas | **34.144 sesiones, 55.2% positivas** | ✅ |
+| **4 — `categories_explored_cid`** | poblada, distinta del macro, sin nulos | **avg 1.32 vs macro 1.14, 0 nulos** | ✅ |
+| **7 — particionamiento físico** | Bronze/Silver por fecha; Gold sin partición, sin micro-archivos | **Bronze [event_date] 61 arch ~4.31 GB · Silver [date] 61 arch ~6.41 GB · Gold partición [] 6 arch ~1.33 GB (~222 MB/arch, cero micro-archivos)** | ✅ |
+| **8 — idempotencia** | sin Delta `_tmp*` en gold/ | **gold/ sin `_tmp*`** (catálogo limpio) | ✅ |
+| **MLflow tracking** | setup operativo | **smoke test OK** tras `set_tracking_uri("databricks")` + `set_registry_uri("databricks-uc")` (ver doc 02 §4) | ✅ |
+
+**=> El "riesgo 3" (físico de particionamiento pendiente de corrida + MLflow setup) queda CERRADO EN VIVO.
+La capa está lista para modelado/tablero sin pendientes de corrida.**
+
+### Hallazgo de régimen temporal de noviembre (insumo del split de Sara)
+
+La serie diaria completa de noviembre (tasa de etiqueta a nivel sesión) muestra un **valle con recuperación**,
+no una degradación monótona: baja de ~0.060 (1-nov) al **fondo en 13–14 nov (0.042 / 0.033)**; sigue la
+**cuarentena 15–17** (excluida; 15≈0, 16=0.057, 17=0.155); y **desde el 18-nov se recupera** y estabiliza en
+~0.048–0.055, con pico en **Black Friday 29 (0.061) y 30 (0.061)**. Implicación para la **Opción C**
+(test = nov 24–30): **test ≈0.056 vs train ≈0.059 → brecha ~5% relativa** (mismo régimen, *out-of-time* sano).
+El test **incluye Black Friday (29) y el día siguiente (30)** → la evaluación debe **estratificarse CON y SIN**
+esos dos días (`is_black_friday`) o el agregado mezcla dos regímenes. **Hipótesis de negocio** (explícitamente
+**hipótesis, no hecho**): *diferimiento de compra pre-Black-Friday*. Esto **refina** el watch-item 13–14 nov ya
+registrado (doc 00 §17.5/§18.5); el split **sigue abierto con Sara** — es insumo/evidencia, no decisión tomada.
+
+> **Nota:** esta verificación **no** modifica el contrato §13 ni las cifras §17 (la auditoría ya las dio por
+> correctas: 0.0589 base limpia, etc.); solo **confirma en vivo** lo que la auditoría estática había trazado en
+> código. Los marcadores `†` (físico pendiente) y las frases "requiere corrida" de §1/§3 se actualizan abajo a
+> "confirmado en vivo 5-jun".
+
+---
+
 ## 1. Resumen ejecutivo — semáforo por check
 
 | # | Check | Semáforo | Una línea |
@@ -35,11 +77,11 @@ de los 14 GB).
 | 4 | Categóricas (`_cid` vs macro) | 🟢 | `categories_explored_cid = countDistinct(category_id)` poblada; macro se conserva para tablero; `Unknown` consistente. |
 | 5 | Consistencia de cifras (titular ↔ §17 ↔ CSV) | 🟠→🟢 | Los CSV por-categoría **excluyen `Unknown`** → no reproducían el titular. **Resuelto:** `agg_funnel_global.csv` (incl. Unknown) cuadra exacto + README documenta + claim de `src/funnel.py` corregido. |
 | 6 | Esquema vs contrato §13 (22 cols) | 🟢 | La Gold materializa **exactamente** las 22 columnas del contrato; evolución aditiva. |
-| 7 | Particionamiento (doc 02 §3) | 🟢† | Código correcto: Bronze/Silver por fecha (+ZORDER cat_id), Gold sin partición +ZORDER(session_date,user_id). †Físico requiere re-corrida para `DESCRIBE DETAIL`. |
+| 7 | Particionamiento (doc 02 §3) | 🟢† | Código correcto: Bronze/Silver por fecha (+ZORDER cat_id), Gold sin partición +ZORDER(session_date,user_id). †Físico **confirmado en vivo 5-jun** (ver §Verificación en vivo): Bronze [event_date] 61 arch · Silver [date] 61 arch · Gold partición [] 6 arch ~222 MB, cero micro-archivos. |
 | 8 | Reproducibilidad / idempotencia | 🟠→🟢 | Writes `overwrite` (idempotentes) y sin secretos. **Resuelto:** `_tmp*` borrados, `FORCE_REBUILD_UNITS=False`. Queda solo la recomendación opcional del `user_id` determinista. |
 | 9 | Higiene de cuota en el EDA | 🟢 | El EDA lee de Silver/Gold vía "Capa de agregados" (Spark→pandas); ningún gráfico re-escanea Silver; distribuciones sobre muestra 3% (semilla 42). |
 
-`*` verde con nota menor · `†` verde en código, físico pendiente de corrida.
+`*` verde con nota menor · `†` verde en código; **físico confirmado en vivo 5-jun** (ver §Verificación en vivo).
 
 **Conclusión:** **apto para soltar modelado (Sara) y tablero (Kelly) hoy.** Los ámbar son de
 *presentación/consistencia y limpieza*, no de corrección de la Gold; se corrigen sin re-congelar el
@@ -85,7 +127,8 @@ del *mismo segundo* que el corte (dirección **conservadora**, anti-fuga segura)
 
 **Criterio de aceptación.** ✅ Ninguna feature incluye el evento de corte ni posterior; sesiones sin
 navegación previa → `sin_navegacion_previa=true` y features en 0. **Cumple.**
-*Requiere corrida:* confirmar `tasa_gold ≈ tasa_target` en los conteos reales (la lógica lo garantiza).
+*Confirmado en vivo 5-jun:* `tasa_gold = 0.0610 full / 0.0589 limpia` y `sin_navegacion_previa` = 34.144
+sesiones (55.2% positivas), medidos contra la Gold real (ver §Verificación en vivo).
 
 ### Check 2 — Grano e integridad 🟢 (nota menor)
 **Verificación.** `df_session` y `df_features` agrupan **solo por `user_session`** → 1 fila/sesión por
@@ -97,9 +140,9 @@ con `first(ignorenulls)`** → el join ya no duplica.
 **Hallazgo menor.** *Cómo* se conserva el `user_id` no está documentado y es **no determinista** (sin
 `orderBy`). Ver tabla de hallazgos. El grano **no** se ve afectado.
 
-**Criterio.** ✅ Aserciones de grano pasan (por construcción). Conteo ≈ 22.99M y tasa 0.0610 full / 0.0589
-limpia: confirmado **indirectamente** vía `agg_tipologia_visitante.csv` (buyer = **5.893%** sobre base
-limpia = 0.0589). *Requiere corrida* para el conteo exacto full.
+**Criterio.** ✅ Aserciones de grano pasan (por construcción). *Confirmado en vivo 5-jun:* **22.995.676 filas
+= sesiones distintas, 0 duplicados**; tasa 0.0610 full / 0.0589 limpia (ver §Verificación en vivo). El `*` y la
+nota del `user_id` no determinista **se conservan** (sigue siendo recomendación opcional vigente, no ejecutada).
 
 ### Check 3 — Cuarentena 15–17 nov 🟢
 **Verificación.** Gold (celda 13) crea `session_date` y `label_window_corrupt = session_date.between(15,17
@@ -168,8 +211,8 @@ session_hour, day_of_week, is_weekend` (4) · `sin_navegacion_previa, is_black_f
 (3). Tipos coherentes con el contrato (ints, floats con `round`, `date`, `bool`/`int 0/1`). Evolución
 **aditiva** (las 8 nuevas se añaden; nada se renombró/eliminó respecto a la v1).
 
-**Criterio.** ✅ Diff de schema (código) == contrato §13. **Cumple.** *Requiere corrida:* `DESCRIBE`/
-`printSchema` físico para confirmar los tipos materializados.
+**Criterio.** ✅ Diff de schema (código) == contrato §13. **Cumple.** *Confirmado en vivo 5-jun:* la Gold real
+materializa **exactamente 22 columnas** (ver §Verificación en vivo).
 
 ### Check 7 — Particionamiento 🟢 (código; físico pendiente)
 **Verificación.** Bronze: `partitionBy("event_date")` (celda 5). Silver: `partitionBy("date")` +
@@ -177,9 +220,9 @@ session_hour, day_of_week, is_weekend` (4) · `sin_navegacion_previa, is_black_f
 (session_date, user_id)` (celda 13). Coincide con §13 / doc 02 §3 (Gold ≪ 1 TB → clusterizar, no
 particionar). doc 02 §3 ya cita evidencia medida (Silver 6.41 GB/61 particiones; Gold 1.33 GB/6 archivos).
 
-**Criterio.** ✅ Implementado == especificado. **Cumple en código.** El *físico* se materializa al re-correr
-el pipeline; la evidencia `DESCRIBE DETAIL` ya está en doc 02 §3 (4-jun). **Requiere corrida** solo si se
-re-materializa.
+**Criterio.** ✅ Implementado == especificado. **Cumple en código.** *Confirmado en vivo 5-jun* (`DESCRIBE
+DETAIL`): Bronze [event_date] 61 arch ~4.31 GB · Silver [date] 61 arch ~6.41 GB · **Gold partición [] 6 arch
+~1.33 GB (~222 MB/arch, cero micro-archivos)** — coincide con doc 02 §3 (ver §Verificación en vivo).
 
 ### Check 8 — Reproducibilidad / idempotencia 🟠
 **Verificación.** Toda escritura usa `mode("overwrite")` (+`overwriteSchema`) → **idempotente** (re-correr
@@ -191,8 +234,9 @@ cubre `kaggle.json`/`*secret*`/`*.key`. Muestreos con **semilla fija** (`seed=42
 deja re-escaneo (corregido a `False`); no-determinismo de `first(user_id)` y de `dropDuplicates`
 (superviviente arbitrario, filas idénticas salvo linaje → impacto nulo).
 
-**Criterio.** Parcial: idempotencia ✅, secretos ✅, semillas ✅; **`_tmp_eda_units` aún por borrar** (requiere
-corrida). **Ámbar** hasta cerrar ese borrado.
+**Criterio.** ✅ idempotencia, secretos, semillas. *Confirmado en vivo 5-jun:* **gold/ sin Delta `_tmp*`**
+(catálogo limpio) y `FORCE_REBUILD_UNITS=False` (ver §Verificación en vivo) → el ámbar quedó **cerrado**.
+Queda solo la recomendación opcional del `user_id` determinista (no ejecutada).
 
 ### Check 9 — Higiene de cuota en el EDA 🟢
 **Verificación.** El EDA (celda 13–19) define una **"Capa de agregados"**: escanea Silver un número acotado
