@@ -47,15 +47,17 @@ La estrategia de particionamiento se define **por capa**, según los **patrones 
 |---|---|---|---|
 | **Bronze** | Por **fecha de evento** (`event_date`) | Alineada al replay incremental (los CSV llegan por mes/día); permite reprocesar un día sin tocar el resto | Tamaño de archivo objetivo 128 MB–1 GB; evita micro-archivos |
 | **Silver** | Por **fecha** (+ **categoría** si la selectividad lo amerita) | Eventos limpios/tipados y sesiones reconstruidas se consultan por ventana temporal y por categoría | `ZORDER` sobre columnas de mayor selectividad (p. ej. `category_id`); compactación con `OPTIMIZE` |
-| **Gold** | Por **fecha** y **categoría** | La matriz de *features* y los agregados de negocio para BI se filtran por esas columnas en el tablero | `ZORDER` por columnas de filtro frecuente; tamaños 128 MB–1 GB |
+| **Gold (features por sesión)** | **Sin particionar** (~23M filas, ~1–2 GB) | Particionar por fecha daría ~25 MB/partición → **anti-patrón de archivos pequeños**; por tamaño (≪ 1 TB) se **clusteriza**, no se particiona | `OPTIMIZE` + `ZORDER BY (session_date, user_id)`: el *data-skipping* de Delta poda el split train/test por `session_date` sin micro-archivos; `user_id` agrupa el join de clustering |
+| **Gold agregada (BI)** | n/a (tablas pequeñas) | Funnel/métricas ya agregados (≤ cientos de filas) que consume Power BI | Se exportan como CSV/Parquet pequeños a `reports/data/` |
 
 **Reglas concretas (firmadas en la propuesta corregida, Curso 2):**
 1. **Nunca** particionar por columnas de alta cardinalidad (`user_id`, `user_session`, timestamp exacto).
 2. Particionar por columnas de **filtro frecuente** (fecha y categoría), no por las de ingesta.
 3. **Tamaño de archivo** en el rango **128 MB–1 GB** por partición; usar `OPTIMIZE` para compactar y `ZORDER` para clustering por las columnas de mayor selectividad.
-4. **Medir** —tamaño en disco, particiones escaneadas y tiempo de ejecución— para sustentar la optimización con evidencia, no por intuición.
+4. **Decidir la partición por TAMAÑO, no solo por columna.** Particionar por fecha aplica a las capas **grandes** (Bronze/Silver: 100M+ eventos, multi-GB → particiones de ~128 MB+). Una tabla **pequeña** (≪ 1 TB, p. ej. la **Gold de features ~1–2 GB**) **no se particiona**: hacerlo daría ~25 MB/partición (micro-archivos, el mismo anti-patrón que penalizamos). En su lugar `ZORDER`/clustering + *data-skipping* de Delta. Es la aplicación del rector *"la herramienta adecuada al problema"*: conocer la regla **y su excepción** (guía de Databricks: no particionar tablas ≪ 1 TB).
+5. **Medir** —tamaño en disco, particiones escaneadas y tiempo de ejecución (`DESCRIBE DETAIL`)— para sustentar la optimización con evidencia, no por intuición.
 
-**Frontera train/test en el pipeline.** El **split temporal octubre/noviembre** (octubre entrena, noviembre prueba) debe quedar **visible en el diagrama del pipeline** (Ilustración 2): como Bronze/Silver/Gold están particionadas por fecha, la separación entrenamiento/prueba se materializa como un corte sobre la columna de partición, no como una mezcla aleatoria de filas. Esto refuerza el argumento anti-fuga del componente de Aprendizaje Automático.
+**Frontera train/test en el pipeline.** El **split temporal octubre/noviembre** (octubre entrena, noviembre prueba) debe quedar **visible en el diagrama del pipeline** (Ilustración 2): Bronze/Silver están particionadas por fecha y la Gold lleva `session_date` con `ZORDER`/*data-skipping*, así que la separación entrenamiento/prueba se materializa como un **corte/filtro sobre la columna temporal** (partición en las capas grandes; data-skipping en la Gold), no como una mezcla aleatoria de filas. Esto refuerza el argumento anti-fuga del componente de Aprendizaje Automático.
 
 > *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma, y cierra el GAP marcado en `08_feedback_exposiciones_pregrado.md` §5 (el doc no la detallaba).*
 
