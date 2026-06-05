@@ -59,6 +59,8 @@ La estrategia de particionamiento se define **por capa**, según los **patrones 
 
 **Frontera train/test en el pipeline.** El **split temporal octubre/noviembre** (octubre entrena, noviembre prueba) debe quedar **visible en el diagrama del pipeline** (Ilustración 2): Bronze/Silver están particionadas por fecha y la Gold lleva `session_date` con `ZORDER`/*data-skipping*, así que la separación entrenamiento/prueba se materializa como un **corte/filtro sobre la columna temporal** (partición en las capas grandes; data-skipping en la Gold), no como una mezcla aleatoria de filas. Esto refuerza el argumento anti-fuga del componente de Aprendizaje Automático.
 
+> **Evidencia medida (4-jun · `DESCRIBE DETAIL`):** **Silver = 6.41 GB en 61 particiones por fecha** (~105 MB/partición, dentro del rango 128 MB–1 GB). **Gold de sesión = 1.33 GB, sin particionar, 6 archivos** (~220 MB) con `ZORDER (session_date, user_id)`. Particionar esa Gold por fecha habría dado ~22 MB/partición → el anti-patrón de archivos pequeños, confirmado con números. *(Esto es la regla 5 "medir, no por intuición" en acción.)*
+
 > *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma, y cierra el GAP marcado en `08_feedback_exposiciones_pregrado.md` §5 (el doc no la detallaba).*
 
 ---
