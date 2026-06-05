@@ -77,6 +77,15 @@ Databricks Free Edition es **solo cómputo serverless** y está sujeta a una pol
 6. **No correr cargas pesadas la noche anterior a una entrega.** Si la cuota se agota, se pierde el día. Dejar buffer.
 7. **Regla de colaboración (clave):** en Free Edition los datos **no se comparten entre cuentas** (cada quien tiene su Volume y su cuota). Por eso: que **una sola persona** construya y materialice las capas pesadas; la **Gold agregada (pequeña)** se exporta al repo / almacenamiento compartido para que el resto trabaje modelado y Power BI sobre ella, sin re-correr los 14 GB en cada cuenta.
 
+> **MLflow en serverless — gotcha verificado (5-jun).** En cómputo serverless (Free Edition),
+> `mlflow.set_experiment(...)` falla con `CONFIG_NOT_AVAILABLE: spark.mlflow.modelRegistryUri` porque ese
+> config no viene seteado y Spark Connect bloquea su lectura. **Fix:** antes de `set_experiment`, llamar
+> `mlflow.set_tracking_uri("databricks")` y `mlflow.set_registry_uri("databricks-uc")`. Es un problema conocido
+> de Databricks, **no del código**. El **logging de experimento** (params/métricas/modelo, §18.4 del doc 00) **no
+> requiere** el model registry; el fix solo evita que la línea de *setup* se caiga. Verificado con smoke test el
+> 5-jun (notebook `notebooks/analysis/_verif_post_audit.ipynb`); cierra el "MLflow setup" del riesgo 3. *(Insumo
+> directo para Sara.)*
+
 ---
 
 ## 5. Limitaciones conocidas y preguntas probables del profesor (Q&A de defensa)
