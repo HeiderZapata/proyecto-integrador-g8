@@ -14,6 +14,15 @@ de los 14 GB).
 > Hay **2 hallazgos ámbar** (consistencia de cifras BI ↔ titular, e idempotencia/limpieza pendiente) y
 > varios menores, todos con fix concreto. Ninguno frena el arranque de modelado/tablero hoy.
 
+> ## ✅ ACTUALIZACIÓN (5-jun, post-acciones) — los 2 ámbar quedaron RESUELTOS
+>
+> Tras correr/aplicar los fixes: **(5)** se generó **`agg_funnel_global.csv`** y cuadra **exacto** con el
+> titular (58.598.189 unidades · cart 3.93% · conv 2.24% · abandono 43.14% · 994.150 carritos · $283.6M);
+> el README documenta la exclusión de `Unknown`; y se corrigió el claim falso de `src/funnel.py` en el EDA.
+> **(8)** se borraron los Delta `_tmp*` del catálogo y se puso `FORCE_REBUILD_UNITS=False`.
+> **Queda 1 sola recomendación opcional:** hacer determinista el `user_id` de sesiones multi-usuario
+> (requiere re-correr la Gold; aditivo-seguro). **Con eso, los 9 checks quedan en verde.**
+
 ---
 
 ## 1. Resumen ejecutivo — semáforo por check
@@ -24,10 +33,10 @@ de los 14 GB).
 | 2 | Grano e integridad (1 fila = 1 sesión) | 🟢* | Grano garantizado por `groupBy(user_session)` + `LEFT join`. *Menor:* el `user_id` de sesiones multi-usuario se resuelve con `first()` **no determinista** (sin documentar/ordenar). |
 | 3 | Cuarentena 15–17 nov (etiqueta) | 🟢 | `label_window_corrupt` + `session_date` presentes; CSV diario confirma 15-nov=0 compras; watch-item 13–14 nov registrado para Sara. |
 | 4 | Categóricas (`_cid` vs macro) | 🟢 | `categories_explored_cid = countDistinct(category_id)` poblada; macro se conserva para tablero; `Unknown` consistente. |
-| 5 | Consistencia de cifras (titular ↔ §17 ↔ CSV) | 🟠 | Los CSV por-categoría **excluyen `Unknown`** → **no reproducen** el funnel titular (3.93/2.24/43.1) ni los 994k carritos / $283.6M. Además, claim **falso** de `src/funnel.py` "compartido". |
+| 5 | Consistencia de cifras (titular ↔ §17 ↔ CSV) | 🟠→🟢 | Los CSV por-categoría **excluyen `Unknown`** → no reproducían el titular. **Resuelto:** `agg_funnel_global.csv` (incl. Unknown) cuadra exacto + README documenta + claim de `src/funnel.py` corregido. |
 | 6 | Esquema vs contrato §13 (22 cols) | 🟢 | La Gold materializa **exactamente** las 22 columnas del contrato; evolución aditiva. |
 | 7 | Particionamiento (doc 02 §3) | 🟢† | Código correcto: Bronze/Silver por fecha (+ZORDER cat_id), Gold sin partición +ZORDER(session_date,user_id). †Físico requiere re-corrida para `DESCRIBE DETAIL`. |
-| 8 | Reproducibilidad / idempotencia | 🟠 | Writes `overwrite` (idempotentes) y sin secretos en código. **Pendiente:** borrar `_tmp_eda_units`; `FORCE_REBUILD_UNITS=True` deja re-escaneo; no-determinismo de `first()`. |
+| 8 | Reproducibilidad / idempotencia | 🟠→🟢 | Writes `overwrite` (idempotentes) y sin secretos. **Resuelto:** `_tmp*` borrados, `FORCE_REBUILD_UNITS=False`. Queda solo la recomendación opcional del `user_id` determinista. |
 | 9 | Higiene de cuota en el EDA | 🟢 | El EDA lee de Silver/Gold vía "Capa de agregados" (Spark→pandas); ningún gráfico re-escanea Silver; distribuciones sobre muestra 3% (semilla 42). |
 
 `*` verde con nota menor · `†` verde en código, físico pendiente de corrida.
@@ -231,25 +240,27 @@ Estas quedaron **abiertas a propósito** (doc 00 §13, §17.3, §18.5). No son e
 |---|---|---|
 | Reporte de auditoría (este documento) | `docs/auditoria_capa_datos_2026-06-05.md` | ✅ aplicado |
 | Nota de exclusión de `Unknown` + funnel global para Kelly | `reports/data/README.md` | ✅ aplicado |
-| Celda `agg_funnel_global` (funnel + totales incl. `Unknown`) | `notebooks/pipeline/03_gold_agregada_bi.ipynb` | ✅ código añadido · ⏳ **pendiente de correr** para generar el CSV |
-| Corregir claim falso de `src/funnel.py` "compartido" | `notebooks/analysis/eda_ecommerce.ipynb` (celdas 15/17/30) | ⏳ **parche listo (§7), pendiente de aplicar a mano** |
-| `FORCE_REBUILD_UNITS = True → False` (higiene de cuota) | `notebooks/analysis/eda_ecommerce.ipynb` (celda 16) | ⏳ **parche listo (§7), pendiente de aplicar a mano** |
-| Borrar `_tmp_eda_units` (Delta temporal) | Databricks (`dbutils.fs.rm`) | ⏳ **pendiente de correr** |
-| `user_id` determinista en sesiones multi-usuario | `notebooks/pipeline/02_medallion.ipynb` | 💡 **recomendado** (requiere re-correr Gold; aditivo-seguro) |
+| Celda `agg_funnel_global` (funnel + totales incl. `Unknown`) | `notebooks/pipeline/03_gold_agregada_bi.ipynb` | ✅ aplicado · ✅ **corrido** → `agg_funnel_global.csv` cuadra con el titular |
+| Corregir claim falso de `src/funnel.py` "compartido" | `notebooks/analysis/eda_ecommerce.ipynb` (celdas 15/17/30) | ✅ **aplicado** (vía script JSON) |
+| `FORCE_REBUILD_UNITS = True → False` (higiene de cuota) | `notebooks/analysis/eda_ecommerce.ipynb` (celda 16) | ✅ **aplicado** |
+| Borrar `_tmp_eda_units` / `_tmp*` (Delta temporal) | Databricks (`dbutils.fs.rm`) | ✅ **hecho** (catálogo limpio) |
+| `user_id` determinista en sesiones multi-usuario | `notebooks/pipeline/02_medallion.ipynb` | 💡 **recomendado, opcional** (requiere re-correr Gold; aditivo-seguro) |
 
-> **Por qué dos parches del EDA quedan "pendientes de aplicar a mano":** `eda_ecommerce.ipynb` (~72k tokens)
-> **excede el límite de lectura del editor** de esta sesión, y `NotebookEdit` exige leer el notebook antes de
-> editarlo. Para **no arriesgar corromper** un deliverable del equipo, se dejan como snippets exactos (§7) en
-> vez de editar a ciegas. Son cambios de **comentario** y de **una constante** — sin efecto sobre datos.
+> **Nota:** las correcciones del EDA se aplicaron con un script de reemplazo sobre el JSON del notebook
+> (`eda_ecommerce.ipynb` excede el límite del editor para `NotebookEdit`). Son cambios de **comentario** y de
+> **una constante** — sin efecto sobre datos ni sobre el esquema Gold. **Sincronizar con `git pull` en el Git
+> folder de Databricks.**
 
 **No se modificó la lógica de features de la Gold** (esquema CONGELADO §13). Los parches aplicados son de
 documentación, higiene y export BI; ninguno re-congela el contrato.
 
 ---
 
-## 7. Parches listos para `eda_ecommerce.ipynb` (aplicar a mano)
+## 7. Parches aplicados a `eda_ecommerce.ipynb` (✅ hechos, registro)
 
-**Celda 16 (`id: b1-agg-units`) — higiene de cuota.** Cambiar la línea:
+> Aplicados el 5-jun vía script de reemplazo sobre el JSON. Se documentan aquí para trazabilidad.
+
+**Celda 16 (`id: b1-agg-units`) — higiene de cuota.** Se cambió la línea:
 ```python
 FORCE_REBUILD_UNITS = True   # cuarentena: la base cambio a limpia -> rebuild 1 vez; luego puede volver a False
 ```
