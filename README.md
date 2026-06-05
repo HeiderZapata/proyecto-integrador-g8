@@ -64,7 +64,7 @@ Databricks lo necesita para leer/escribir en el repo.
 1. **Genera tu credencial *Legacy*:** kaggle.com → avatar → **Settings** → sección **API**. Hay dos tipos de credencial; usa **"Create Legacy API Key"** (bajo *Legacy API Credentials*), **NO** el token nuevo `KGAT_`. Descarga el `kaggle.json` (trae `username` y `key`). Si ya generaste un `KGAT_`, expíralo.
 2. **Crea tu Volume:** Catalog → workspace → default → **Create → Volume**. **Volume type: Managed.** Nómbralo `ecommerce_raw` (en minúsculas, igual que en el código).
 3. **Sube tu `kaggle.json` al Volume:** dentro del Volume, **Upload to this volume** → selecciona el archivo. Queda en `/Volumes/workspace/default/ecommerce_raw/kaggle.json`.
-4. El notebook `notebooks/pipeline/01_sube_datos_kaggle_Databricks.ipynb` **lee la llave de ese archivo** (sin ningún valor escrito en el código). Esta celda corre **antes** de la descarga:
+4. El notebook `notebooks/pipeline/01_ingesta_kaggle.ipynb` **lee la llave de ese archivo** (sin ningún valor escrito en el código). Esta celda corre **antes** de la descarga:
 
 ```python
 %pip install kaggle
@@ -94,7 +94,7 @@ for f in os.listdir('/Volumes/workspace/default/ecommerce_raw'):
 > **Por qué así (lección aprendida):** una llave escrita dentro de un notebook queda en el historial de Git y se asume comprometida. Por eso **ninguna credencial va en el código**: cada quien sube su `kaggle.json` a su Volume (no al repo) y el notebook lo lee de ahí. En Databricks serverless **no** sirve el comando `~/.kaggle/...` que sugiere Kaggle (ese `~` es efímero). Usamos la llave *Legacy* porque el notebook trabaja con `username`+`key`. El `.gitignore` bloquea `kaggle.json` por si acaso.
 
 ### Paso 7 — Verificar que todo funciona
-Ejecuta la primera celda de `notebooks/pipeline/01_sube_datos_kaggle_Databricks.ipynb`. Si corre sin errores, estás listo.
+Ejecuta la primera celda de `notebooks/pipeline/01_ingesta_kaggle.ipynb`. Si corre sin errores, estás listo.
 
 ---
 
@@ -153,7 +153,7 @@ proyecto-integrador-g8/
 
 Detalle y el principio **exploración ≠ producción**: `docs/00_estado_del_proyecto.md` §12.
 
-> **Nota (jun):** el notebook `02_Medallion_Y_EDA_Ecommerce` hoy combina Medallion + EDA. Está provisionalmente en `notebooks/pipeline/`; se separará en Fase 4 (Medallion → `pipeline/`, funnel → `analysis/`).
+> **Nota:** el pipeline está separado del análisis (principio *exploración ≠ producción*): `02_medallion.ipynb` (Bronze/Silver/Gold) y `03_gold_agregada_bi.ipynb` viven en `pipeline/`; el EDA entregable (`eda_ecommerce.ipynb`) en `analysis/`. La separación se completó el 4-jun (doc 00 §2.3.1 paso 1).
 
 ---
 
@@ -166,7 +166,7 @@ Detalle y el principio **exploración ≠ producción**: `docs/00_estado_del_pro
 | Kelly | [@usuario] | Visualización + narrativa (EDA-funnel, tablero) |
 | Yeison | [@usuario] | Integración + Gold (con Heider) + A/B + documento |
 
-*(Reparto propuesto; se confirma en la reunión que cierra Fase 3 — doc 00 §11.)*
+*(Reparto **firme** — aceptado en la reunión del 3-jun; doc 00 §11.)*
 
 ---
 
