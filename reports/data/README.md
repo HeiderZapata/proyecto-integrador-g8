@@ -2,7 +2,7 @@
 
 CSVs pequeños que alimentan el **tablero ejecutivo** (Kelly). Los genera
 `notebooks/pipeline/03_gold_agregada_bi.ipynb` sobre la **base limpia** (cuarentena 15–17 nov),
-con las **mismas definiciones del EDA** → los números coinciden con `notebooks/analysis/EDA.ipynb`.
+con las **mismas definiciones del EDA** → los números coinciden con `notebooks/analysis/eda_ecommerce.ipynb`.
 
 > **Cómo se actualizan:** correr el notebook en Databricks → escribe los CSV en el Volume
 > (`.../gold/bi_export`) → descargar y **commitear aquí**. Power BI los consume desde esta carpeta
@@ -21,6 +21,6 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
 - Todo en **base limpia** salvo `agg_metricas_diarias`, que **conserva todos los días** con
   `ventana_corrupta` y `is_black_friday` → úsalas para **anotar la calidad de datos** (15–17 nov) y Black Friday.
 - Las **dos palancas** del EDA: **(A)** electrónica / carritos abandonados (**~$211M en juego**), **(B)**
-  recurrentes (**35.8% compradores = 73.9% revenue**). Detalle e interpretación en `EDA.ipynb` §4.9 y la Fase II.
+  recurrentes (**35.8% compradores = 73.9% revenue**). Detalle e interpretación en `eda_ecommerce.ipynb` §4.9 y la Fase II.
 - **¿Te falta un corte (filtro/cruce) que no está?** Pídelo y se añade una tabla más — es barato,
   el notebook ya tiene la base. Mejor una tabla agregada nueva que conectar el tablero a las filas crudas.
