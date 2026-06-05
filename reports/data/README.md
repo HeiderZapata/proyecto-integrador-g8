@@ -20,6 +20,13 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
 **Notas para Kelly:**
 - Todo en **base limpia** salvo `agg_metricas_diarias`, que **conserva todos los días** con
   `ventana_corrupta` y `is_black_friday` → úsalas para **anotar la calidad de datos** (15–17 nov) y Black Friday.
+- ⚠️ **`agg_funnel_categoria` y `agg_revenue_en_juego` EXCLUYEN la categoría `Unknown`/"Sin taxonomía"**
+  (~32% de las unidades, sin macro-categoría). Por eso **NO sumes sus filas para obtener el funnel global
+  del titular**: el titular (cart **3.93%** / conv **2.24%** / abandono **43.1%**, **994k** carritos
+  abandonados, **$283.6M** en juego) es sobre **58.6M** unidades **incl. Unknown**; sumar el per-categoría
+  da ~4.40/2.54/42.35% sobre **38.6M** (sin Unknown). Para la **tarjeta KPI global** usa
+  `agg_funnel_global.csv` (fila TOTAL incl. Unknown) — lo genera la celda "Funnel global" de
+  `03_gold_agregada_bi.ipynb`. Los cortes **por marca/categoría/segmento** sí cuadran al céntimo con el EDA.
 - Las **dos palancas** del EDA: **(A)** electrónica / carritos abandonados (**~$211M en juego**), **(B)**
   recurrentes (**35.8% compradores = 73.9% revenue**). Detalle e interpretación en `eda_ecommerce.ipynb` §4.9 y la Fase II.
 - **¿Te falta un corte (filtro/cruce) que no está?** Pídelo y se añade una tabla más — es barato,
