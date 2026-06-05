@@ -120,17 +120,18 @@ la macro donde hay `Unknown` (la macro colapsa todas las categorías "Unknown" e
 
 **Criterio.** ✅ `_cid` difiere de la macro donde hay `Unknown`, ambas no-nulas. **Cumple.**
 
-### Check 5 — Consistencia de cifras 🟠 — TABLA DE RECONCILIACIÓN
+### Check 5 — Consistencia de cifras 🟠→🟢 — TABLA DE RECONCILIACIÓN
 
 **Fuente de verdad fijada: BASE LIMPIA** (cuarentena 15–17 nov), unidad = producto-en-sesión para el funnel.
+*Actualizada tras generar `agg_funnel_global.csv` (5-jun): todas las filas cuadran.*
 
-| Métrica titular | EDA §17 / titular (incl. `Unknown`, 58.6M) | Derivable de los 6 CSV | ¿Cuadra? | Comentario |
+| Métrica titular | EDA §17 / titular (incl. `Unknown`, 58.6M) | Derivable de los CSV | ¿Cuadra? | Comentario |
 |---|---|---|:---:|---|
-| Funnel global — cart rate | **3.93%** | 4.40% (suma `agg_funnel_categoria`, 38.6M) | ❌ | CSV excluye `Unknown`; no hay fila global |
-| Funnel global — conv rate | **2.24%** | 2.54% | ❌ | idem |
-| Funnel global — abandono | **43.1%** | 42.35% | ❌ | idem |
-| Carritos abandonados (total) | **994k** | 720k (suma `agg_revenue_en_juego`) | ❌ | idem (`Unknown` fuera) |
-| Revenue en juego (total) | **$283.6M** | $254.5M | ❌ | idem |
+| Funnel global — cart rate | **3.93%** | **3.93%** (`agg_funnel_global.csv`) | ✅ | el CSV global (incl. Unknown) cuadra; sumar el per-categoría daría 4.40% (excl. Unknown) |
+| Funnel global — conv rate | **2.24%** | **2.24%** (`agg_funnel_global.csv`) | ✅ | idem (per-categoría daría 2.54%) |
+| Funnel global — abandono | **43.1%** | **43.14%** (`agg_funnel_global.csv`) | ✅ | idem (per-categoría daría 42.35%) |
+| Carritos abandonados (total) | **994k** | **994.150** (`agg_funnel_global.csv`) | ✅ | idem (per-categoría daría 720k) |
+| Revenue en juego (total) | **$283.6M** | **$283.622.918** (`agg_funnel_global.csv`) | ✅ | idem (per-categoría daría $254.5M) |
 | Revenue en juego — electronics | **~$211M** | **$211.1M** (`agg_revenue_en_juego`) | ✅ | coincide exacto |
 | Electronics — conv rate | **3.52%** | **3.52%** (`agg_funnel_categoria`) | ✅ | coincide |
 | Samsung+Apple = % carritos electronics | **68.6%** | **68.6%** (853.708 / 1.244.360) | ✅ | coincide |
@@ -140,18 +141,20 @@ la macro donde hay `Unknown` (la macro colapsa todas las categorías "Unknown" e
 | Tasa etiqueta sesión (base limpia) | **0.0589** | **5.893%** buyer (`agg_tipologia_visitante`) | ✅ | coincide |
 | Concentración revenue electronics 76.9% / top-3 87.3% | titular §17 | — (no hay CSV de revenue **comprado** por categoría) | ⚠️ | métrica distinta (revenue comprado, no en-juego); no exportada |
 
-**Lectura.** Todo lo **por-categoría / marca / segmento** cuadra al céntimo entre EDA y CSV. Lo que **no
-cuadra** es el **funnel global y los totales** (carritos, $) porque los CSV per-categoría **excluyen
-`Unknown`** mientras el titular lo **incluye** (58.6M vs 38.6M unidades). Es coherente *dentro de cada
-alcance*, pero **una suma ingenua del CSV no reproduce el titular** → riesgo de que Kelly o el jurado vean
-un desajuste. Además, la concentración "revenue electronics 76.9% / top-3 87.3%" es revenue **comprado**
-(no en-juego) y **no tiene CSV**.
+**Lectura.** Todo lo **por-categoría / marca / segmento** ya cuadraba al céntimo entre EDA y CSV. El **funnel
+global y los totales** (carritos, $) **no** se reproducían sumando los CSV per-categoría porque estos
+**excluyen `Unknown`** (58.6M titular vs 38.6M sin Unknown) — **resuelto** al exportar
+`agg_funnel_global.csv`, que da el global **incl. Unknown** y cuadra exacto con el titular. La exclusión de
+`Unknown` en los per-categoría es **por diseño** (no se puede poner "Sin taxonomía" en un treemap de
+categorías) y queda **advertida** en `reports/data/README.md`. Pendiente menor (no bloqueante): la
+concentración "revenue electronics 76.9% / top-3 87.3%" es revenue **comprado** (no en-juego) y **no tiene
+CSV**; si Kelly la quiere en el tablero, se añade una tabla `agg_revenue_comprado_categoria`.
 
 **Discrepancias y fix.**
-- **5a (totales global):** añadir `agg_funnel_global.csv` (fila TOTAL incl. `Unknown`: 58.6M, 3.93/2.24/43.1,
-  994k carritos, $283.6M) — *celda de código **añadida** a `03_gold_agregada_bi.ipynb`; pendiente de correr
-  para materializar el CSV*. Documentar la exclusión en `reports/data/README.md` — **hecho**.
-- **5b (src/funnel.py):** corregir el comentario del EDA — *parche listo en §7, pendiente de aplicar a mano*.
+- **5a (totales global) — RESUELTO:** `agg_funnel_global.csv` (fila TOTAL incl. `Unknown`: 58.598.189 unidades,
+  3.93/2.24/43.14, 994.150 carritos, $283.622.918) **generado y commiteado**; cuadra con el titular. La
+  exclusión de `Unknown` en los per-categoría está documentada en `reports/data/README.md`. ✅
+- **5b (src/funnel.py) — RESUELTO:** comentario del EDA corregido (la lógica es inline, replicada en `03`); ver §7. ✅
 - **§6 full-data:** revisado — el EDA usa **base limpia** en §4/§5/§6 (la cuarentena es transversal, celda
   13); **solo §7** recarga la base completa, y está **rotulado**. doc 00 §6 y §7 **etiquetan** explícitamente
   base-limpia vs full-data (abandono 51.7% full / 43.1% limpia). **No quedan números full-data sin rótulo.**
