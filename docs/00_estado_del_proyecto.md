@@ -17,6 +17,14 @@
 
 ---
 
+> ## ✅ CAPA GOLD — COMPLETA Y CONGELADA (4-jun)
+>
+> La secuencia §2.3.1 (tratamiento de datos) **se cerró**: **Gold de 22 columnas CONGELADA** (§13); EDA oficial re-fuenteado a **base limpia** (cuarentena transversal de la ventana corrupta 15–17 nov) con hallazgos y números **refrescados**; **particionamiento layer-aware** con evidencia medida (doc 02 §3); y **6 CSV agregados** para Power BI en `reports/data/` (verificados vs EDA). Esto **desbloquea a Sara (modelado) y Kelly (tablero)**.
+> - **Decisiones y hallazgos:** §17 (calidad, cuarentena, features, números limpios) · **§13** (contrato Gold) · **§6.1·bis del EDA** (split) · doc 02 §3 (particionamiento).
+> - **Abierto a propósito (mañana, con el equipo):** decisión de **split** train/test con Sara; flag `sin_navegacion_previa` (§13); diagramas de arquitectura de Heider (Ilustración 2 — ver §2.3).
+
+---
+
 # PARTE A — Orientación y estado
 
 ## 1. El proyecto en una frase
@@ -57,7 +65,7 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 |---|---|---|---|
 | **Expirar la credencial de Kaggle expuesta** | Heider | **Hecho** | Notebook lee del Volume + `.gitignore` (Hecho); Heider con instrucción de expirar la llave en Kaggle → riesgo cerrado (ver banner). Falta solo su "hecho" explícito |
 | Confirmar roles | Equipo | **Hecho** | **Aceptados en la reunión del 3-jun.** §11 pasó de PROPUESTO a firme |
-| Congelar los tres contratos | Yeison (Gold) / Equipo | En curso | §13. **El esquema Gold se congela HOY** al cerrar la secuencia §2.3.1 (no hay consumidor en paralelo hoy); salida del modelo y datos del dashboard se enuncian para que la Gold ya nazca sirviéndolos |
+| Congelar los tres contratos | Yeison (Gold) / Equipo | **Hecho (Gold)** | §13. **Esquema Gold CONGELADO (4-jun)** —22 columnas— al cerrar la pasada 2. Salida del modelo (la cierra Sara) y datos del dashboard (Gold agregada, ya exportada a `reports/data/`) enunciados |
 | Cronograma mié 3 → mar 9 con fecha y dueño | Equipo | Ajustado (4-jun) | §15. La reunión movió el arranque: jue 4 = onboarding del equipo + Yeison propone plan a Heider |
 | Ordenar el repo (estructura de código + protocolo Git + `.gitignore`) | Heider/Yeison (Claude Code) | Hecho | §12. Estructura creada, notebooks movidos a `pipeline/`, `.gitignore` en la raíz (baseline en `main`) |
 | Doc de convenciones Git — `CONTRIBUTING.md` (ramas, PRs, evitar conflictos) | Heider/Yeison | Hecho | §14.1. En la raíz del repo (baseline en `main`) |
@@ -67,15 +75,23 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | Frente / Tarea | Responsable | Estado | Notas |
 |---|---|---|---|
-| Pipeline Medallion (Bronze/Silver/Gold) — **todos los ajustes de la capa** | **Heider/Yeison** | En curso | v1 corrió sobre 14 GB. Secuencia §2.3.1: **pasos 1–3 Hechos (4-jun)** — Gold v1 corregida y validada; faltan pasos 4–5. **Ruta crítica — ver §3** |
+| Pipeline Medallion (Bronze/Silver/Gold) — **todos los ajustes de la capa** | **Heider/Yeison** | **Hecho (4-jun)** | Secuencia §2.3.1 **completa (pasos 1–5)**: Gold v1 → pasada 2 (calidad + cuarentena 15–17 nov + 22 features + multicolinealidad resuelta) → **particionamiento layer-aware** → **contrato §13 CONGELADO** → Gold agregada BI exportada. EDA oficial a base limpia. **Detalle en §17 y §13.** *(Track paralelo §2.3.1 paso 6 —`readStream`/MLflow/scoring— sigue pendiente.)* |
 | Entrenamiento + evaluación del modelo | Sara | Pendiente | PR-AUC, calibración (no accuracy). Arranca con la Gold v1 (paso 3) |
 | Clustering de visitantes | Sara | Pendiente | Con metodología propia; el **cruce clasificador × clustering** es el insight |
 | Tablero Power BI ejecutivo | Kelly | Pendiente | Sobre la Gold **agregada** (no 69M filas). Arranca con la Gold v1 (paso 3) |
 | Diseño del A/B test | Yeison | Pendiente | Cierre: medir un incentivo sobre el segmento de mayor intención |
-| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | Pendiente | Reflejar frontera train/test + dos arquitecturas (doc 02 §3): **S3 + Auto Loader = referencia; Volume = implementada** (decisión firme, §7). Yeison deja el insumo listo; Heider arma los diagramas |
+| Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | **En revisión** | Heider añadió **Ilustración 2 (implementada, Kappa) e Ilustración 3 (referencia)** en doc 03 (Mermaid). ⚠️ **3 ajustes pendientes para Heider** antes de la entrega — ver el callout debajo de esta tabla |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
 | Documento consolidado del PI | Equipo | Pendiente | |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
+
+> **📐 Para Heider — Ilustración 2: 3 ajustes antes de la entrega (revisión de Yeison).** Heider integró en `docs/03_propuesta_corregida.md` dos diagramas Mermaid: **Ilustración 2** (arquitectura implementada, estilo Kappa) e **Ilustración 3** (de referencia). Muy buena base; **la Ilustración 3 está correcta**. La **Ilustración 2** tiene 3 detalles que **no coinciden con lo congelado el 4-jun** y conviene alinear para que el diagrama defienda lo que de verdad hicimos (el jurado de HPC pregunta esto):
+>
+> 1. **Silver — partición.** El diagrama dice *"Partición: fecha+categoría"*. Lo **implementado** es **partición por `date` + `ZORDER (category_id)`** (la categoría es *clustering*, no partición). → Rotular: *"Silver · partición por fecha · ZORDER categoría"*. (Evidencia medida: Silver 6.41 GB en 61 particiones — doc 02 §3.)
+> 2. **Gold — NO se particiona.** El diagrama no debe mostrar la Gold particionada: a **~1.33 GB (≪ 1 TB)** se decidió **`OPTIMIZE` + `ZORDER (session_date, user_id)`**, no partición (particionarla por fecha daría micro-archivos de ~22 MB, el anti-patrón). → Mostrar la Gold con *data-skipping por `session_date`*, sin partición. (doc 02 §3, regla "decidir por tamaño".)
+> 3. **Split train/test.** El diagrama fija *"Train Octubre / Test Noviembre"*, pero el split está **ABIERTO con Sara** (recomendado **C** = train Oct+Nov→23 / test Nov 24–30; ver EDA §6.1·bis). → Rotular genérico *"Split temporal (corte por fecha)"* y no fijar el mes hasta cerrar con Sara mañana.
+>
+> *No se editó el diagrama de Heider (es su deliverable); estos ajustes los aplica él tras la decisión de split. La cuarentena 15–17 nov también puede mencionarse como nota de calidad en el diagrama si se quiere.*
 
 #### 2.3.1 Tratamiento de datos — secuencia ordenada (Heider/Yeison · hoy en adelante)
 
@@ -83,10 +99,10 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 
 | # | Paso | Responsable | Estado | Notas |
 |---|---|---|---|---|
-| 1 | **Separar Medallion ↔ EDA** | Heider/Yeison (Claude Code) | **Hecho (4-jun)** | §12.3. `02_Medallion_Ecommerce.ipynb` queda solo Medallion (funnel-EDA retirado); `EDA.ipynb` movido a `analysis/`, retitulado a "EDA del PI" y con TODO de re-fuente a Silver/Gold. Commit `9f09a8b` |
+| 1 | **Separar Medallion ↔ EDA** | Heider/Yeison (Claude Code) | **Hecho (4-jun)** | §12.3. `02_medallion.ipynb` queda solo Medallion (funnel-EDA retirado); `eda_ecommerce.ipynb` movido a `analysis/`, retitulado a "EDA del PI" y con TODO de re-fuente a Silver/Gold. Commit `9f09a8b` |
 | 2 | **Validar la estructura de la Gold** (`join`/sesgo, reconstrucción de sesión, grano, corte anti-fuga) | Heider/Yeison (Sara consultada por el sesgo) | **Hecho (4-jun)** | Diagnóstico (`02b_diagnostico_gold_join.ipynb`) confirmó: sesgo de selección real pero pequeño (descartes 9× positivos, ~0.1%), grano roto (`user_session` con >1 `user_id`) y gotcha del frame RANGE. Commit `27b66b6` |
 | 3 | **Complementar Medallion — pasada 1** (con el EDA *actual*): limpieza completa, tipado, dedup, nulos/outliers de precio, sesiones-bot; construir/eliminar/transformar variables que el EDA actual ya justifique | Heider/Yeison | **Hecho (4-jun)** | Gold corregida (corte determinista, LEFT join sin sesgo, grano 1 fila = 1 sesión + flag `sin_navegacion_previa`) + Silver con `dropDuplicates` y `price>0`. **Gold v1 validada: 22.99M sesiones, tasa etiqueta 0.0610, 0 duplicados.** Pendiente (sin umbral acordado): outliers de precio y sesiones-bot. Commit `3f66e6a`. *El contrato se congela tras la pasada 2 (paso 5)* |
-| 4 | **Organizar el `EDA.ipynb` oficial** sobre la Gold v1 (reubicar en `analysis/`, conectar a Silver/Gold, retitular, revisar completitud vs. Pregunta de Oro) | Heider/Yeison (Claude Code) → alinear con Kelly | **Hecho (4-jun)** | §12.3. **EDA re-fuenteado a Silver/Gold v1 (capa de agregados Spark→pandas; ningún gráfico re-escanea Silver), corriendo entero en Databricks.** Se añadieron **§5 (perfilado Gold v1)** y **§6 (temporal/Black Friday, curva de intención, tipología de visitantes)** + §7 diagnóstico. Insumo de Kelly (tablero) y Sara (features). **Ver §17 para los hallazgos y decisiones que salieron.** Andamiaje local en `notebooks/analysis/_build/` (gitignored). |
+| 4 | **Organizar el `eda_ecommerce.ipynb` oficial** sobre la Gold v1 (reubicar en `analysis/`, conectar a Silver/Gold, retitular, revisar completitud vs. Pregunta de Oro) | Heider/Yeison (Claude Code) → alinear con Kelly | **Hecho (4-jun)** | §12.3. **EDA re-fuenteado a Silver/Gold v1 (capa de agregados Spark→pandas; ningún gráfico re-escanea Silver), corriendo entero en Databricks.** Se añadieron **§5 (perfilado Gold v1)** y **§6 (temporal/Black Friday, curva de intención, tipología de visitantes)** + §7 diagnóstico. Insumo de Kelly (tablero) y Sara (features). **Ver §17 para los hallazgos y decisiones que salieron.** Andamiaje local en `notebooks/analysis/_build/` (gitignored). |
 | 5 | **Pasada 2 sobre la Gold** (según el EDA): correlación/multicolinealidad, variables para ML, métricas/tablas agregadas para el tablero, **calidad de datos** | Heider/Yeison | **Casi (§13 ✅)** | Cierra "Gold completa y robusta". ✅ **Hecho (4-jun):** calidad (cuarentena 15–17 nov + categóricas/precio/bots auditados), **8 features nuevas (22 cols)**, multicolinealidad resuelta (`revisit_intensity`), particionamiento layer-aware, **contrato §13 CONGELADO**, EDA re-fuenteado a base limpia con hallazgos refrescados. **Pendiente menor:** borrar `_tmp_eda_units` (Block 5). *(Block 3 — 6 CSVs agregados, verificados vs EDA — **Hecho**, en `reports/data/`.)* |
 | 6 | **Track paralelo/posterior** (no gatea la correctitud de la Gold): Bronze→`readStream` (Kappa) · Spark SQL · MLflow setup · scoring batch | Heider (readStream/SQL) · Heider/Sara (MLflow/scoring) | Pendiente | `readStream` con checkpoint, no en bucle (doc 02 §4). **Scoring batch es de los últimos pasos: requiere modelo entrenado** |
 
@@ -180,7 +196,7 @@ Opcional, como una diapositiva. Demuestra que 0.5 es erróneo bajo desbalanceo, 
 - **Implementada (Databricks Free):** ingesta batch → **replay de streaming** (Auto Loader + `Trigger.AvailableNow()` + checkpoint, estilo Kappa) → Medallion en Delta → Spark SQL → MLflow + scoring batch → Power BI.
 - **Ingesta: Volume de Databricks, NO bucket S3 externo (DECISIÓN FIRME — 4-jun).** El crudo se queda en el Volume `ecommerce_raw` y Databricks ingesta desde ahí. Por qué: (1) un Volume **ya está respaldado por object storage** —leer del Volume *es* ingestar desde un almacén de objetos—, y Auto Loader (`cloudFiles`) puede apuntar al path del Volume, así que el replay de streaming/Kappa se demuestra **sin** bucket externo; (2) S3 agregaría una cuenta AWS y credenciales que gestionar (choca con *no exponer secretos* y con la reproducibilidad del repo) y las *external locations / storage credentials* son limitadas en Free Edition; (3) re-subir y re-ingestar 14 GB quema tiempo y cuota a pocos días de entregar, sin resolver ningún problema actual. S3 solo valdría la pena si herramientas **fuera** de Databricks tuvieran que leer el crudo, si hubiera un *landing zone* multi-fuente real, o si el Volume no aguantara el tamaño —nada de eso aplica aquí. **En la Ilustración 2:** S3 + Auto Loader van dibujados como la arquitectura **de referencia** productiva; el **Volume respaldado por object storage** es la **implementada**. Esta es también la respuesta de Q&A a «¿por qué no S3?».
 - **Streaming liviano aprobado:** convertir Bronze a `readStream`. Cubre la Unidad 4, da sustancia a la narrativa Kappa. Correr con checkpoint, no en bucle. Nada de broker/productor/AWS.
-- **Particionamiento por capa (doc 02 §3):** Bronze por fecha de evento; Silver/Gold por fecha (+ categoría); `ZORDER` por columnas selectivas; tamaños 128 MB–1 GB; nunca por alta cardinalidad. Cuida la cuota y deja visible la frontera train/test.
+- **Particionamiento por capa (doc 02 §3 · decisión por TAMAÑO):** Bronze/Silver por **fecha** (capas grandes → particiones de ~128 MB+; Silver además `ZORDER (category_id)`). La **Gold de sesión NO se particiona** (~1.33 GB ≪ 1 TB → `OPTIMIZE` + `ZORDER (session_date, user_id)`; particionarla por fecha daría micro-archivos de ~22 MB, el anti-patrón). **Nunca** por alta cardinalidad. La **frontera train/test** = filtro sobre `session_date` con *data-skipping*. Evidencia medida (`DESCRIBE DETAIL`) en doc 02 §3. *(Es también respuesta de Q&A: "¿por qué no particionan la Gold?" — conocer la regla y su excepción.)*
 
 ---
 
@@ -260,6 +276,8 @@ reports/
 
 **Archivos de gobierno en la raíz del repo:** `README.md` (puesta en marcha del entorno), `CONTRIBUTING.md` (cómo colaborar en Git, §14.1) y `.gitignore`. *(El `material_cursos/` se eliminó: los packs ya están destilados en `docs/` y el material crudo no hace falta en el repo.)*
 
+**Convención de nombres (4-jun).** Notebooks en `snake_case` con prefijo numérico por orden de ejecución en `pipeline/`: `01_ingesta_kaggle` → `02_medallion` → `03_gold_agregada_bi` (+ `02b_diagnostico_gold_join`, diagnóstico puntual del `join`). EDA entregable: `analysis/eda_ecommerce`. *(Renombrados desde nombres mixtos —`01_sube_datos_kaggle_Databricks`, `02_medallion`, `EDA`— el 4-jun, con referencias cruzadas actualizadas.)* **Excepción del `.gitignore`:** los CSV de la Gold agregada en `reports/data/` **sí** se versionan (`!reports/data/*.csv`); el resto de `*.csv` sigue ignorado.
+
 **Regla mental:** si el código **produce** una tabla Delta que otros consumen → `pipeline/`. Si **lee** capas ya hechas para aprender o comunicar → `exploration/` o `analysis/`. El funnel "reciclado del taller 2" pertenece a `analysis/`, no al pipeline.
 
 **Por qué separar (no es estética):** (1) **cuota** — si los gráficos vivieran dentro del pipeline, cada reconstrucción de una capa quemaría cómputo renderizando visualizaciones (doc 02 §4); (2) **anti-fuga** — el EDA de features debe respetar el corte temporal Oct/Nov; enredarlo con la ingesta facilita "espiar" datos de test.
@@ -267,19 +285,12 @@ reports/
 ### 12.3 Separar Medallion del EDA + dejar el EDA oficial (Heider/Yeison — tarea de §2.3)
 El EDA de descubrimiento *informa* las transformaciones, pero estas se **codifican en Silver/Gold**, no se quedan en el notebook de exploración. **Co-responsables: Heider y Yeison** (es parte de dejar la tabla Gold completa y robusta). La dirección de dependencia es de una sola vía: EDA-descubrimiento → transformaciones (pipeline) → EDA-entregable (consume). Esta tabla Gold alimenta **tanto el EDA-entregable como los modelos**, y el EDA es **insumo directo de las decisiones de diseño del tablero (Kelly) y de features (Sara)** — el conocimiento del negocio que sale del EDA es crucial, no decorativo. Por eso es el paso más importante y se valida con cuidado.
 
-**Situación a 4-jun — hay dos notebooks en juego:**
-- `02_Medallion_Y_EDA_Ecommerce` (en `pipeline/`): **combina Medallion + un EDA-funnel delgado** (reciclado, superficial) — justo la conflación que evitamos.
-- `EDA.ipynb` (recién subido a `pipeline/`, ubicación provisional): **es el EDA *real*** que el equipo desarrolló hace semanas para el taller de Visualización, sobre una **muestra**. Este será el **archivo oficial del EDA** del PI.
+**Estado — HECHO (4-jun).** La separación Medallion ↔ EDA se completó:
+- **`02_medallion.ipynb`** (en `pipeline/`) quedó **solo Medallion** (Bronze/Silver/Gold, determinista e idempotente); el EDA-funnel delgado que traía se retiró.
+- **`eda_ecommerce.ipynb`** (el EDA real del taller, originalmente sobre muestra) se **reubicó en `analysis/`**, se **re-fuenteó a Silver/Gold** (capa de agregados Spark→pandas; corre entero en Databricks **sin re-escanear los 14 GB**), se retituló a "EDA del PI" y se llevó a **base limpia** (cuarentena 15–17 nov). Sus hallazgos alimentan a **Kelly** (tablero) y **Sara** (features) — **ver §17**.
+- La limpieza/tipado/dedup/reconstrucción de sesión/features se **codificaron en Silver/Gold** (no quedaron en el notebook de análisis). La dirección de dependencia se respetó: EDA-descubrimiento → transformaciones (pipeline) → EDA-entregable (consume).
 
-**Tarea con Claude Code (abrir ambos notebooks reales; co-responsables Heider/Yeison):**
-1. **Entender** qué hay en `EDA.ipynb` (qué análisis trae, sobre qué muestra, qué supuestos).
-2. **Separar bien Medallion ↔ EDA en ambas direcciones:** qué del EDA debe promoverse a la lógica determinista de Silver/Gold (limpieza, tipado, dedup, reconstrucción de sesión, features) y qué del `02_Medallion_Y_EDA` es realmente análisis y debe salir del pipeline. `EDA.ipynb` queda como el EDA oficial y **debe alimentarse de Silver/Gold**.
-3. **Reubicar** `EDA.ipynb` en `notebooks/analysis/` (no en `pipeline/`).
-4. **Cambiar la fuente de datos:** que lea de **Silver/Gold** (ya no del archivo de muestra del taller) y **corra en Databricks**.
-5. **Retitular** el notebook: el título y la descripción aún aluden al *taller 2 de Visualización*; pasar a "EDA del PI".
-6. **Revisar completitud (no es la versión definitiva):** ver si al EDA le falta algún análisis relevante para la Pregunta de Oro; y al **Medallion**, verificar que haga una **limpieza completa** (aquí es útil contrastar aportes de la comunidad REES46 en Kaggle — §2.2 transversal).
-
-**Estrategia de cuota para este refactor (doc 02 §4):** el EDA oficial **no debe re-escanear los 14 GB**. Mientras se itera el refactor, trabajar sobre **muestra o sobre la Gold/Silver ya materializada**; una sola persona materializa las capas pesadas y exporta la **Gold agregada pequeña**, y el EDA-entregable lee de ahí. Nada de re-correr el Medallion completo solo para refrescar un gráfico; correr con checkpoint y `AvailableNow`, no en bucle. Así el nuevo `EDA.ipynb` añade valor sin quemar la cuota Free.
+*(Estrategia de cuota respetada, doc 02 §4: el cómputo pesado se concentra en la "capa de agregados" sobre Silver/Gold y baja tablas pequeñas a pandas; ningún gráfico re-escanea Silver.)*
 
 ### 12.4 Convención de packs de contexto
 - `material_cursos/<curso>/` — material crudo. **Eliminado del repo** (los packs ya están destilados); si alguien lo necesita en local, mantenerlo fuera de Git.
@@ -342,7 +353,7 @@ Ajustado tras la reunión del 3-jun. Respeta la ruta crítica (§3) y la regla d
 | Día | Foco | Quién / qué |
 |---|---|---|
 | **mié 3** | Reunión — Fase 3 cerrada | **HECHO.** Roles aceptados (§11 firme), avances y pasos a seguir presentados. Heider con instrucción de expirar la credencial Kaggle. |
-| **jue 4** (hoy) | Onboarding del equipo + **Gold completa y EDA oficial (HITO, hoy)** | **Kelly, Sara, Heider:** entender repo + docs y estudiar su tema (ML, Viz, ingeniería) — **no trabajan en sus frentes hoy**. **Yeison + Claude Code:** ejecutar la secuencia §2.3.1 completa — separar Medallion/EDA, validar `join`, pasada 1, organizar `EDA.ipynb`, pasada 2 — y **congelar el esquema Gold completo + exportar la Gold agregada** al cierre del día. **Heider:** al terminar onboarding, apoya con la **Ilustración 2** (autónoma, no toca la Gold). |
+| **jue 4** (hoy) | Onboarding del equipo + **Gold completa y EDA oficial (HITO, hoy)** | **Kelly, Sara, Heider:** entender repo + docs y estudiar su tema (ML, Viz, ingeniería) — **no trabajan en sus frentes hoy**. **Yeison + Claude Code:** ejecutar la secuencia §2.3.1 completa — separar Medallion/EDA, validar `join`, pasada 1, organizar `eda_ecommerce.ipynb`, pasada 2 — y **congelar el esquema Gold completo + exportar la Gold agregada** al cierre del día. **Heider:** al terminar onboarding, apoya con la **Ilustración 2** (autónoma, no toca la Gold). |
 | **vie 5** | Modelo + tablero arrancan sobre Gold congelada | **Sara:** features (anti-fuga, split temporal) + entrenar (logística → GBM), PR-AUC + calibración; iniciar clustering. **Kelly:** Power BI v1 sobre la Gold agregada + narrativa, usando el EDA oficial como guía de diseño. **Heider:** Bronze→`readStream` (Kappa) + Spark SQL + MLflow setup. **Yeison:** diseño del A/B test + documento. |
 | **sáb 6** | Insight + integración | **Sara:** cerrar clustering + perfilado; **cruce clasificador × clustering** (el insight). **Heider:** scoring batch + métricas de optimización. **Kelly:** tablero v2. **Yeison:** documento consolidado integrando resultados. |
 | **dom 7** | Consolidar + ensayar | Documento consolidado + PPTX. Ensayo de defensa (filtrado en vivo). Q&A por profesor (doc 08 §5). |
@@ -379,7 +390,7 @@ Cada integrante usa su propia IA (Claude o Gemini). Súbele estos documentos de 
 
 ## 17. Hallazgos y decisiones del EDA oficial (4-jun) — insumo para Sara, Kelly y la pasada 2
 
-El EDA (`notebooks/analysis/EDA.ipynb`) quedó re-fuenteado a **Silver/Gold v1** y corriendo en Databricks (§2.3.1 paso 4 Hecho). Esto resume lo que salió y lo que hay que decidir/hacer. **Es el puente para abrir los siguientes frentes.**
+El EDA (`notebooks/analysis/eda_ecommerce.ipynb`) quedó re-fuenteado a **Silver/Gold v1** y corriendo en Databricks (§2.3.1 paso 4 Hecho). Esto resume lo que salió y lo que hay que decidir/hacer. **Es el puente para abrir los siguientes frentes.**
 
 ### 17.1 Hallazgos de negocio (base limpia · cuarentena 15–17 nov · 90.6M eventos / 58.6M unidades)
 - **Funnel por unidad (base LIMPIA):** cart **3.93%**, conv **2.24%**, cierre **56.9%**, **abandono 43.1%** (58.6M unidades; 994k carritos abandonados). *(La ventana corrupta inflaba el abandono a 51.7% y deprimía el cierre a 48.3%; full-data en §7.)* El negocio es **electrónica**: conv **3.52%**, mayor volumen (20.7M unidades), y el mayor pool de carritos abandonados ≈ **$211M en juego** (de $283.6M totales; full-data inflaba electronics a $349.5M). **Concentración de revenue:** electronics **76.9%**, top-3 **87.3%**; el 50% del revenue lo hacen **50 productos** (0.1%).
