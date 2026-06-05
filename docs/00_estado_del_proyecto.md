@@ -168,8 +168,8 @@ Opcional, como una diapositiva. Demuestra que 0.5 es erróneo bajo desbalanceo, 
 ## 6. Datos clave (EDA sobre los 14 GB)
 
 - **Esquema:** `event_time`, `event_type` (view/cart/purchase), `product_id`, `category_id`, `category_code`, `brand`, `price`, `user_id`, `user_session`.
-- **Volumen:** Oct (5.5 GB) + Nov (9 GB); ~69M unidades en el funnel.
-- **Métricas:** cart rate 3.85%, **conversión 2.22%**, **abandono 42.27%**.
+- **Volumen:** Oct (5.5 GB) + Nov (9 GB); 109.5M eventos → ~69.6M unidades full / **~58.6M en base limpia** (sin 15–17 nov).
+- **Métricas (base limpia · EDA oficial, cuarentena 15–17 nov):** cart **3.93%**, **conversión 2.24%**, **cierre 56.9%**, **abandono 43.1%** (unidad = producto-en-sesión). *Full-data (con la ventana corrupta): abandono 51.7% / cierre 48.3% — el 15-nov inflaba el abandono +8.6pp; ver §7/§17.*
 - **Modelado:** split temporal (Oct entrena, Nov prueba), corte anti-fuga (solo comportamiento previo al primer cart/purchase), métrica PR-AUC + calibración (no accuracy).
 
 ---
@@ -374,7 +374,7 @@ Cada integrante usa su propia IA (Claude o Gemini). Súbele estos documentos de 
 El EDA (`notebooks/analysis/EDA.ipynb`) quedó re-fuenteado a **Silver/Gold v1** y corriendo en Databricks (§2.3.1 paso 4 Hecho). Esto resume lo que salió y lo que hay que decidir/hacer. **Es el puente para abrir los siguientes frentes.**
 
 ### 17.1 Hallazgos sobre data completa (Oct+Nov, 109.5M eventos / 69.6M unidades producto-en-sesión)
-- **Funnel por unidad:** cart 4.61%, conv **2.23%** (≈ el 2.22% histórico), cierre 48.3%, **abandono 51.7%**. El negocio es **electrónica**: 75.6% del revenue, top-3 categorías 87%, y el mayor pool de carritos abandonados ($349.5M de $489.8M en juego).
+- **Funnel por unidad (base LIMPIA · cuarentena 15–17 nov):** cart **3.93%**, conv **2.24%**, cierre **56.9%**, **abandono 43.1%** (58.6M unidades). *(La ventana corrupta inflaba el abandono a 51.7% y deprimía el cierre a 48.3%; full-data en §7.)* El negocio es **electrónica**: conv **3.52%** y mayor volumen (20.7M unidades), y el mayor pool de carritos abandonados ≈ **$211M en juego** (full-data lo inflaba a $349.5M por la ventana). *Pendiente refrescar a base limpia la concentración de revenue (75.6% / top-3 87% eran full-data) con §4.8.*
 - **Dos palancas (síntesis §4.9):** (A) recuperar carritos de alta intención que no cierran (electronics; Samsung/Apple ≈68%); (B) retener al núcleo recurrente (**36.8%** de compradores = **73.8%** del revenue; vuelven en ~2.7 días, 82.5% a la misma categoría).
 - **El precio no es el freno**; la decisión es casi inmediata (mediana **2.2 min**).
 - **Perfilado Gold (§5) — contraintuitivo y clave para Sara:** las features tienen correlación **débil y NEGATIVA** con la compra; los compradores **navegan menos** (deciden rápido). Son features **pre-carrito** (anti-fuga). **Multicolinealidad** alta (`total_views`≈`distinct_products_viewed` 0.92). → el poder predictivo está en no-linealidades/interacciones; **enriquecer features** en la pasada 2.
