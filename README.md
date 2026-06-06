@@ -40,25 +40,31 @@ Databricks lo necesita para leer/escribir en el repo.
 5. **No lo pegues en ningún archivo del repo.** Es un secreto; solo va en el campo de Databricks (Paso 4).
 
 ### Paso 4 — Vincular GitHub con tu Databricks
-1. En Databricks: tu usuario → **Settings → Linked accounts**.
-2. **Add Git credential** → **Git provider:** GitHub · **Username:** tu usuario · **Token:** el del Paso 3 → **Save**.
+1. En Databricks: tu nombre (arriba a la derecha) → **Settings** → bajo **User**, **Linked accounts**.
+2. **Add Git credential** y completa:
+   - **Git provider:** GitHub
+   - **Git provider username:** tu usuario de GitHub
+   - **Token / App password:** el PAT de GitHub del Paso 3 (no un token de Databricks).
+   - **Git credential nickname:** una etiqueta interna tuya, única, p. ej. `github-proyecto-g8`. Es solo para tu referencia; no afecta la conexión.
+3. **Save**. Debe quedar marcado como *GitHub (Linked)*.
 
 ### Paso 5 — Clonar el repositorio como Git folder
-> *Pasos PROVISIONALES (forma nueva de Databricks; ya no se usa la carpeta "Repos"). Yeison los valida al configurarse y se finalizan después.*
-1. Requisito: haber vinculado tu token de GitHub (Paso 4) — el repo es privado.
+> *Forma nueva de Databricks: ya no se usa la carpeta "Repos".*
+1. Requisito: haber vinculado tu credencial de GitHub (Paso 4) — el repo es privado.
 2. Menú izquierdo → **Workspace** → entra a tu **carpeta personal**: **Users → tu-correo**.
 3. Botón **Create** (arriba a la derecha) → **Git folder**. *(No uses "Repo": ese es el modo viejo.)*
-4. **Git repository URL:** `https://github.com/HeiderZapata/proyecto-integrador-g8` → **Create Git folder**.
-5. **Importante:** antes de trabajar, en el diálogo de Git **crea/cámbiate a TU rama de frente** (`feat/pipeline`, `feat/modelo`, `feat/viz`, `feat/ab-test`, `feat/doc`). **Nunca trabajes sobre `main`.** El detalle está en `CONTRIBUTING.md`.
+4. **Git repository URL:** `https://github.com/HeiderZapata/proyecto-integrador-g8`.
+5. **Sparse checkout mode:** déjalo **DESACTIVADO** (queremos todo el repo; es pequeño).
+6. **Create Git folder.** Verás la carpeta `proyecto-integrador-g8` con `docs/`, `notebooks/` (con `pipeline/`, etc.) y `reports/`.
+7. **Importante:** antes de trabajar, en el diálogo de Git **crea/cámbiate a TU rama de frente** (`feat/pipeline`, `feat/modelo`, `feat/viz`, `feat/ab-test`, `feat/doc`). **Nunca trabajes sobre `main`.** El detalle está en `CONTRIBUTING.md`.
 
 ### Paso 6 — Tus credenciales de Kaggle (cada quien la suya — método simple)
-> *Pasos PROVISIONALES: Yeison los valida y se finalizan después.*
 **Ninguna llave se commitea, nunca.** Cada integrante usa la suya.
 
 1. **Genera tu credencial *Legacy*:** kaggle.com → avatar → **Settings** → sección **API**. Hay dos tipos de credencial; usa **"Create Legacy API Key"** (bajo *Legacy API Credentials*), **NO** el token nuevo `KGAT_`. Descarga el `kaggle.json` (trae `username` y `key`). Si ya generaste un `KGAT_`, expíralo.
-2. **Crea tu Volume:** Catalog → workspace → default → **Create → Volume**, nómbralo `ecommerce_raw`.
+2. **Crea tu Volume:** Catalog → workspace → default → **Create → Volume**. **Volume type: Managed.** Nómbralo `ecommerce_raw` (en minúsculas, igual que en el código).
 3. **Sube tu `kaggle.json` al Volume:** dentro del Volume, **Upload to this volume** → selecciona el archivo. Queda en `/Volumes/workspace/default/ecommerce_raw/kaggle.json`.
-4. El notebook `notebooks/pipeline/01_sube_datos_kaggle_Databricks.ipynb` **lee la llave de ese archivo** (sin ningún valor escrito en el código). Esta celda corre **antes** de la descarga:
+4. El notebook `notebooks/pipeline/01_ingesta_kaggle.ipynb` **lee la llave de ese archivo** (sin ningún valor escrito en el código). Esta celda corre **antes** de la descarga:
 
 ```python
 %pip install kaggle
@@ -88,32 +94,42 @@ for f in os.listdir('/Volumes/workspace/default/ecommerce_raw'):
 > **Por qué así (lección aprendida):** una llave escrita dentro de un notebook queda en el historial de Git y se asume comprometida. Por eso **ninguna credencial va en el código**: cada quien sube su `kaggle.json` a su Volume (no al repo) y el notebook lo lee de ahí. En Databricks serverless **no** sirve el comando `~/.kaggle/...` que sugiere Kaggle (ese `~` es efímero). Usamos la llave *Legacy* porque el notebook trabaja con `username`+`key`. El `.gitignore` bloquea `kaggle.json` por si acaso.
 
 ### Paso 7 — Verificar que todo funciona
-Ejecuta la primera celda de `notebooks/pipeline/01_sube_datos_kaggle_Databricks.ipynb`. Si corre sin errores, estás listo.
+Ejecuta la primera celda de `notebooks/pipeline/01_ingesta_kaggle.ipynb`. Si corre sin errores, estás listo.
 
 ---
 
-## Flujo de trabajo diario (resumen — el detalle está en `CONTRIBUTING.md`)
+## Flujo de trabajo diario — cómo guardar y subir tus cambios
 
-Trabajamos con **una rama por frente** (no por persona) y `main` se actualiza **solo cuando Yeison fusiona un PR**. Desde Databricks:
+> **⚠️ Lo más importante (léelo): ejecutar un notebook NO actualiza GitHub.** Correr las celdas solo genera resultados en *tu* Databricks. Para que tu código llegue a GitHub tienes que hacer **Commit & Push a mano** (pasos abajo), y eso sube **solo a tu rama** — `main` cambia únicamente cuando Yeison fusiona tu PR. Los **datos** del Volume (los CSV) **nunca** van a GitHub.
 
-```
-Antes de trabajar:
-  → Abre el ícono de Git del Git folder
-  → Asegúrate de estar en TU rama (feat/...), no en main
-  → Pull  (trae lo último)
+Trabajamos con **una rama por frente** (no por persona). Todo esto se hace desde el **diálogo de Git** del Git folder en Databricks (el ícono de Git / el nombre de la rama que aparece arriba del notebook).
 
-Al terminar una pieza estable:
-  → Commit & Push  → SUBE A TU RAMA, no a main
-  → Mensaje claro, p. ej. "viz: funnel por categoría v1"
+### A) Una sola vez — crea tu rama de frente
+1. Abre el **diálogo de Git** del Git folder `proyecto-integrador-g8`.
+2. En el selector de rama (arriba), elige **Create Branch**.
+3. Nómbrala según tu frente: `feat/pipeline`, `feat/modelo`, `feat/viz`, `feat/ab-test` o `feat/doc`. Créala **a partir de `main`**.
+4. Quedas parado en tu rama. **Nunca trabajes sobre `main`.**
 
-Para integrar a main:
-  → Abre un Pull Request en GitHub (tu rama → main)
-  → Sincroniza tu rama con main y deja el PR "en verde" (sin conflictos)
-  → Avisa a Yeison: él hace el merge a main
-  → Los demás hacen Pull de main
-```
+### B) Cada vez que vas a trabajar — trae lo último
+1. Abre el diálogo de Git y confirma que estás en **TU rama** (no en `main`).
+2. Clic en **Pull** → baja los cambios que ya estén en `main`/tu rama.
+3. Trabaja en tu notebook, dentro de tu carpeta (`notebooks/...`).
 
-> **Regla de oro:** nunca trabajes ni hagas push directo a `main`. Todo entra por PR; el merge lo centraliza Yeison (suplente: Heider). Conflictos, recetas de rescate y `.gitignore`: ver `CONTRIBUTING.md`.
+### C) Al terminar una pieza estable — Commit & Push (esto SÍ sube a GitHub)
+1. Abre el diálogo de Git. Verás la lista de **archivos cambiados**.
+2. Escribe un **mensaje de commit** claro, p. ej. `viz: funnel por categoría v1`.
+3. Clic en **Commit & Push**.
+4. Esto sube tus cambios a **tu rama** en GitHub (no a `main`). Si es la primera vez en esa rama, Databricks la crea en GitHub.
+5. *Si te sale un conflicto:* normalmente es porque `main` cambió; haz **Pull** primero, resuelve y vuelve a **Commit & Push**. (Detalle en `CONTRIBUTING.md` §7.)
+
+### D) Para integrar tu trabajo a `main` — el Pull Request
+1. Entra a GitHub: `https://github.com/HeiderZapata/proyecto-integrador-g8`.
+2. Abre un **Pull Request**: tu rama → `main`.
+3. Asegúrate de que el PR quede **"Able to merge" / en verde** (sin conflictos); si no, sincroniza tu rama con `main` (Pull) y vuelve a empujar.
+4. **Avisa a Yeison** en el chat: él hace el **merge** a `main` (suplente: Heider). **Este es el único momento en que `main` cambia.**
+5. Cuando Yeison fusione, los demás hacen **Pull** de `main` para recibir tu cambio.
+
+> **Regla de oro:** nunca trabajes ni hagas push directo a `main`. Todo entra por PR; el merge lo centraliza Yeison (suplente: Heider). Si editas y **no** haces Commit & Push, tu trabajo se queda solo en tu Databricks y nadie lo ve (ni queda respaldado). Conflictos, recetas de rescate y `.gitignore`: ver `CONTRIBUTING.md`.
 
 ---
 
@@ -137,7 +153,7 @@ proyecto-integrador-g8/
 
 Detalle y el principio **exploración ≠ producción**: `docs/00_estado_del_proyecto.md` §12.
 
-> **Nota (jun):** el notebook `02_Medallion_Y_EDA_Ecommerce` hoy combina Medallion + EDA. Está provisionalmente en `notebooks/pipeline/`; se separará en Fase 4 (Medallion → `pipeline/`, funnel → `analysis/`).
+> **Nota:** el pipeline está separado del análisis (principio *exploración ≠ producción*): `02_medallion.ipynb` (Bronze/Silver/Gold) y `03_gold_agregada_bi.ipynb` viven en `pipeline/`; el EDA entregable (`eda_ecommerce.ipynb`) en `analysis/`. La separación se completó el 4-jun (doc 00 §2.3.1 paso 1).
 
 ---
 
@@ -150,7 +166,7 @@ Detalle y el principio **exploración ≠ producción**: `docs/00_estado_del_pro
 | Kelly | [@usuario] | Visualización + narrativa (EDA-funnel, tablero) |
 | Yeison | [@usuario] | Integración + Gold (con Heider) + A/B + documento |
 
-*(Reparto propuesto; se confirma en la reunión que cierra Fase 3 — doc 00 §11.)*
+*(Reparto **firme** — aceptado en la reunión del 3-jun; doc 00 §11.)*
 
 ---
 
