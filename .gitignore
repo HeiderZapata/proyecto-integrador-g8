@@ -3,8 +3,9 @@
 *.csv
 *.parquet
 *.tsv
-# Excepción: la Gold AGREGADA pequeña sí la versionamos para Power BI.
-# Si la guardas, ponla en reports/data/ y fuérzala con:  git add -f reports/data/gold_agg.parquet
+# Excepción: la Gold AGREGADA pequeña para Power BI SÍ se versiona (doc 00 §12.2).
+!reports/data/*.csv
+!reports/data/*.parquet
 
 # --- Material del curso (peso + IP del profe) ---
 material_cursos/
@@ -24,6 +25,9 @@ spark-warehouse/
 
 # --- Power BI: decidir en equipo si versionar el .pbix (es binario y pesado) ---
 # *.pbix
+
+# --- Andamiaje local del refactor del EDA (cell sources + backups, no es entregable) ---
+notebooks/analysis/_build/
 
 # --- Basura del sistema y editores ---
 .DS_Store

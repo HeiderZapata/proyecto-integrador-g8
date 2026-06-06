@@ -47,15 +47,19 @@ La estrategia de particionamiento se define **por capa**, según los **patrones 
 |---|---|---|---|
 | **Bronze** | Por **fecha de evento** (`event_date`) | Alineada al replay incremental (los CSV llegan por mes/día); permite reprocesar un día sin tocar el resto | Tamaño de archivo objetivo 128 MB–1 GB; evita micro-archivos |
 | **Silver** | Por **fecha** (+ **categoría** si la selectividad lo amerita) | Eventos limpios/tipados y sesiones reconstruidas se consultan por ventana temporal y por categoría | `ZORDER` sobre columnas de mayor selectividad (p. ej. `category_id`); compactación con `OPTIMIZE` |
-| **Gold** | Por **fecha** y **categoría** | La matriz de *features* y los agregados de negocio para BI se filtran por esas columnas en el tablero | `ZORDER` por columnas de filtro frecuente; tamaños 128 MB–1 GB |
+| **Gold (features por sesión)** | **Sin particionar** (~23M filas, ~1–2 GB) | Particionar por fecha daría ~25 MB/partición → **anti-patrón de archivos pequeños**; por tamaño (≪ 1 TB) se **clusteriza**, no se particiona | `OPTIMIZE` + `ZORDER BY (session_date, user_id)`: el *data-skipping* de Delta poda el split train/test por `session_date` sin micro-archivos; `user_id` agrupa el join de clustering |
+| **Gold agregada (BI)** | n/a (tablas pequeñas) | Funnel/métricas ya agregados (≤ cientos de filas) que consume Power BI | Se exportan como CSV/Parquet pequeños a `reports/data/` |
 
 **Reglas concretas (firmadas en la propuesta corregida, Curso 2):**
 1. **Nunca** particionar por columnas de alta cardinalidad (`user_id`, `user_session`, timestamp exacto).
 2. Particionar por columnas de **filtro frecuente** (fecha y categoría), no por las de ingesta.
 3. **Tamaño de archivo** en el rango **128 MB–1 GB** por partición; usar `OPTIMIZE` para compactar y `ZORDER` para clustering por las columnas de mayor selectividad.
-4. **Medir** —tamaño en disco, particiones escaneadas y tiempo de ejecución— para sustentar la optimización con evidencia, no por intuición.
+4. **Decidir la partición por TAMAÑO, no solo por columna.** Particionar por fecha aplica a las capas **grandes** (Bronze/Silver: 100M+ eventos, multi-GB → particiones de ~128 MB+). Una tabla **pequeña** (≪ 1 TB, p. ej. la **Gold de features ~1–2 GB**) **no se particiona**: hacerlo daría ~25 MB/partición (micro-archivos, el mismo anti-patrón que penalizamos). En su lugar `ZORDER`/clustering + *data-skipping* de Delta. Es la aplicación del rector *"la herramienta adecuada al problema"*: conocer la regla **y su excepción** (guía de Databricks: no particionar tablas ≪ 1 TB).
+5. **Medir** —tamaño en disco, particiones escaneadas y tiempo de ejecución (`DESCRIBE DETAIL`)— para sustentar la optimización con evidencia, no por intuición.
 
-**Frontera train/test en el pipeline.** El **split temporal octubre/noviembre** (octubre entrena, noviembre prueba) debe quedar **visible en el diagrama del pipeline** (Ilustración 2): como Bronze/Silver/Gold están particionadas por fecha, la separación entrenamiento/prueba se materializa como un corte sobre la columna de partición, no como una mezcla aleatoria de filas. Esto refuerza el argumento anti-fuga del componente de Aprendizaje Automático.
+**Frontera train/test en el pipeline.** El **split temporal octubre/noviembre** (octubre entrena, noviembre prueba) debe quedar **visible en el diagrama del pipeline** (Ilustración 2): Bronze/Silver están particionadas por fecha y la Gold lleva `session_date` con `ZORDER`/*data-skipping*, así que la separación entrenamiento/prueba se materializa como un **corte/filtro sobre la columna temporal** (partición en las capas grandes; data-skipping en la Gold), no como una mezcla aleatoria de filas. Esto refuerza el argumento anti-fuga del componente de Aprendizaje Automático.
+
+> **Evidencia medida (4-jun · `DESCRIBE DETAIL`):** **Silver = 6.41 GB en 61 particiones por fecha** (~105 MB/partición, dentro del rango 128 MB–1 GB). **Gold de sesión = 1.33 GB, sin particionar, 6 archivos** (~220 MB) con `ZORDER (session_date, user_id)`. Particionar esa Gold por fecha habría dado ~22 MB/partición → el anti-patrón de archivos pequeños, confirmado con números. *(Esto es la regla 5 "medir, no por intuición" en acción.)*
 
 > *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma, y cierra el GAP marcado en `08_feedback_exposiciones_pregrado.md` §5 (el doc no la detallaba).*
 
@@ -72,6 +76,15 @@ Databricks Free Edition es **solo cómputo serverless** y está sujeta a una pol
 5. **Trigger correcto y lotes acotados:** usar `Trigger.AvailableNow()` (es obligatorio en serverless) y ajustar `maxFilesPerTrigger` / `maxBytesPerTrigger` para mantener la memoria predecible y respetar el tope de 9000 s por consulta.
 6. **No correr cargas pesadas la noche anterior a una entrega.** Si la cuota se agota, se pierde el día. Dejar buffer.
 7. **Regla de colaboración (clave):** en Free Edition los datos **no se comparten entre cuentas** (cada quien tiene su Volume y su cuota). Por eso: que **una sola persona** construya y materialice las capas pesadas; la **Gold agregada (pequeña)** se exporta al repo / almacenamiento compartido para que el resto trabaje modelado y Power BI sobre ella, sin re-correr los 14 GB en cada cuenta.
+
+> **MLflow en serverless — gotcha verificado (5-jun).** En cómputo serverless (Free Edition),
+> `mlflow.set_experiment(...)` falla con `CONFIG_NOT_AVAILABLE: spark.mlflow.modelRegistryUri` porque ese
+> config no viene seteado y Spark Connect bloquea su lectura. **Fix:** antes de `set_experiment`, llamar
+> `mlflow.set_tracking_uri("databricks")` y `mlflow.set_registry_uri("databricks-uc")`. Es un problema conocido
+> de Databricks, **no del código**. El **logging de experimento** (params/métricas/modelo, §18.4 del doc 00) **no
+> requiere** el model registry; el fix solo evita que la línea de *setup* se caiga. Verificado con smoke test el
+> 5-jun (notebook `notebooks/analysis/_verif_post_audit.ipynb`); cierra el "MLflow setup" del riesgo 3. *(Insumo
+> directo para Sara.)*
 
 ---
 
