@@ -1,6 +1,6 @@
 # 00 — Estado del Proyecto · PI Grupo 8 (documento maestro)
 
-**Última actualización:** viernes 5 de junio de 2026
+**Última actualización:** domingo 7 de junio de 2026
 **Entrega de productos:** lunes 8 de junio · **Exposición:** martes 9 de junio (5–9 pm)
 **Equipo:** Kelly, Sara, Heider y Yeison
 **Repositorio:** `HeiderZapata/proyecto-integrador-g8` · este archivo vive en `docs/`
@@ -35,7 +35,7 @@ La capa de datos se declaró cerrada ayer (**Gold congelada**, §13). Hoy se **a
 
 - **Yeison — orquestación + datos + A/B + documento.** (1) ✅ **Auditoría de la capa de datos HECHA** (Medallion + EDA, Claude Code, rama `feat/auditoria-datos`): **capa sin bloqueantes**, 9 checks en verde — reporte en `auditoria_capa_datos_2026-06-05.md`. **Confirmada EN VIVO contra la Gold real (5-jun, Databricks serverless):** checks 1/2/3/4/7/8 verificados (esquema 22 cols · grano 22.99M sin dups · tasa 0.0610 full / 0.0589 limpia · particionamiento físico medido · flags) + **MLflow tracking operativo (smoke test)** → **riesgo 3 cerrado; capa lista para modelado/tablero sin pendientes de corrida** (ver addendum "Verificación en vivo" en `auditoria_capa_datos_2026-06-05.md`). (2) §13/§17 actualizados (cross-ref `agg_funnel_global`); pendientes menores cerrados (`_tmp_eda_units` borrado). (3) Armar los **planes de empalme** para Sara y Kelly (en el chat de Claude). Luego: avanzar el diseño del **A/B test** y el documento.
 - **Sara — modelado.** Estudiar su arranque: **§18** (plan de modelado), **§13** (contrato Gold + set de features) y **§17** (hallazgos del EDA) + pack ML (`05_…`). En el **empalme** con Yeison se cierran sus tres inputs: **split** (recom. C), **flag `sin_navegacion_previa`** y el **contrato 2** (salida del modelo). Tras el empalme: baseline **logística → GBM**, **PR-AUC + calibración**, sobre snapshot local o muestra en Databricks (§18.3).
-- **Kelly — visualización.** Estudiar **§17** (las dos palancas del negocio) + pack Viz (`07_…`) + la **Pregunta de Oro** (§1); revisar los **7 CSV** de `reports/data/`. En el **empalme**: el mapa *pregunta → gráfico*. Tras el empalme: **Power BI v1** conectado a la Gold agregada.
+- **Kelly — visualización.** ✅ **Tablero Power BI v1 COMPLETO (7-jun) — 4 páginas.** Portada con navegación entre páginas + (1) **Análisis global:** 4 KPIs (conv 2.24%, abandono 43.14%, 994K carritos, $283.6M revenue), funnel por categoría con treemap, tipología de visitante y segmentos de comprador con filtro Top N dinámico (5/10/15). (2) **Detalle Electronics:** 4 KPIs ($409 ticket, 41.5% abandono, 511K carritos, $211.1M revenue), Top 10 marcas por carritos abandonados, scatter ticket vs abandono. (3) **Contexto temporal:** tráfico vs conversión diaria, compras diarias, anotaciones Black Friday y ventana corrupta 15–17 nov. Paleta púrpura coherente. Archivo `.pbix` en `reports/powerbi/` (144 KB). **Publicado en Power BI Service** (área de trabajo personal Kelly). **Pendiente:** conectar scores del modelo cuando Sara entregue (Contrato 2).
 - **Heider — ingeniería.** Llave Kaggle **expirada ✅**. Aplicar ya los ajustes 1 y 2 de la Ilustración 2 (§2.3); el ajuste 3 (rótulo del split) queda en espera de la decisión de split con Sara (hoy, en el empalme)** (§2.3). Track paralelo (§2.3.1 paso 6): Bronze → **`readStream`** con checkpoint, **Spark SQL**. **MLflow tracking ya VERIFICADO operativo** (smoke test 5-jun, serverless con `set_registry_uri`); el logging del modelo (params, PR-AUC/Brier, modelo calibrado, signature) lo implementa **Sara** en su pipeline (§18.4). **No tocar la Gold** (está congelada).
 
 ## Mapa de la semana (detalle en §15)
@@ -45,7 +45,7 @@ La capa de datos se declaró cerrada ayer (**Gold congelada**, §13). Hoy se **a
 | mié 3 | ✅ | Reunión — Fase 3 cerrada, roles firmes |
 | jue 4 | ✅ | Onboarding + **Gold congelada** + EDA oficial |
 | **vie 5 (hoy)** | 🔄 | **✅ Auditoría capa de datos HECHA** (sin bloqueantes, `auditoria_capa_datos_2026-06-05.md`) → empalmes con Sara/Kelly → arranque de modelo y tablero; Heider: Ilustración 2 + `readStream`/MLflow |
-| sáb 6 | — | **Insight** (cruce clasificador × clustering) + scoring batch + tablero v2 + documento |
+| sáb 6 | — | **Tablero v1 ✅ Kelly ·** **Insight** (cruce clasificador × clustering) + scoring batch + tablero v2 + documento |
 | dom 7 | — | Consolidar documento + PPTX + **ensayo de defensa** (filtrado en vivo) |
 | lun 8 | 🎯 | **ENTREGA** — buffer y revisión final; **sin cargas pesadas** (regla de cuota) |
 | mar 9 (5–9 pm) | 🎤 | **EXPOSICIÓN** ante los tres profesores |
