@@ -14,6 +14,21 @@ de los 14 GB).
 > Hay **2 hallazgos ámbar** (consistencia de cifras BI ↔ titular, e idempotencia/limpieza pendiente) y
 > varios menores, todos con fix concreto. Ninguno frena el arranque de modelado/tablero hoy.
 
+> **🔄 Addendum 7-jun — watch-item 13–14 nov RESUELTO (ventana ampliada a 14–17).** El Check 3 dejó
+> registrado un *watch-item 13–14 nov* (tasas de sesión 0.042 / 0.033) sin expandir la ventana
+> unilateralmente. Al revisar el tablero de Kelly se detectó que el **14-nov** tiene un **volcado de
+> eventos** (2.86M views / 165k carts, *por encima de Black Friday*, con compras planas y conversión
+> 0.77%) — la misma firma de ETL del 15–17, pero en los **eventos**, no en la **etiqueta**. El criterio
+> original de cuarentena miraba **solo `purchase`**, por eso el 14 pasó el filtro. **Decisión (7-jun):**
+> criterio = *etiqueta rota **o** volumen de eventos anómalo* → **cuarentena 14–17 nov**. El **13-nov NO**
+> se cuarentena (volumen normal; tasa baja = régimen de inicios de noviembre). Esto **no invalida** los
+> veredictos del 5-jun: el flag y la lógica eran correctos para su criterio; se **amplió** el criterio.
+> Acción: re-correr `02_medallion` (repobla `label_window_corrupt`), `03_gold_agregada_bi_pyspark` (CSV
+> de Kelly) y el EDA. Detalle en doc 00 §17 (callout 7-jun).
+
+> **🔄 Addendum 8-jun — fase ingesta/medallion SELLADA y corrida verificada.** Se cerraron los pendientes:
+> **(a)** la **única recomendación opcional** del 5-jun —`user_id` no determinista (checks 2 y 8, líneas 35/111/152/157/251/306)— quedó **EJECUTADA**: la Gold ahora toma el `user_id` del primer evento por `event_time` (`min(struct(event_time, user_id))`), reproducible; **(b)** Bronze pasó a **`readStream` / Auto Loader + `Trigger.AvailableNow` + checkpoint** (Kappa real, ya no batch). **Verificado en vivo (8-jun):** Bronze **109.95M** filas sin duplicar (el RESET evitó doble ingesta), grano Gold **22.99M** intacto, cuarentena marca **4 fechas (14–17)**, tasa **limpia 0.0597 / corrupta 0.0691 / full 0.0610**. Con esto las notas «recomendación opcional vigente, no ejecutada» del cuerpo quedan **superadas**.
+
 > ## ✅ ACTUALIZACIÓN (5-jun, post-acciones) — los 2 ámbar quedaron RESUELTOS
 >
 > Tras correr/aplicar los fixes: **(5)** se generó **`agg_funnel_global.csv`** y cuadra **exacto** con el
