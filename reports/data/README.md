@@ -14,16 +14,23 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
 
 | CSV | Pregunta de negocio | Columnas clave | Gráfico (doc 07 §5) |
 |---|---|---|---|
-| `agg_funnel_categoria` | ¿Dónde se concentra la fuga por categoría? **(Palanca A)** | `macro_category, units, reached_cart, purchased, cart_rate, conv_rate, cierre_pct, abandono_pct` | Treemap / barras |
+| `agg_funnel_categoria` | ¿Dónde se concentra la fuga por categoría? **(Palanca A)** | `macro_category, units, reached_cart, purchased, revenue, revenue_en_juego, cart_rate, conv_rate, cierre_pct, abandono_pct, ticket_medio` | Treemap / barras |
 | `agg_revenue_en_juego` | ¿Cuánto $ hay en carritos abandonados? **(Palanca A)** | `macro_category, carritos_abandonados, revenue_en_juego, ticket_medio` | Treemap (área = $) |
 | `agg_marca_electronics` | ¿Qué marcas concentran el premio? | `brand, carritos, comprados, abandonados, abandono_pct, ticket` | Barras |
 | `agg_segmentos_comprador` | ¿Qué segmento concentra el revenue? **(Palanca B)** | `segmento, n_compradores, revenue, ticket_promedio, pct_compradores, pct_revenue` | Combo doble eje |
-| `agg_metricas_diarias` | ¿Cómo evoluciona conversión/revenue? | `date, views, carts, purchases, revenue, conv_x100, is_black_friday, ventana_corrupta` | Líneas / áreas |
+| `agg_metricas_diarias` | ¿Cómo evoluciona conversión/revenue? **(global)** | `date, views, carts, purchases, revenue, conv_x100, is_black_friday, ventana_corrupta` | Líneas / áreas |
+| `agg_metricas_diarias_categoria` | Evolución temporal **filtrable por categoría** (NUEVA, 7-jun) | `date, macro_category, views, carts, purchases, revenue, is_black_friday, ventana_corrupta` | Líneas con slicer de categoría |
 | `agg_tipologia_visitante` | ¿Cómo se reparten browser/intender/buyer? | `tipo, n_sesiones, pct` | Barras |
 
 **Notas para Kelly:**
-- Todo en **base limpia** salvo `agg_metricas_diarias`, que **conserva todos los días** con
-  `ventana_corrupta` y `is_black_friday` → úsalas para **anotar la calidad de datos** (**14–17 nov**) y Black Friday.
+- Todo en **base limpia** salvo `agg_metricas_diarias` **y `agg_metricas_diarias_categoria`**, que
+  **conservan todos los días** con `ventana_corrupta` y `is_black_friday` → úsalas para **anotar la
+  calidad de datos** (**14–17 nov**) y Black Friday.
+- **`agg_metricas_diarias_categoria` (NUEVA):** misma serie temporal pero al grano `date × macro_category`
+  (incluye `Unknown`/"Sin taxonomía"). **Sumando todas las categorías reproduce exactamente
+  `agg_metricas_diarias`** → úsala con un *slicer* de categoría para gráficos temporales interactivos.
+  La **conversión** no viene como columna: créala como **medida** en Power BI (`SUM(purchases)/SUM(views)`),
+  así respeta el filtro de categoría/fecha activo (es la práctica correcta en BI, no un % pre-agregado).
   *(El 14-nov ya quedó marcado `ventana_corrupta=1` en el CSV; este día es el que producía el pico de vistas atípico del gráfico temporal.)*
 - ⚠️ **`agg_funnel_categoria` y `agg_revenue_en_juego` EXCLUYEN la categoría `Unknown`/"Sin taxonomía"**
   (~32% de las unidades, sin macro-categoría). Por eso **NO sumes sus filas para obtener el funnel global
