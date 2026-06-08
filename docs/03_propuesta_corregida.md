@@ -173,7 +173,7 @@ flowchart TB
  subgraph subGraph2["3. Almacenamiento Lakehouse & ELT Medallion"]
         D[("🥉 Bronze: Delta<br>Partición: fecha")]
         E[("🥈 Silver: Delta<br>Eventos limpios/sesiones<br>Partición por fecha · ZORDER categoría")]
-        F[("🥇 Gold: Delta<br>Matriz por sesión<br>Data-skipping por session_date<br>(Cuarentena 15-17 nov)")]
+        F[("🥇 Gold: Delta<br>Matriz por sesión<br>Data-skipping por session_date<br>(Cuarentena 14-17 nov)")]
         F1["Train<br>(Corte por fecha)"]
         F2["Test<br>(Corte por fecha)"]
   end
