@@ -31,7 +31,7 @@
 
 **Propensión** (`02_modelado_propension`): baseline trivial (PR-AUC 0.056) → logística (0.096) → GBM+Optuna calibrado: CV 0.123, test PR-AUC 0.118, Brier 0.052 (con/sin Black Friday reportado). Sin fuga (test ≈ CV). Features top: `max_price_viewed`, `electronics_view_share` → coincide con el EDA.
 
-**Clustering** (`04_clustering`): k=4 (defendido por accionabilidad, no por silhouette). Segmentos: C0 electrónica alto valor (42.6%, conv 7.5%) → objetivo del A/B, C2 general bajo valor, C1 explorador que no cierra, C3 anómalo.
+**Clustering** (`04_clustering`): KMeans **k=5** (por accionabilidad; silhouette favorece k=2 pero es demasiado grueso). Segmentos: **C3 electrónica gama media (29.3%, conv 8.4%)** + **C4 electrónica premium (13.8%, $1.024)** → objetivo del A/B; C0 general bajo valor (49.8%); C1 explorador que no cierra (7.0%); C2 anómalo (calidad de datos). Validado con **DBSCAN** (eps automático p95 ≈ 0.40 → **1 cluster + 3.7% ruido**: estructura continua sin islas de densidad; detección de outliers). **Arquetipos de comprador (§10):** premium electrónica (~14%), electrónica gama media (~40%), no-electrónica bajo valor (~40%), investigador (~5%) → insight para directivos; complementa palanca B del EDA.
 
 **Pendiente:** `06_scoring_mlflow_databricks` — MLflow + scoring batch + Contrato 2 (`user_session`, prob. calibrada, segmento) en Delta.
 
