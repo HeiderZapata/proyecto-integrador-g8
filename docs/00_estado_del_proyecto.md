@@ -35,7 +35,7 @@
 
 **Propensión** (`02_modelado_propension`): Dummy 0.056 → logística 0.0966 → GBM (LightGBM)+Optuna calibrado: CV 0.1235, **test PR-AUC 0.1172** (ex-BF 0.1115), Brier 0.0515. Sin fuga (test≈CV). Features top: `max_price_viewed`, `electronics_view_share` → coincide con el EDA.
 
-**Clustering** (`04_clustering`): **k=5** (por accionabilidad). Target A/B = **C3 "electrónica precio medio"** (29.3%, conv **8.4%**, el de mayor conversión; 91.6% no compra); C4 alto valor ($1,024, 5.8%), C0 general bajo valor (49.8%), C1 explorador (7%), C2 anómalo. **DBSCAN real** (eps adaptativo → 1 masa/gradiente, no islas) + **arquetipos de comprador** (§10). *(El informe §3.5 ya quedó actualizado a C3.)*
+**Clustering** (`04_clustering`): **k=5** (por accionabilidad). Target A/B = **C3 "electrónica precio medio"** (29.3%, conv **8.4%**, el de mayor conversión; 91.6% no compra); C4 alto valor/premium (13.8%, $1,024, conv 5.8%), C0 general bajo valor (49.8%), C1 explorador (7%), C2 anómalo. **DBSCAN real** (eps adaptativo p95≈0.40 → 1 masa/gradiente + 3.7% ruido, no islas) + **arquetipos de comprador** (§10). *(El informe §3.5 ya quedó actualizado a C3.)*
 
 **Pendiente:** `06_scoring_mlflow_databricks` — MLflow + scoring batch + Contrato 2 (`user_session`, prob. calibrada, segmento) en Delta.
 
