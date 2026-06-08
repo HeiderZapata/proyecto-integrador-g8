@@ -112,10 +112,46 @@ De aquí salen **dos palancas de negocio**:
 - Limitaciones y trabajo futuro (historia de usuario, uplift como extensión).
 
 ### 3.5 Cierre del alcance: diseño del A/B test
-<!-- [REQUISITO] cierra el alcance de ML (docs/05 §5) y responde al revisor de la propuesta. [FUENTE] por redactar (Yeison); alcance doc 00 §5.2(4), §18.7. [ESTADO] PENDIENTE. -->
-- Por qué A/B y no uplift causal (datos observacionales, sin tratamiento/control). *(doc 00 §5.1)*
-- Hipótesis, unidad de aleatorización, métrica primaria, MDE, tamaño de muestra/poder, duración.
-- Segmento objetivo (C0) y cómo el modelo de propensión hace el targeting fino dentro del segmento.
+<!-- [REQUISITO] cierra el alcance de ML (docs/05 §5) y responde al revisor de la propuesta. [FUENTE] doc 00 §5.1, §17.1; clustering nb 04. [ESTADO] borrador -->
+
+#### 3.5.1 Por qué un diseño de A/B y no una estimación de *uplift*
+La propuesta original prometía un modelo de *uplift* (efecto incremental de un incentivo). **No es estimable con estos datos**: el uplift mide un efecto causal y requiere un grupo **tratado** y uno de **control**; el dataset es **observacional** y no contiene ninguna variable de tratamiento. Por eso el proyecto no estima causalidad: entrega el **diseño del experimento** que *generaría* esos datos y permitiría medir el efecto. De hecho, el A/B es precisamente el mecanismo que produce los pares tratamiento/control sobre los que, en una segunda fase, sí podría entrenarse un modelo de uplift. El clasificador de propensión (§3.3) no reemplaza al experimento: **selecciona a quién vale la pena exponer al incentivo**; el experimento mide si el incentivo funciona.
+
+#### 3.5.2 Objetivo e hipótesis
+**Pregunta:** ¿un incentivo inmediato (p. ej. envío gratis o un descuento por tiempo limitado) mostrado a visitantes de **alta intención de electrónica** que están por abandonar, **aumenta la conversión** sin destruir el margen?
+
+- **H₀:** el incentivo no cambia la tasa de conversión del grupo objetivo (`p_tratamiento = p_control`).
+- **H₁:** el incentivo aumenta la conversión (`p_tratamiento > p_control`).
+- **Prueba:** comparación de dos proporciones (z-test) sobre la métrica primaria; intervalo de confianza sobre el *lift*.
+
+#### 3.5.3 Población objetivo y targeting con el modelo
+El experimento se restringe al **segmento C0** ("comprador de electrónica de alto valor": 42.6 % del tráfico, conversión 7.5 %, el único que combina propensión + valor + volumen — §3.3.4). Dentro de C0, el **modelo de propensión** define el subconjunto elegible (los de probabilidad calibrada por encima del umbral operativo), de modo que el incentivo se gasta donde hay intención real y no en toda la base. *(Matiz honesto y defendible: targetear por alta propensión puede incluir "compradores seguros" que habrían comprado igual; el A/B mide el efecto **promedio** sobre el grupo tratado, y son justamente sus datos los que después permitirían distinguir a los persuadibles vía uplift. No invertimos el orden.)*
+
+#### 3.5.4 Unidad de aleatorización y asignación
+- **Unidad = visitante** (asignación "pegajosa" por `user_id`/cookie), no la sesión, para evitar que una misma persona vea ambas experiencias (contaminación) entre visitas.
+- Asignación **50/50** aleatoria a **Control** (experiencia actual, sin incentivo) y **Tratamiento** (incentivo). Un solo brazo de tratamiento para que el efecto sea atribuible; variantes de incentivo quedan como diseño multivariante futuro.
+- **Validez:** test A/A previo + chequeo de *Sample Ratio Mismatch* (la división real debe ser ~50/50); horizonte **fijo** (o corrección secuencial) para no "espiar" y inflar el falso positivo.
+
+#### 3.5.5 Métricas
+- **Primaria (OEC):** tasa de conversión por visitante (¿compró?).
+- **Secundarias:** tasa de abandono de carrito, ingreso por visitante, ticket promedio.
+- **Guardarraíl (no negociables):** **margen/utilidad por visitante** (un descuento puede subir conversión y destruir margen) y tasa de devoluciones. El experimento solo "gana" si sube la primaria **sin** romper el guardarraíl.
+
+#### 3.5.6 Tamaño de muestra, MDE y duración
+Línea base de C0: conversión **p₀ = 7.5 %**. Con **α = 0.05 (bilateral)** y **potencia = 80 %**, el tamaño por brazo según el efecto mínimo detectable (MDE) es:
+
+| MDE | p₀ → p₁ | n por brazo | n total |
+|---|---|---|---|
+| +1.0 pp (absoluto) | 7.5 % → 8.5 % | ~11,600 | ~23,200 |
+| +10 % (relativo) | 7.5 % → 8.25 % | ~20,300 | ~40,600 |
+| +0.5 pp (absoluto) | 7.5 % → 8.0 % | ~44,900 | ~89,800 |
+
+*(Fórmula de dos proporciones: n ≈ (z_{α/2}+z_β)²·[p₀(1−p₀)+p₁(1−p₁)] / (p₁−p₀)².)*
+
+**Duración.** C0 ≈ 42.6 % de ~346 k sesiones/día → del orden de **10⁵ visitantes-C0 elegibles por día**, así que el tamaño de muestra se alcanza en **pocos días** incluso para el MDE exigente de +0.5 pp. El cuello de botella no es el volumen sino la **validez temporal**: se corre un mínimo de **2 semanas** para cubrir ≥2 ciclos semanales completos y se **excluyen periodos anómalos** (Black Friday y la ventana 14–17 nov) para no confundir el efecto del incentivo con estacionalidad.
+
+#### 3.5.7 Regla de decisión y análisis
+Análisis por **intención de tratar**. Se declara ganador el Tratamiento si el *lift* de conversión es **estadísticamente significativo** (IC al 95 % que excluye 0) **y** el guardarraíl de margen no se deteriora; en ese caso se despliega al segmento. Como extensiones: reducción de varianza (CUPED) y análisis de heterogeneidad del efecto dentro de C0 (primer paso hacia el uplift de segunda fase).
 
 ## 4. Tecnología: Ingeniería de Datos y uso de tecnología
 <!-- [REQUISITO] SI7006 (obligatorio): ciclo de vida + arquitectura. [FUENTE] doc 02 + doc 00 §7. [ESTADO] borrador -->
