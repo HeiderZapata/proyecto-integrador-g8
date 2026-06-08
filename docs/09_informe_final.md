@@ -24,20 +24,52 @@ montados en el canal del TEAM → carpeta "Entrega Final". Exposición ≤ 20 mi
 ---
 
 ## 1. Introducción
-<!-- [REQUISITO] Estructura oficial. [FUENTE] doc 00 §1, §5. [ESTADO] redactar -->
-- Contexto del problema (e-commerce, fuga de conversión) y motivación.
-- Dataset REES46 (clickstream multi-categoría, Oct–Nov 2019, ~14.5 GB).
-- **Frase de ascensor** y alcance del proyecto en una frase (doc 00 §1).
-- Qué entrega el proyecto: propensión + clustering + diagnóstico + diseño de A/B test.
+<!-- [REQUISITO] Estructura oficial. [FUENTE] doc 00 §1, §5. [ESTADO] borrador -->
+
+El comercio electrónico convierte una fracción muy pequeña de su tráfico: en la tienda analizada, **~98 de cada 100 visitas no terminan en compra y ~4 de cada 10 carritos se abandonan**. En un negocio de este volumen, cada punto de conversión recuperado tiene un impacto directo en el ingreso; por eso entender *dónde* y *por qué* se fuga la conversión —y *sobre quién* conviene intervenir— es una pregunta de negocio de primer orden.
+
+El proyecto trabaja sobre **REES46**, un dataset abierto de *clickstream* multi-categoría de una tienda de e-commerce (Octubre–Noviembre 2019, ~14.5 GB, **109.5 M de eventos** `view`/`cart`/`purchase`). Su escala y su naturaleza de flujo de eventos lo hacen un caso realista tanto para la **ingeniería de grandes datos** como para el **modelado de propensión** sobre un **evento raro** (la compra, ~2–6 % según la unidad de medida).
+
+**Pregunta de negocio (alcance completo):** ¿dónde y por qué se nos escapan las compras, qué tipos de visitante las explican, y dónde —y cómo lo mediríamos— conviene concentrar el esfuerzo para recuperar conversión? De ella se afila la **Pregunta de Oro** que guía el tablero: *¿dónde se concentra la fuga de conversión y qué segmento de visitantes representa la mayor oportunidad de recuperarla?*
+
+El proyecto **no** construye un modelo para "adivinar quién compra"; construye un **sistema de decisión** con cuatro piezas: (1) un **clasificador de propensión** de compra a nivel sesión; (2) un **clustering de visitantes** para tipificar el comportamiento; (3) un **diagnóstico** del funnel y de las variables que explican la (no) conversión; y (4) el **diseño de un A/B test** que mediría el efecto de un incentivo sobre el segmento de mayor intención. La predicción es el **instrumento**; la **decisión de negocio** es el producto. *(El giro respecto a la propuesta original —que prometía un modelo de uplift causal, no estimable con datos observacionales— se fundamenta en §2.5 y se cierra en §3.5.)*
+
+**Estructura del documento.** §2 establece el marco teórico; §3 desarrolla la metodología de ML (problema, EDA, características, modelos, entrenamiento, evaluación y el diseño del A/B); §4 describe la ingeniería de datos y la arquitectura tecnológica; §5 la visualización y comunicación; §6 las conclusiones generales; §7 las referencias.
 
 ## 2. Marco teórico y referencias
-<!-- [REQUISITO] Estructura oficial. [FUENTE] docs/05 (ML), doc 02 (Big Data), docs/07 (Viz). [ESTADO] redactar -->
-- Clasificación supervisada y evento raro (PR-AUC, calibración). *(docs/05 §1)*
-- Clustering / aprendizaje no supervisado (K-Means, silhouette, "cluster≠segmento"). *(docs/05 §1.4)*
-- Anti-fuga y validación que respeta el tiempo. *(docs/05 §1.3)*
-- Arquitectura de grandes datos (Medallion, Kappa, Delta Lake). *(doc 02)*
-- Diseño experimental / por qué A/B y no uplift causal. *(doc 00 §5.1, docs/05 §5)*
-- Referencias (REES46, papers/cursos, librerías).
+<!-- [REQUISITO] Estructura oficial. [FUENTE] docs/05 (ML), doc 02 (Big Data), docs/07 (Viz), doc 00 §5. [ESTADO] borrador -->
+
+El hilo conductor metodológico no es "qué algoritmo", sino **cómo defender una decisión de modelado**: problema → baseline → métrica → validación → umbral → decisión. Un score alto no prueba nada por sí solo.
+
+### 2.1 Clasificación supervisada sobre eventos raros
+Cuando la clase positiva es minoritaria (la compra), el **accuracy engaña**: un clasificador "todo-negativo" alcanza ~94–98 % de accuracy y 0 % de recall. Por eso la métrica se alinea al error dominante: **PR-AUC** (*average precision*), que pone la clase positiva rara en primer plano, junto con *precision/recall* en el punto de operación; el ROC-AUC puede verse optimista con positivos raros. El **desbalance** se trata dentro del entrenamiento (`class_weight`/`scale_pos_weight`, o remuestreo) y **nunca** sobre el conjunto de prueba. Además, **discriminar ≠ calibrar**: una probabilidad bien ordenada puede estar mal calibrada, por lo que se reporta la **curva de calibración** y el **Brier score** ("si el modelo dice 0.8, ~80 % de casos similares deben ser positivos"). Finalmente, **el umbral es una política operativa**, no 0.5: se define por el costo del error y la capacidad de intervención ("el modelo estima; el umbral decide").
+
+### 2.2 Validación que respeta el tiempo y anti-fuga
+Cuando los datos tienen estructura temporal, "el futuro no puede entrenar el modelo que evalúa el pasado". Una *feature* es válida solo si su información existía **antes** del momento de predicción. De aquí se derivan dos decisiones: un **split temporal** *out-of-time* (entrenar con el pasado, evaluar con el futuro) y un **corte anti-fuga** (usar solo el comportamiento previo al evento que define la etiqueta). El *leakage* se audita sobre el **pipeline completo** (escalado/imputación/rebalanceo dentro de cada *fold*), no solo sobre el estimador. *(No se usa* forecasting *ni walk-forward: el problema es de clasificación; se transfiere el criterio temporal, no la maquinaria de series de tiempo.)*
+
+### 2.3 Árboles, ensembles y boosting
+Los árboles (CART) particionan el espacio de features y capturan no-linealidades e interacciones. Los **ensembles** mejoran por **diversidad** de errores: *bagging* (reduce varianza, p. ej. Random Forest) y **boosting** (corrección secuencial del residuo, p. ej. XGBoost/LightGBM/CatBoost). El boosting exige control de `learning_rate`, profundidad, regularización y *subsampling*. La **optimización de hiperparámetros** se trata como diseño experimental (Optuna/optimización bayesiana) optimizando la métrica objetivo bajo **validación cruzada estratificada**, y se selecciona por **promedio y variabilidad** entre *folds*, no por el mejor *trial* aislado.
+
+### 2.4 Aprendizaje no supervisado: clustering
+Representar es elegir una geometría: el **escalado es parte de la definición de similitud** (sin él, la variable de mayor magnitud domina la distancia). **K-Means** minimiza la inercia intra-cluster; **PCA** sirve para *inspeccionar* (no "prueba" clusters). El número de grupos *k* se elige con **codo + silhouette**, pero "el mejor *k* no es el que maximiza una métrica, es el que sostiene una partición defendible". Principio central: **"cluster ≠ segmento"** — un cluster es una partición del algoritmo; un segmento debe poder **nombrarse, dimensionarse, perfilarse, validarse y accionarse** de forma diferenciada.
+
+### 2.5 Diseño experimental: propensión ≠ *uplift*
+La **propensión** estima *quién comprará*; el **uplift** estima el *efecto causal* de un tratamiento (un incentivo). El uplift requiere un grupo **tratado** y uno de **control**; con datos **observacionales** (sin variable de tratamiento) **no es estimable**, y usar la propensión como si fuera uplift seleccionaría "compradores seguros" y afirmaría causalidad no verificable. La vía correcta es **diseñar el experimento** (A/B) que mediría el efecto, lo que ata el clasificador (targeting) con la decisión de negocio (§3.5).
+
+### 2.6 Arquitectura de grandes datos
+El **ciclo de vida del dato** va de la ingesta al consumo analítico. Se distingue una arquitectura **de referencia** (productiva) de la **implementada**. La **arquitectura Medallion** (Bronze → Silver → Gold) sobre **Delta Lake** da transacciones ACID, *time-travel* y *schema enforcement* sobre un lago de datos. Frente a **Lambda** (batch + streaming en paralelo), el estilo **Kappa** unifica el procesamiento en un único flujo de *streaming*; con **Auto Loader** + *triggers* + *checkpoint* se obtiene un **replay de streaming** reproducible sobre datos batch. El procesamiento distribuido se hace con **Apache Spark**; el particionamiento se decide por **tamaño** de cada capa (evitando micro-archivos), y los modelos se **persisten** con MLflow para *scoring* y consumo.
+
+### 2.7 Visualización y comunicación
+La visualización **abre una hipótesis, no cierra una decisión**. Para una audiencia de negocio, la comunicación se organiza alrededor de la **Pregunta de Oro**, con un tablero ejecutivo desplegado que prioriza **narrativa y diseño** sobre el detalle técnico, y filtrado/interactividad para sostener la defensa en vivo.
+
+### 2.8 Referencias
+<!-- [ESTADO] completar formato bibliográfico (APA) al consolidar -->
+- **Dataset:** Kechinov, M. *eCommerce behavior data from multi category store* (REES46), Kaggle. *[completar URL/fecha de acceso]*
+- **Aprendizaje Automático:** material del curso SI7009 (M. Terán, EAFIT, 2026) — destilado en `docs/05_contexto_aprendizaje_automatico.md`.
+- **Grandes Datos:** material del curso SI7006 — y `docs/02_arquitectura_bigdata_y_databricks.md` (arquitectura, Medallion, Kappa, particionamiento).
+- **Visualización:** material del curso SI7007 — destilado en `docs/07_contexto_visualizacion.md`.
+- **Herramientas/librerías:** scikit-learn, LightGBM/XGBoost, Optuna, Apache Spark + Delta Lake, MLflow, Power BI. *[completar versiones y citas]*
+- *(Referencias adicionales de PR-AUC, calibración, K-Means y diseño de experimentos a completar en la consolidación.)*
 
 ## 3. Desarrollo metodológico de modelos de ML
 <!-- [REQUISITO] SI7009: modelado sup+no sup, evaluación, selección, métricas, caso de uso. ESTE ES EL CORAZÓN PARA AA. -->
