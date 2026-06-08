@@ -14,6 +14,18 @@ de los 14 GB).
 > Hay **2 hallazgos ámbar** (consistencia de cifras BI ↔ titular, e idempotencia/limpieza pendiente) y
 > varios menores, todos con fix concreto. Ninguno frena el arranque de modelado/tablero hoy.
 
+> **🔄 Addendum 7-jun — watch-item 13–14 nov RESUELTO (ventana ampliada a 14–17).** El Check 3 dejó
+> registrado un *watch-item 13–14 nov* (tasas de sesión 0.042 / 0.033) sin expandir la ventana
+> unilateralmente. Al revisar el tablero de Kelly se detectó que el **14-nov** tiene un **volcado de
+> eventos** (2.86M views / 165k carts, *por encima de Black Friday*, con compras planas y conversión
+> 0.77%) — la misma firma de ETL del 15–17, pero en los **eventos**, no en la **etiqueta**. El criterio
+> original de cuarentena miraba **solo `purchase`**, por eso el 14 pasó el filtro. **Decisión (7-jun):**
+> criterio = *etiqueta rota **o** volumen de eventos anómalo* → **cuarentena 14–17 nov**. El **13-nov NO**
+> se cuarentena (volumen normal; tasa baja = régimen de inicios de noviembre). Esto **no invalida** los
+> veredictos del 5-jun: el flag y la lógica eran correctos para su criterio; se **amplió** el criterio.
+> Acción: re-correr `02_medallion` (repobla `label_window_corrupt`), `03_gold_agregada_bi_pyspark` (CSV
+> de Kelly) y el EDA. Detalle en doc 00 §17 (callout 7-jun).
+
 > ## ✅ ACTUALIZACIÓN (5-jun, post-acciones) — los 2 ámbar quedaron RESUELTOS
 >
 > Tras correr/aplicar los fixes: **(5)** se generó **`agg_funnel_global.csv`** y cuadra **exacto** con el

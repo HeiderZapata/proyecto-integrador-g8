@@ -1,8 +1,12 @@
 # Gold agregada para Power BI (contrato §13.3)
 
 CSVs pequeños que alimentan el **tablero ejecutivo** (Kelly). Los genera
-`notebooks/pipeline/03_gold_agregada_bi.ipynb` sobre la **base limpia** (cuarentena 15–17 nov),
+`notebooks/pipeline/03_gold_agregada_bi_pyspark.ipynb` sobre la **base limpia** (cuarentena **14–17 nov**),
 con las **mismas definiciones del EDA** → los números coinciden con `notebooks/analysis/eda_ecommerce.ipynb`.
+
+> **⏳ Pendiente de regenerar (7-jun):** la cuarentena se amplió de 15–17 a **14–17 nov** (el 14 tenía un
+> volcado de eventos que se escapó del criterio original; ver doc 00 §17, callout 7-jun). Hay que
+> **re-correr el notebook** para regenerar estos CSV; los números de abajo aún excluyen solo 15–17.
 
 > **Cómo se actualizan:** correr el notebook en Databricks → escribe los CSV en el Volume
 > (`.../gold/bi_export`) → descargar y **commitear aquí**. Power BI los consume desde esta carpeta
@@ -19,14 +23,16 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
 
 **Notas para Kelly:**
 - Todo en **base limpia** salvo `agg_metricas_diarias`, que **conserva todos los días** con
-  `ventana_corrupta` y `is_black_friday` → úsalas para **anotar la calidad de datos** (15–17 nov) y Black Friday.
+  `ventana_corrupta` y `is_black_friday` → úsalas para **anotar la calidad de datos** (**14–17 nov**) y Black Friday.
+  *(El 14-nov ya quedó marcado `ventana_corrupta=1` en el CSV; este día es el que producía el pico de vistas atípico del gráfico temporal.)*
 - ⚠️ **`agg_funnel_categoria` y `agg_revenue_en_juego` EXCLUYEN la categoría `Unknown`/"Sin taxonomía"**
   (~32% de las unidades, sin macro-categoría). Por eso **NO sumes sus filas para obtener el funnel global
   del titular**: el titular (cart **3.93%** / conv **2.24%** / abandono **43.1%**, **994k** carritos
   abandonados, **$283.6M** en juego) es sobre **58.6M** unidades **incl. Unknown**; sumar el per-categoría
   da ~4.40/2.54/42.35% sobre **38.6M** (sin Unknown). Para la **tarjeta KPI global** usa
   `agg_funnel_global.csv` (fila TOTAL incl. Unknown) — lo genera la celda "Funnel global" de
-  `03_gold_agregada_bi.ipynb`. Los cortes **por marca/categoría/segmento** sí cuadran al céntimo con el EDA.
+  `03_gold_agregada_bi_pyspark.ipynb`. Los cortes **por marca/categoría/segmento** sí cuadran al céntimo con el EDA.
+  *(⏳ Todos estos números se refrescan al re-correr con la cuarentena 14–17; cambiarán algo al excluir el 14.)*
 - Las **dos palancas** del EDA: **(A)** electrónica / carritos abandonados (**~$211M en juego**), **(B)**
   recurrentes (**35.8% compradores = 73.9% revenue**). Detalle e interpretación en `eda_ecommerce.ipynb` §4.9 y la Fase II.
 - **¿Te falta un corte (filtro/cruce) que no está?** Pídelo y se añade una tabla más — es barato,
