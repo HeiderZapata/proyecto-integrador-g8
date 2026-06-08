@@ -25,19 +25,21 @@
 
 ---
 
-## 🔄 FRENTE DE MODELADO — EN AVANCE (NO FINAL · 7-jun)
+## 🔄 FRENTE DE MODELADO — VERSIONES FINALES DE SARA, EN REVISIÓN (8-jun)
 
-> **Estos son resultados preliminares, no la versión final.** Sara sigue **configurando, corriendo y comparando** modelos; las cifras de abajo son la línea base actual y pueden cambiar. El frente cierra cuando estén el modelo elegido (logueado en MLflow), el scoring batch y el Contrato 2 (§18.4).
+> **Sara subió "versiones finales" (8-jun, rama `feat/modelo`) con cuarentena 14–17 aplicada.** **Yeison las revisa a fondo en un chat aparte** (tiene dudas por resolver); las cifras pueden afinarse tras esa revisión. El frente cierra con el modelo elegido en MLflow, el scoring batch y el Contrato 2 (§18.4).
 
-**Split cerrado: Opción C** (train = oct + nov ≤ 23 / test = 24–30 nov), justificado con evidencia de deriva (`notebooks/modeling/03_drift_split_diagnostico`): conversión estable oct↔nov fuera de la corrupción, precio sin deriva (PSI≈0); brecha de tasa train↔test 5.8% (sano). Invariantes: cuarentena 15–17 nov, `StratifiedKFold` solo en CV interna, `is_black_friday` solo para estratificar la evaluación.
+**Base limpia (cuarentena 14–17):** 19.71M sesiones, tasa 0.0597 (cuadra con el tablero y la Gold sellada).
 
-**Propensión** (`02_modelado_propension`): baseline trivial (PR-AUC 0.056) → logística (0.096) → GBM+Optuna calibrado: CV 0.123, test PR-AUC 0.118, Brier 0.052 (con/sin Black Friday reportado). Sin fuga (test ≈ CV). Features top: `max_price_viewed`, `electronics_view_share` → coincide con el EDA.
+**Split cerrado: Opción C** (train = oct + nov ≤ 23 / test = 24–30 nov), justificado con evidencia de deriva (`03_drift_split_diagnostico`): conversión estable oct↔nov, precio sin deriva (PSI≈0); train 16.97M/0.0603, test 2.74M/0.0560, brecha 7.1% (sano). Invariantes: cuarentena 14–17, `StratifiedKFold` solo en CV interna, `is_black_friday` solo para estratificar la evaluación.
 
-**Clustering** (`04_clustering`): k=4 (defendido por accionabilidad, no por silhouette). Segmentos: C0 electrónica alto valor (42.6%, conv 7.5%) → objetivo del A/B, C2 general bajo valor, C1 explorador que no cierra, C3 anómalo.
+**Propensión** (`02_modelado_propension`): Dummy 0.056 → logística 0.0966 → GBM (LightGBM)+Optuna calibrado: CV 0.1235, **test PR-AUC 0.1172** (ex-BF 0.1115), Brier 0.0515. Sin fuga (test≈CV). Features top: `max_price_viewed`, `electronics_view_share` → coincide con el EDA.
+
+**Clustering** (`04_clustering`): **k=5** (por accionabilidad). Target A/B = **C3 "electrónica precio medio"** (29.3%, conv **8.4%**, el de mayor conversión; 91.6% no compra); C4 alto valor ($1,024, 5.8%), C0 general bajo valor (49.8%), C1 explorador (7%), C2 anómalo. **DBSCAN real** (eps adaptativo → 1 masa/gradiente, no islas) + **arquetipos de comprador** (§10). *(El informe §3.5 ya quedó actualizado a C3.)*
 
 **Pendiente:** `06_scoring_mlflow_databricks` — MLflow + scoring batch + Contrato 2 (`user_session`, prob. calibrada, segmento) en Delta.
 
-**Abierto (con Yeison):** confirmar corte exacto del split y posible muestreo Híbrido (C + A).
+**En revisión (Yeison, chat aparte):** auditoría a prueba de balas contra el estándar del curso (ver `notebooks/modeling/revision_modelado_2026-06-07.md`). Ítems abiertos conocidos: R1 (texto "fuga a nivel de usuario" en `02` §3, aún incorrecto), Optuna selecciona por media máx / 20 trials, features redundantes (`categories_explored` vs `_cid`), outliers de duración. **Reconciliar k=5 al integrar `feat/modelo` a `main`.**
 
 ---
 
@@ -142,7 +144,7 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 | Diseño del A/B test | Yeison | **Diseño redactado** | **Diseño completo en el informe §3.5** (en `main`): hipótesis, targeting con el modelo sobre C0, aleatorización por visitante, métricas + guardarraíl de margen, tamaño de muestra/MDE/potencia y duración. Cierre del alcance (responde al revisor: uplift→A/B) |
 | Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | **En revisión** | Heider añadió **Ilustración 2 (implementada, Kappa) e Ilustración 3 (referencia)** en doc 03 (Mermaid). ⚠️ **3 ajustes pendientes para Heider** antes de la entrega — ver el callout debajo de esta tabla |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
-| Documento final del PI (informe) | Equipo | **Esqueleto casi completo (NO consolidado aún)** | `docs/09_informe_final.md` (en `main`), estructura alineada a la rúbrica. **Redactados: §1 Intro, §2 Marco teórico, §3.2 EDA, §3.5 A/B, §4 Tecnología, §5 Viz.** Falta solo **§3.3–§3.4 (números del modelo de Sara)** y cierres cortos (§3.1, §6 conclusiones, §7 referencias) que dependen de los resultados. Flujo: (1) Yeison cierra el esqueleto con insumos de Sara/Kelly; (2) Heider lo **lleva a Word**; (3) **completar de inicio a fin robusteciendo redacción, estilo y narrativa** |
+| Documento final del PI (informe) | Equipo | **Esqueleto casi completo + `.docx` (NO consolidado aún)** | `docs/09_informe_final.md` **+ `docs/09_informe_final.docx`** (en `main`, generado con pandoc/TOC), estructura alineada a la rúbrica. **Redactados: §1 Intro, §2 Marco teórico, §3.2 EDA, §3.5 A/B (target C3, k=5), §4 Tecnología, §5 Viz.** Falta **§3.3–§3.4 (números del modelo, tras la revisión de Yeison)** y cierres cortos (§3.1, §6 conclusiones, §7 referencias). Flujo: (1) Yeison cierra el esqueleto con insumos de Sara/Kelly; (2) **Heider arranca el Word** desde el `.docx`; (3) **completar de inicio a fin robusteciendo redacción, estilo y narrativa** |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
 
 > **📐 Para Heider — Ilustración 2: 3 ajustes + verificación final antes de la entrega (revisión de Yeison).** Heider integró en `docs/03_propuesta_corregida.md` dos diagramas Mermaid: **Ilustración 2** (arquitectura implementada, estilo Kappa) e **Ilustración 3** (de referencia). Muy buena base; **la Ilustración 3 está correcta**. La **Ilustración 2** tiene 3 detalles que **no coinciden con lo congelado el 4-jun** y conviene alinear para que el diagrama defienda lo que de verdad hicimos (el jurado de HPC pregunta esto):
