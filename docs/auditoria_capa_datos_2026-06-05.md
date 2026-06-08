@@ -26,6 +26,9 @@ de los 14 GB).
 > Acción: re-correr `02_medallion` (repobla `label_window_corrupt`), `03_gold_agregada_bi_pyspark` (CSV
 > de Kelly) y el EDA. Detalle en doc 00 §17 (callout 7-jun).
 
+> **🔄 Addendum 8-jun — fase ingesta/medallion SELLADA y corrida verificada.** Se cerraron los pendientes:
+> **(a)** la **única recomendación opcional** del 5-jun —`user_id` no determinista (checks 2 y 8, líneas 35/111/152/157/251/306)— quedó **EJECUTADA**: la Gold ahora toma el `user_id` del primer evento por `event_time` (`min(struct(event_time, user_id))`), reproducible; **(b)** Bronze pasó a **`readStream` / Auto Loader + `Trigger.AvailableNow` + checkpoint** (Kappa real, ya no batch). **Verificado en vivo (8-jun):** Bronze **109.95M** filas sin duplicar (el RESET evitó doble ingesta), grano Gold **22.99M** intacto, cuarentena marca **4 fechas (14–17)**, tasa **limpia 0.0597 / corrupta 0.0691 / full 0.0610**. Con esto las notas «recomendación opcional vigente, no ejecutada» del cuerpo quedan **superadas**.
+
 > ## ✅ ACTUALIZACIÓN (5-jun, post-acciones) — los 2 ámbar quedaron RESUELTOS
 >
 > Tras correr/aplicar los fixes: **(5)** se generó **`agg_funnel_global.csv`** y cuadra **exacto** con el
