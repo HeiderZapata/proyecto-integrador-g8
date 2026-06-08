@@ -204,13 +204,28 @@ El proyecto distingue dos arquitecturas: la **implementada** (lo que de verdad c
 - **Decisión de diseño — Volume vs S3 (Q&A de defensa).** Se usa el Volume y no un bucket S3 externo porque (1) el Volume ya está respaldado por object storage y Auto Loader puede apuntar a su path, así que el replay Kappa se demuestra sin bucket externo; (2) S3 agregaría una cuenta AWS y credenciales que gestionar (choca con "no exponer secretos") y las *external locations* son limitadas en Free Edition; (3) re-ingestar 14 GB quemaría tiempo y cuota sin resolver ningún problema actual. En la arquitectura de referencia, S3 + Auto Loader sí aparecen como la capa productiva.
 
 ## 5. Visualización y comunicación de datos
-<!-- [REQUISITO] SI7007 (rúbrica 35%: despliegue/funcionalidad/narrativa/defensa). [FUENTE] reports/powerbi + docs/07 + doc 00 §8. -->
-- **Requerimientos de comunicación:** Pregunta de Oro, audiencia (jurado BA/Diseño). *(doc 00 §8)*
-- **Análisis y diseño:** mapa pregunta→gráfico, paleta, narrativa. *(doc 00 §8, reports/data/README)*
-- **Implementación:** Tablero Power BI (4 páginas) publicado en Power BI Service. *(doc 00 §2.3, reports/powerbi/)*
-  - Análisis global · Detalle Electronics · Contexto temporal · (v2) matriz de oportunidad + scores. *(⏳ Contrato 2)*
-- **Validación:** coherencia de cifras vs EDA (12 CSV verificados). *(doc 00 §17.1)*
-- Enlace público del tablero desplegado (requisito de despliegue 10%).
+<!-- [REQUISITO] SI7007 (rúbrica 35%: despliegue/funcionalidad/narrativa/defensa). [FUENTE] reports/powerbi + reports/data/README + docs/07 + doc 00 §8. [ESTADO] borrador (tablero en finalización por Kelly: falta v2 con scores) -->
+
+### 5.1 Requerimientos de comunicación
+El tablero responde la **Pregunta de Oro** (*¿dónde se concentra la fuga y qué segmento es la mayor oportunidad?*) para una audiencia **ejecutiva y de jurado** que pesa **narrativa, diseño e interactividad** por encima del detalle técnico. El requisito de la rúbrica (SI7007) es un tablero **desplegado y accesible**, **fluido**, con un **pitch de negocio** que termine en recomendaciones accionables y una **defensa** filtrando en vivo.
+
+### 5.2 Análisis (mapa pregunta → gráfico)
+Cada visual responde una pregunta de negocio, organizada alrededor de las **dos palancas** del EDA (§3.2.3):
+- **Palanca A — dónde está la fuga:** funnel por categoría (`agg_funnel_categoria` → treemap/barras), dinero en carritos abandonados (`agg_revenue_en_juego` → treemap por área), y drill de marcas del premio (`agg_marca_electronics` → barras).
+- **Palanca B — a quién retener:** segmentos de comprador (`agg_segmentos_comprador` → combo de doble eje, %compradores vs %revenue).
+- **Contexto/diagnóstico:** embudo global (`agg_funnel_embudo`), tipología de visitante (`agg_tipologia_visitante`), cuándo intervenir (`agg_hora_dow` → heatmap hora×día), y evolución temporal con *toggle* día↔hora y slicers de categoría/marca (`agg_metricas_dia_hora`, `agg_metricas_diarias_categoria`, `agg_electronics_marca_diaria`).
+
+### 5.3 Diseño
+Cuatro páginas con **portada y navegación** (ver `reports/powerbi/`): (1) **Análisis global** (KPIs + funnel + tipología + segmentos con Top-N dinámico), (2) **Detalle Electronics** (el negocio: ticket, abandono, marcas, scatter ticket×abandono), (3) **Contexto temporal** (tráfico vs conversión diaria, con **anotaciones de calidad de datos**: ventana 14–17 nov y Black Friday). Paleta púrpura coherente. Principio: cada página sostiene un paso de la narrativa, no una pila de gráficos.
+
+### 5.4 Implementación
+- **Power BI** conectado a la **Gold agregada** (12 CSV en `reports/data/`), no a las 23 M filas crudas — la estrategia de cuota del proyecto (doc 02). El `.pbix` vive en `reports/powerbi/Tablero_PI.pbix`.
+- Buenas prácticas de BI aplicadas: la **conversión se crea como *medida*** (`SUM(purchases)/SUM(views)`) para que respete el filtro activo, no como porcentaje pre-agregado; *field parameters* para el *toggle* día↔hora y *slicers* de categoría/marca.
+- **Desplegado en Power BI Service** (requisito de despliegue, 10 %). *[completar: enlace público accesible]*.
+- **Pendiente (v2):** conectar los **scores del modelo** (Contrato 2 de §3.3) y la **matriz de oportunidad** (probabilidad × valor) para cerrar el targeting del A/B. *(El tablero está en finalización por Kelly.)*
+
+### 5.5 Validación
+Los CSV se generan con las **mismas definiciones del EDA** → los cortes por categoría/marca/segmento **cuadran al céntimo** con `eda_ecommerce.ipynb`. Dos validaciones explícitas: (1) la migración a Spark SQL produce los **mismos 12 CSV** que la versión PySpark (verificado; solo ±0.01 en `ticket_medio` por redondeo); (2) **gotcha documentado** — `agg_funnel_categoria`/`agg_revenue_en_juego` **excluyen `Unknown`** (~32 %), por lo que el **KPI global** del titular (cart 3.86 % / conv 2.27 % / abandono 41.19 % / 903 k carritos / $250.4 M) se toma de `agg_funnel_global` (incl. Unknown), **no** de sumar las filas por categoría.
 
 ## 6. Conclusiones generales del proyecto
 <!-- [FUENTE] doc 00 §1, §5, §17 + resultados finales. [ESTADO] redactar al cierre. -->
