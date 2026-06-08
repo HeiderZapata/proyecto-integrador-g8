@@ -25,6 +25,20 @@
 
 ---
 
+## ✅ FRENTE DE MODELADO — AVANCE (7-jun)
+
+**Split cerrado: Opción C** (train = oct + nov ≤ 23 / test = 24–30 nov), justificado con evidencia de deriva (`notebooks/modeling/03_drift_split_diagnostico`): conversión estable oct↔nov fuera de la corrupción, precio sin deriva (PSI≈0); brecha de tasa train↔test 5.8% (sano). Invariantes: cuarentena 15–17 nov, `StratifiedKFold` solo en CV interna, `is_black_friday` solo para estratificar la evaluación.
+
+**Propensión** (`02_modelado_propension`): baseline trivial (PR-AUC 0.056) → logística (0.096) → GBM+Optuna calibrado: CV 0.123, test PR-AUC 0.118, Brier 0.052 (con/sin Black Friday reportado). Sin fuga (test ≈ CV). Features top: `max_price_viewed`, `electronics_view_share` → coincide con el EDA.
+
+**Clustering** (`04_clustering`): k=4 (defendido por accionabilidad, no por silhouette). Segmentos: C0 electrónica alto valor (42.6%, conv 7.5%) → objetivo del A/B, C2 general bajo valor, C1 explorador que no cierra, C3 anómalo.
+
+**Pendiente:** `06_scoring_mlflow_databricks` — MLflow + scoring batch + Contrato 2 (`user_session`, prob. calibrada, segmento) en Delta.
+
+**Abierto (con Yeison):** confirmar corte exacto del split y posible muestreo Híbrido (C + A).
+
+---
+
 # 🔥 AHORA — Hoy y esta semana
 
 > **Faltan 3 días para la entrega (lun 8) y 4 para la exposición (mar 9).** Esta es la sección de "qué hago ahora". El plan completo día a día está en **§15**; los frentes en **§11**; los contratos en **§13**.
