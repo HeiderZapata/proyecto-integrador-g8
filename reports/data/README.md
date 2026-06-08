@@ -52,3 +52,16 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
   recurrentes (**35.7% compradores = 73.7% revenue**). Detalle e interpretación en `eda_ecommerce.ipynb` §4.9 y la Fase II.
 - **¿Te falta un corte (filtro/cruce) que no está?** Pídelo y se añade una tabla más — es barato,
   el notebook ya tiene la base. Mejor una tabla agregada nueva que conectar el tablero a las filas crudas.
+
+---
+
+## Recomendaciones para el tablero (visualización · propósito + criterios de evaluación)
+
+El jurado pesa **narrativa, diseño e interactividad** (defender filtrando en vivo). Ideas concretas con las tablas disponibles:
+
+- **Slide temporal — toggle día ↔ hora (`agg_metricas_dia_hora`).** Un **único** visual (barras de tráfico + línea de conversión, doble eje) con un **field parameter** `{Día del mes = date, Hora del día = hour}` en el eje X y un slicer *"Ver por: día / hora"*. Conversión como **medida** (`SUM(purchases)/SUM(views)`) para que respete el eje activo. En modo hora, filtra `ventana_corrupta = 0`. *Por qué puntúa:* interactividad en vivo + diseño limpio (un visual) + técnica avanzada de PBI.
+- **Narrativa "volumen ≠ conversión".** La conversión **cae en noviembre** porque el **tráfico pre-Black-Friday** sube más rápido que las compras (no es un bug; ver doc 00 §17.2). Anota la rampa: *"rampa pre-BF: el tráfico sube, la conversión baja"*. Con `agg_metricas_diarias_categoria` muestra que esa rampa la **lidera electronics**.
+- **Embudo (`agg_funnel_embudo`).** Visual **funnel/waterfall** Vistas→Carrito→Compra → hace tangible la frase *"de 100 vistas perdemos 98, y 4 de cada 10 carritos"*. Pieza narrativa fuerte y legible.
+- **Heatmap "cuándo intervenir" (`agg_hora_dow`).** Matriz día-de-semana × hora con color = conversión → da el *timing* accionable del A/B test (a qué hora pica la intención).
+- **Pendiente (cuando Sara entregue clusters):** **matriz de oportunidad** (segmento: tamaño × abandono × valor) que aterriza el *"qué segmento = mayor oportunidad"* de la Pregunta de Oro. Es el cruce clasificador×clustering, el insight del proyecto.
+- **Detalle/forma:** unificar separador decimal (hoy mezcla `2.24%` y `3,5%`); rotular "Ganancias en juego" como *"$ en riesgo / recuperable"*; añadir una frase-insight por página (*"electronics = 83% del $ en juego → objetivo del A/B"*).
