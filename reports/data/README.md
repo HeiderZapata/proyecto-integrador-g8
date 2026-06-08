@@ -57,7 +57,27 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
 
 ## Recomendaciones para el tablero (visualización · propósito + criterios de evaluación)
 
-El jurado pesa **narrativa, diseño e interactividad** (defender filtrando en vivo). Ideas concretas con las tablas disponibles:
+El jurado pesa **narrativa, diseño e interactividad** (defender filtrando en vivo).
+
+### Mapa: qué hay en cada tabla → gráfico / slide chevere
+
+| Tabla | Qué hay | Gráfico / slide chevere |
+|---|---|---|
+| `agg_funnel_global` | KPI titular **incl. Unknown** (cart/conv/cierre/abandono, carritos, $ en juego) | **Tarjetas KPI** grandes en la portada/análisis global |
+| `agg_funnel_embudo` | Embudo Vistas→Carrito→Compra (3 etapas, % y unidades perdidas) | **Funnel / waterfall** — *"de 100 vistas perdemos 98; de 10 carritos, 4"* |
+| `agg_funnel_categoria` | Funnel por categoría **+ revenue + ticket** | **Treemap** (área = $ en juego) + **barras** de conversión; *slicer* Top-N |
+| `agg_revenue_en_juego` | $ en carritos abandonados por categoría | **Treemap** (área = $ recuperable) — dimensiona la Palanca A |
+| `agg_marca_electronics` | Marcas electronics: carritos, comprados, abandonados, ticket | **Barras** Top-10 + **scatter** ticket vs abandono (tamaño = carritos) |
+| `agg_segmentos_comprador` | one-time vs recurrente (nº, revenue, ticket, %) | **Combo doble eje** *% compradores vs % revenue* — la paradoja 36% → 74% |
+| `agg_tipologia_visitante` | browser / intender / buyer | **Embudo de 3** o barras (90 / 4 / 6) |
+| `agg_metricas_diarias` | Serie diaria global (views/carts/purchases/revenue/conv + banderas) | **Línea + barras** doble eje, con anotaciones **BF** y **14–17 nov** |
+| `agg_metricas_diarias_categoria` | Serie diaria **por categoría** | **Línea** con *slicer de categoría* — muestra que electronics lidera la rampa |
+| `agg_metricas_dia_hora` | Serie **día × hora** (toggle) | **Línea con *field parameter*** día↔hora — interactividad en vivo |
+| `agg_hora_dow` | **hora × día-de-semana** (sesiones, compras, conv) | **Heatmap / matriz** (color = conversión) — *"cuándo intervenir"* |
+| `agg_electronics_marca_diaria` | Top-12 marcas electronics **en el tiempo** | **Línea** con *slicer de marca* |
+
+### Cómo armarlas (detalle)
+Ideas concretas con las tablas disponibles:
 
 - **Slide temporal — toggle día ↔ hora (`agg_metricas_dia_hora`).** Un **único** visual (barras de tráfico + línea de conversión, doble eje) con un **field parameter** `{Día del mes = date, Hora del día = hour}` en el eje X y un slicer *"Ver por: día / hora"*. Conversión como **medida** (`SUM(purchases)/SUM(views)`) para que respete el eje activo. En modo hora, filtra `ventana_corrupta = 0`. *Por qué puntúa:* interactividad en vivo + diseño limpio (un visual) + técnica avanzada de PBI.
 - **Narrativa "volumen ≠ conversión".** La conversión **cae en noviembre** porque el **tráfico pre-Black-Friday** sube más rápido que las compras (no es un bug; ver doc 00 §17.2). Anota la rampa: *"rampa pre-BF: el tráfico sube, la conversión baja"*. Con `agg_metricas_diarias_categoria` muestra que esa rampa la **lidera electronics**.
