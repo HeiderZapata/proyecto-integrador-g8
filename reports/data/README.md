@@ -21,6 +21,9 @@ con las **mismas definiciones del EDA** → los números coinciden con `notebook
 | `agg_metricas_diarias` | ¿Cómo evoluciona conversión/revenue? **(global)** | `date, views, carts, purchases, revenue, conv_x100, is_black_friday, ventana_corrupta` | Líneas / áreas |
 | `agg_metricas_diarias_categoria` | Evolución temporal **filtrable por categoría** (NUEVA, 7-jun) | `date, macro_category, views, carts, purchases, revenue, is_black_friday, ventana_corrupta` | Líneas con slicer de categoría |
 | `agg_tipologia_visitante` | ¿Cómo se reparten browser/intender/buyer? | `tipo, n_sesiones, pct` | Barras |
+| `agg_funnel_embudo` | Embudo global vistas→carrito→compra (NUEVA, 7-jun) | `etapa, n, pct_del_total, pct_paso_anterior, perdidos_vs_anterior` | **Funnel / waterfall** |
+| `agg_hora_dow` | ¿Cuándo intervenir? hora × día de la semana (NUEVA, 7-jun) | `day_of_week, day_name, session_hour, is_weekend, n_sesiones, n_compras, conv_x100` | **Matriz / heatmap** |
+| `agg_electronics_marca_diaria` | Top marcas electronics en el tiempo (NUEVA, 7-jun) | `date, brand, views, carts, purchases, revenue, is_black_friday, ventana_corrupta` | Líneas con slicer de marca |
 
 **Notas para Kelly:**
 - Todo en **base limpia** salvo `agg_metricas_diarias` **y `agg_metricas_diarias_categoria`**, que
