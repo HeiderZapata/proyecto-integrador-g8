@@ -7332,12 +7332,7 @@ a.anchor-link {
     if (!diagrams.length) {
       return;
     }
-    const mermaid = (await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.10.0/mermaid.esm.min.mjs")).default;
-    const elkUrl = "https://cdnjs.cloudflare.com/ajax/libs/mermaid-layout-elk/0.1.9/mermaid-layout-elk.esm.min.mjs";
-    if(elkUrl) {
-      const elkLayouts = (await import(elkUrl)).default;
-      mermaid.registerLayoutLoaders(elkLayouts);
-    }
+    const mermaid = (await import("https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs")).default;
     const parser = new DOMParser();
 
     mermaid.initialize({
@@ -7434,8 +7429,7 @@ a.anchor-link {
      * Post-process to ensure mermaid diagrams contain only valid SVG and XHTML.
      */
     function cleanMermaidSvg(svg) {
-      svg = svg.replace(RE_VOID_ELEMENT, replaceVoidElement);
-      return `${SVG_XML_HEADER}${svg}`;
+      return svg.replace(RE_VOID_ELEMENT, replaceVoidElement);
     }
 
 
@@ -7461,285 +7455,6 @@ a.anchor-link {
       }
       return `<${tag} ${rest}>`;
     }
-
-
-  /**
-   * Named HTML entities with their decimal equivalent codes.
-   *
-   * @see https://www.w3.org/TR/WD-html40-970708/sgml/entities.html
-   * */
-  const HTML_ENTITIES = `<!ENTITY Aacute "&#193;">
-<!ENTITY aacute "&#225;">
-<!ENTITY Acirc "&#194;">
-<!ENTITY acirc "&#226;">
-<!ENTITY acute "&#180;">
-<!ENTITY AElig "&#198;">
-<!ENTITY aelig "&#230;">
-<!ENTITY Agrave "&#192;">
-<!ENTITY agrave "&#224;">
-<!ENTITY alefsym "&#8501;">
-<!ENTITY Alpha "&#913;">
-<!ENTITY alpha "&#945;">
-<!ENTITY amp "&#38;">
-<!ENTITY and "&#8869;">
-<!ENTITY ang "&#8736;">
-<!ENTITY Aring "&#197;">
-<!ENTITY aring "&#229;">
-<!ENTITY asymp "&#8776;">
-<!ENTITY Atilde "&#195;">
-<!ENTITY atilde "&#227;">
-<!ENTITY Auml "&#196;">
-<!ENTITY auml "&#228;">
-<!ENTITY bdquo "&#8222;">
-<!ENTITY Beta "&#914;">
-<!ENTITY beta "&#946;">
-<!ENTITY brvbar "&#166;">
-<!ENTITY bull "&#8226;">
-<!ENTITY cap "&#8745;">
-<!ENTITY Ccedil "&#199;">
-<!ENTITY ccedil "&#231;">
-<!ENTITY cedil "&#184;">
-<!ENTITY cent "&#162;">
-<!ENTITY Chi "&#935;">
-<!ENTITY chi "&#967;">
-<!ENTITY circ "&#710;">
-<!ENTITY clubs "&#9827;">
-<!ENTITY cong "&#8773;">
-<!ENTITY copy "&#169;">
-<!ENTITY crarr "&#8629;">
-<!ENTITY cup "&#8746;">
-<!ENTITY curren "&#164;">
-<!ENTITY dagger "&#8224;">
-<!ENTITY Dagger "&#8225;">
-<!ENTITY darr "&#8595;">
-<!ENTITY dArr "&#8659;">
-<!ENTITY deg "&#176;">
-<!ENTITY Delta "&#916;">
-<!ENTITY delta "&#948;">
-<!ENTITY diams "&#9830;">
-<!ENTITY divide "&#247;">
-<!ENTITY Eacute "&#201;">
-<!ENTITY eacute "&#233;">
-<!ENTITY Ecirc "&#202;">
-<!ENTITY ecirc "&#234;">
-<!ENTITY Egrave "&#200;">
-<!ENTITY egrave "&#232;">
-<!ENTITY empty "&#8709;">
-<!ENTITY emsp "&#8195;">
-<!ENTITY ensp "&#8194;">
-<!ENTITY epsilon "&#949;">
-<!ENTITY Epsilon "&#917;">
-<!ENTITY equiv "&#8801;">
-<!ENTITY Eta "&#919;">
-<!ENTITY eta "&#951;">
-<!ENTITY ETH "&#208;">
-<!ENTITY eth "&#240;">
-<!ENTITY Euml "&#203;">
-<!ENTITY euml "&#235;">
-<!ENTITY exist "&#8707;">
-<!ENTITY fnof "&#402;">
-<!ENTITY forall "&#8704;">
-<!ENTITY frac12 "&#189;">
-<!ENTITY frac14 "&#188;">
-<!ENTITY frac34 "&#190;">
-<!ENTITY frasl "&#8260;">
-<!ENTITY Gamma "&#915;">
-<!ENTITY gamma "&#947;">
-<!ENTITY ge "&#8805;">
-<!ENTITY gt "&#62;">
-<!ENTITY harr "&#8596;">
-<!ENTITY hArr "&#8660;">
-<!ENTITY hearts "&#9829;">
-<!ENTITY hellip "&#8230;">
-<!ENTITY Iacute "&#205;">
-<!ENTITY iacute "&#237;">
-<!ENTITY Icirc "&#206;">
-<!ENTITY icirc "&#238;">
-<!ENTITY iexcl "&#161;">
-<!ENTITY Igrave "&#204;">
-<!ENTITY igrave "&#236;">
-<!ENTITY image "&#8465;">
-<!ENTITY infin "&#8734;">
-<!ENTITY int "&#8747;">
-<!ENTITY Iota "&#921;">
-<!ENTITY iota "&#953;">
-<!ENTITY iquest "&#191;">
-<!ENTITY isin "&#8712;">
-<!ENTITY Iuml "&#207;">
-<!ENTITY iuml "&#239;">
-<!ENTITY Kappa "&#922;">
-<!ENTITY kappa "&#954;">
-<!ENTITY Lambda "&#923;">
-<!ENTITY lambda "&#955;">
-<!ENTITY lang "&#9001;">
-<!ENTITY laquo "&#171;">
-<!ENTITY larr "&#8592;">
-<!ENTITY lArr "&#8656;">
-<!ENTITY lceil "&#8968;">
-<!ENTITY ldquo "&#8220;">
-<!ENTITY le "&#8804;">
-<!ENTITY lfloor "&#8970;">
-<!ENTITY lowast "&#8727;">
-<!ENTITY loz "&#9674;">
-<!ENTITY lrm "&#8206;">
-<!ENTITY lsaquo "&#8249;">
-<!ENTITY lsquo "&#8216;">
-<!ENTITY lt "&#60;">
-<!ENTITY macr "&#175;">
-<!ENTITY mdash "&#8212;">
-<!ENTITY micro "&#181;">
-<!ENTITY middot "&#183;">
-<!ENTITY minus "&#8722;">
-<!ENTITY Mu "&#924;">
-<!ENTITY mu "&#956;">
-<!ENTITY nabla "&#8711;">
-<!ENTITY nbsp "&#160;">
-<!ENTITY ndash "&#8211;">
-<!ENTITY ne "&#8800;">
-<!ENTITY ni "&#8715;">
-<!ENTITY not "&#172;">
-<!ENTITY notin "&#8713;">
-<!ENTITY nsub "&#8836;">
-<!ENTITY Ntilde "&#209;">
-<!ENTITY ntilde "&#241;">
-<!ENTITY Nu "&#925;">
-<!ENTITY nu "&#957;">
-<!ENTITY Oacute "&#211;">
-<!ENTITY oacute "&#243;">
-<!ENTITY Ocirc "&#212;">
-<!ENTITY ocirc "&#244;">
-<!ENTITY OElig "&#338;">
-<!ENTITY oelig "&#339;">
-<!ENTITY Ograve "&#210;">
-<!ENTITY ograve "&#242;">
-<!ENTITY oline "&#8254;">
-<!ENTITY Omega "&#937;">
-<!ENTITY omega "&#969;">
-<!ENTITY Omicron "&#927;">
-<!ENTITY omicron "&#959;">
-<!ENTITY oplus "&#8853;">
-<!ENTITY or "&#8870;">
-<!ENTITY ordf "&#170;">
-<!ENTITY ordm "&#186;">
-<!ENTITY Oslash "&#216;">
-<!ENTITY oslash "&#248;">
-<!ENTITY Otilde "&#213;">
-<!ENTITY otilde "&#245;">
-<!ENTITY otimes "&#8855;">
-<!ENTITY Ouml "&#214;">
-<!ENTITY ouml "&#246;">
-<!ENTITY para "&#182;">
-<!ENTITY part "&#8706;">
-<!ENTITY permil "&#8240;">
-<!ENTITY perp "&#8869;">
-<!ENTITY Phi "&#934;">
-<!ENTITY phi "&#966;">
-<!ENTITY Pi "&#928;">
-<!ENTITY pi "&#960;">
-<!ENTITY piv "&#982;">
-<!ENTITY plusmn "&#177;">
-<!ENTITY pound "&#163;">
-<!ENTITY prime "&#8242;">
-<!ENTITY Prime "&#8243;">
-<!ENTITY prod "&#8719;">
-<!ENTITY prop "&#8733;">
-<!ENTITY Psi "&#936;">
-<!ENTITY psi "&#968;">
-<!ENTITY quot "&#34;">
-<!ENTITY radic "&#8730;">
-<!ENTITY rang "&#9002;">
-<!ENTITY raquo "&#187;">
-<!ENTITY rarr "&#8594;">
-<!ENTITY rArr "&#8658;">
-<!ENTITY rceil "&#8969;">
-<!ENTITY rdquo "&#8221;">
-<!ENTITY real "&#8476;">
-<!ENTITY reg "&#174;">
-<!ENTITY rfloor "&#8971;">
-<!ENTITY Rho "&#929;">
-<!ENTITY rho "&#961;">
-<!ENTITY rlm "&#8207;">
-<!ENTITY rsaquo "&#8250;">
-<!ENTITY rsquo "&#8217;">
-<!ENTITY sbquo "&#8218;">
-<!ENTITY Scaron "&#352;">
-<!ENTITY scaron "&#353;">
-<!ENTITY sdot "&#8901;">
-<!ENTITY sect "&#167;">
-<!ENTITY shy "&#173;">
-<!ENTITY Sigma "&#931;">
-<!ENTITY sigma "&#963;">
-<!ENTITY sigmaf "&#962;">
-<!ENTITY sim "&#8764;">
-<!ENTITY spades "&#9824;">
-<!ENTITY sub "&#8834;">
-<!ENTITY sube "&#8838;">
-<!ENTITY sum "&#8721;">
-<!ENTITY sup "&#8835;">
-<!ENTITY sup1 "&#185;">
-<!ENTITY sup2 "&#178;">
-<!ENTITY sup3 "&#179;">
-<!ENTITY supe "&#8839;">
-<!ENTITY szlig "&#223;">
-<!ENTITY Tau "&#932;">
-<!ENTITY tau "&#964;">
-<!ENTITY there4 "&#8756;">
-<!ENTITY Theta "&#920;">
-<!ENTITY theta "&#952;">
-<!ENTITY thetasym "&#977;">
-<!ENTITY thinsp "&#8201;">
-<!ENTITY THORN "&#222;">
-<!ENTITY thorn "&#254;">
-<!ENTITY tilde "&#732;">
-<!ENTITY times "&#215;">
-<!ENTITY trade "&#8482;">
-<!ENTITY Uacute "&#218;">
-<!ENTITY uacute "&#250;">
-<!ENTITY uarr "&#8593;">
-<!ENTITY uArr "&#8657;">
-<!ENTITY Ucirc "&#219;">
-<!ENTITY ucirc "&#251;">
-<!ENTITY Ugrave "&#217;">
-<!ENTITY ugrave "&#249;">
-<!ENTITY uml "&#168;">
-<!ENTITY upsih "&#978;">
-<!ENTITY Upsilon "&#933;">
-<!ENTITY upsilon "&#965;">
-<!ENTITY Uuml "&#220;">
-<!ENTITY uuml "&#252;">
-<!ENTITY weierp "&#8472;">
-<!ENTITY Xi "&#926;">
-<!ENTITY xi "&#958;">
-<!ENTITY Yacute "&#221;">
-<!ENTITY yacute "&#253;">
-<!ENTITY yen "&#165;">
-<!ENTITY Yuml "&#376;">
-<!ENTITY yuml "&#255;">
-<!ENTITY Zeta "&#918;">
-<!ENTITY zeta "&#950;">
-<!ENTITY zwj "&#8205;">
-<!ENTITY zwnj "&#8204;">`.replace(/\n/g, ' ');
-
-  /**
-   * A reasonably strict xml declaration.
-   */
-  const XML_DECL = '<?xml version="1.0" standalone="no"?>';
-
-  /**
-   * The beginning of the XML doctype declaration.
-   */
-  const DOCTYPE_START = `<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" [`;
-
-  /**
-   * The end of the XML docype declaration.
-   */
-  const DOCTYPE_END = ']>';
-
-  /**
-   * A full header for an SVG XML document.
-   */
-  const SVG_XML_HEADER = `${XML_DECL}
-    ${DOCTYPE_START}${HTML_ENTITIES}${DOCTYPE_END}`;
 
     void Promise.all([...diagrams].map(renderOneMarmaid));
   });
@@ -7830,18 +7545,133 @@ hacen al final <strong>en Databricks</strong> (no aquí).</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=57f85d24">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=57f85d24">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [2]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># %pip install pandas pyarrow numpy scikit-learn imbalanced-learn lightgbm optuna matplotlib</span>
 <span class="c1"># (shap es opcional, solo si quieres esa capa extra de diagnóstico:)</span>
 <span class="c1"># %pip install shap</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Requirement already satisfied: pandas in c:\Users\ylondono\.venvs\learning\Lib\site-packages (3.0.3)
+Collecting pyarrow
+  Downloading pyarrow-24.0.0-cp313-cp313-win_amd64.whl.metadata (3.0 kB)
+Requirement already satisfied: numpy in c:\Users\ylondono\.venvs\learning\Lib\site-packages (2.4.5)
+Requirement already satisfied: scikit-learn in c:\Users\ylondono\.venvs\learning\Lib\site-packages (1.8.0)
+Requirement already satisfied: imbalanced-learn in c:\Users\ylondono\.venvs\learning\Lib\site-packages (0.14.1)
+Requirement already satisfied: lightgbm in c:\Users\ylondono\.venvs\learning\Lib\site-packages (4.6.0)
+Requirement already satisfied: optuna in c:\Users\ylondono\.venvs\learning\Lib\site-packages (4.8.0)
+Requirement already satisfied: matplotlib in c:\Users\ylondono\.venvs\learning\Lib\site-packages (3.10.9)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from pandas) (2.9.0.post0)
+Requirement already satisfied: tzdata in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from pandas) (2026.2)
+Requirement already satisfied: scipy&gt;=1.10.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from scikit-learn) (1.17.1)
+Requirement already satisfied: joblib&gt;=1.3.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from scikit-learn) (1.5.3)
+Requirement already satisfied: threadpoolctl&gt;=3.2.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from scikit-learn) (3.6.0)
+Requirement already satisfied: sklearn-compat&lt;0.2,&gt;=0.1.5 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from imbalanced-learn) (0.1.5)
+Requirement already satisfied: alembic&gt;=1.5.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from optuna) (1.18.4)
+Requirement already satisfied: colorlog in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from optuna) (6.10.1)
+Requirement already satisfied: packaging&gt;=20.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from optuna) (26.2)
+Requirement already satisfied: sqlalchemy&gt;=1.4.2 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from optuna) (2.0.49)
+Requirement already satisfied: tqdm in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from optuna) (4.67.3)
+Requirement already satisfied: PyYAML in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from optuna) (6.0.3)
+Requirement already satisfied: contourpy&gt;=1.0.1 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from matplotlib) (1.3.3)
+Requirement already satisfied: cycler&gt;=0.10 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from matplotlib) (0.12.1)
+Requirement already satisfied: fonttools&gt;=4.22.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from matplotlib) (4.63.0)
+Requirement already satisfied: kiwisolver&gt;=1.3.1 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from matplotlib) (1.5.0)
+Requirement already satisfied: pillow&gt;=8 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from matplotlib) (12.2.0)
+Requirement already satisfied: pyparsing&gt;=3 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from matplotlib) (3.3.2)
+Requirement already satisfied: Mako in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from alembic&gt;=1.5.0-&gt;optuna) (1.3.12)
+Requirement already satisfied: typing-extensions&gt;=4.12 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from alembic&gt;=1.5.0-&gt;optuna) (4.15.0)
+Requirement already satisfied: six&gt;=1.5 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas) (1.17.0)
+Requirement already satisfied: greenlet&gt;=1 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from sqlalchemy&gt;=1.4.2-&gt;optuna) (3.5.0)
+Requirement already satisfied: colorama in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from colorlog-&gt;optuna) (0.4.6)
+Requirement already satisfied: MarkupSafe&gt;=0.9.2 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from Mako-&gt;alembic&gt;=1.5.0-&gt;optuna) (3.0.3)
+Downloading pyarrow-24.0.0-cp313-cp313-win_amd64.whl (27.3 MB)
+   ---------------------------------------- 0.0/27.3 MB ? eta -:--:--
+   ---------------------------------------- 0.0/27.3 MB ? eta -:--:--
+   -------------- ------------------------- 9.7/27.3 MB 47.4 MB/s eta 0:00:01
+   ------------------------------------ --- 24.6/27.3 MB 59.5 MB/s eta 0:00:01
+   ---------------------------------------- 27.3/27.3 MB 54.9 MB/s  0:00:00
+Installing collected packages: pyarrow
+Successfully installed pyarrow-24.0.0
+Note: you may need to restart the kernel to use updated packages.
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>WARNING: Cache entry deserialization failed, entry ignored
+WARNING: Cache entry deserialization failed, entry ignored
+
+[notice] A new release of pip is available: 26.1.1 -&gt; 26.1.2
+[notice] To update, run: python.exe -m pip install --upgrade pip
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Collecting shap
+  Downloading shap-0.52.0-cp312-abi3-win_amd64.whl.metadata (26 kB)
+Requirement already satisfied: numpy&gt;=2 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (2.4.5)
+Requirement already satisfied: scipy in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (1.17.1)
+Requirement already satisfied: scikit-learn in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (1.8.0)
+Requirement already satisfied: pandas in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (3.0.3)
+Requirement already satisfied: tqdm&gt;=4.27.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (4.67.3)
+Requirement already satisfied: packaging&gt;20.9 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (26.2)
+Collecting slicer==0.0.8 (from shap)
+  Using cached slicer-0.0.8-py3-none-any.whl.metadata (4.0 kB)
+Requirement already satisfied: numba in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (0.65.1)
+Requirement already satisfied: llvmlite in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from shap) (0.47.0)
+Collecting cloudpickle (from shap)
+  Using cached cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+Requirement already satisfied: colorama in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from tqdm&gt;=4.27.0-&gt;shap) (0.4.6)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from pandas-&gt;shap) (2.9.0.post0)
+Requirement already satisfied: tzdata in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from pandas-&gt;shap) (2026.2)
+Requirement already satisfied: six&gt;=1.5 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas-&gt;shap) (1.17.0)
+Requirement already satisfied: joblib&gt;=1.3.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from scikit-learn-&gt;shap) (1.5.3)
+Requirement already satisfied: threadpoolctl&gt;=3.2.0 in c:\Users\ylondono\.venvs\learning\Lib\site-packages (from scikit-learn-&gt;shap) (3.6.0)
+Downloading shap-0.52.0-cp312-abi3-win_amd64.whl (499 kB)
+Using cached slicer-0.0.8-py3-none-any.whl (15 kB)
+Using cached cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+Installing collected packages: slicer, cloudpickle, shap
+
+   ------------- -------------------------- 1/3 [cloudpickle]
+   -------------------------- ------------- 2/3 [shap]
+   -------------------------- ------------- 2/3 [shap]
+   -------------------------- ------------- 2/3 [shap]
+   -------------------------- ------------- 2/3 [shap]
+   -------------------------- ------------- 2/3 [shap]
+   ---------------------------------------- 3/3 [shap]
+
+Successfully installed cloudpickle-3.1.2 shap-0.52.0 slicer-0.0.8
+Note: you may need to restart the kernel to use updated packages.
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>
+[notice] A new release of pip is available: 26.1.1 -&gt; 26.1.2
+[notice] To update, run: python.exe -m pip install --upgrade pip
+</pre>
 </div>
 </div>
 </div>
@@ -7906,8 +7736,8 @@ hacen al final <strong>en Databricks</strong> (no aquí).</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Repo : c:\Users\Usuario\Repositorios git\proyecto-integrador-g8
-Data : c:\Users\Usuario\Repositorios git\proyecto-integrador-g8\data\gold_snapshot | existe: True
+<pre>Repo : c:\Users\ylondono\dev\proyecto-integrador-g8
+Data : c:\Users\ylondono\dev\proyecto-integrador-g8\data\gold_snapshot | existe: True
 </pre>
 </div>
 </div>
@@ -7969,7 +7799,7 @@ Data : c:\Users\Usuario\Repositorios git\proyecto-integrador-g8\data\gold_snapsh
 
 Columnas: ['user_session', 'target_purchase', 'user_id', 'total_views', 'distinct_products_viewed', 'brands_compared', 'categories_explored', 'categories_explored_cid', 'browsing_duration_sec', 'avg_price_viewed', 'max_price_viewed', 'electronics_view_share', 'sin_navegacion_previa', 'session_date', 'session_hour', 'day_of_week', 'is_weekend', 'is_black_friday', 'label_window_corrupt', 'revisit_intensity', 'views_per_minute', 'avg_inter_event_sec']
 
-Memoria: 4.69 GB
+Memoria: 2.81 GB
 
 Filas: 22,995,676 | sesiones únicas: 22,995,676
 Tasa target_purchase (FULL): 0.061
@@ -8039,7 +7869,7 @@ Filas tras cuarentena: 19,711,743 | tasa: 0.0597
 <h3 id="Justificaci%C3%B3n-T%C3%A9cnica-y-de-Negocio-(Por-qu%C3%A9-Opci%C3%B3n-C)">Justificación Técnica y de Negocio (Por qué Opción C)<a class="anchor-link" href="#Justificaci%C3%B3n-T%C3%A9cnica-y-de-Negocio-(Por-qu%C3%A9-Opci%C3%B3n-C)">¶</a></h3><ol>
 <li><strong>Mitigación del Concept Drift:</strong> La conversión por sesión decae de octubre (~6.8%) a inicios de noviembre (~5.0%). Un split que entrene solo en octubre (Opción A) dejaría al modelo descalibrado. Al incluir noviembre en Train, el modelo captura la deriva de la conversión y aprende el régimen real bajo el cual será evaluado.</li>
 <li><strong>Estabilidad de Features:</strong> La distribución de precios es consistente entre ventanas ($\text{PSI} \approx 0$), confirmando que el <em>drift</em> es del comportamiento del <em>target</em> y no de la escala de las variables clave.</li>
-<li><strong>Réplica del Escenario de Producción:</strong> Se rechaza el split aleatorio tradicional. El split temporal respeta la consistencia cronológica del negocio (entrenar con el pasado para predecir el futuro) y <strong>evita la fuga de datos (data leakage) a nivel de usuario</strong>, impidiendo que sesiones del mismo cliente se repartan entre ambos conjuntos.</li>
+<li><strong>Réplica del Escenario de Producción:</strong> Se rechaza el split aleatorio tradicional. El split temporal respeta la consistencia cronológica del negocio (entrenar con el pasado para predecir el futuro) sin pretender separar usuarios: un mismo cliente que navega antes y después del corte aparece en train y en test, lo cual es <strong>realista</strong> (en producción el modelo también ve clientes recurrentes). La ausencia de <strong>fuga (data leakage)</strong> la garantizan las <em>features intra-sesión y previas al corte</em> (ninguna variable usa información posterior al primer evento cart/purchase de la sesión), no una disjunción de usuarios.</li>
 </ol>
 <h3 id="Invariantes-del-Dise%C3%B1o-Experimental">Invariantes del Diseño Experimental<a class="anchor-link" href="#Invariantes-del-Dise%C3%B1o-Experimental">¶</a></h3><ul>
 <li><strong>Exclusión de la Ventana Corrupta (14–17 de noviembre):</strong> Se eliminan por completo las sesiones donde <code>label_window_corrupt == 1</code> (ej. 467k carritos con 0 compras el 15-nov). <strong>No se utiliza una variable bandera (<em>flag</em>)</strong> para absorber este comportamiento, ya que el fallo radica en la corrupción del <em>target</em> (falsos negativos). Mantener estas filas sesgaría el aprendizaje en Train y penalizaría artificialmente la evaluación en Test al contrastar predicciones correctas contra etiquetas falsas. Además, este <em>flag</em> no existirá en producción.</li>
@@ -8056,7 +7886,7 @@ Filas tras cuarentena: 19,711,743 | tasa: 0.0597
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Verificar que la cuarentena ya fue aplicada sobre gold antes de llegar aquí</span>
@@ -8130,7 +7960,7 @@ Filas BF (29–30 nov) en test : 838,543  (30.6%)
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">TARGET</span>   <span class="o">=</span> <span class="s2">"target_purchase"</span>
@@ -8189,7 +8019,7 @@ Filas BF (29–30 nov) en test : 838,543  (30.6%)
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
@@ -8236,7 +8066,7 @@ Filas BF (29–30 nov) en test : 838,543  (30.6%)
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">dummy</span> <span class="o">=</span> <span class="n">DummyClassifier</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">"most_frequent"</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_it</span><span class="p">,</span> <span class="n">y_it</span><span class="p">)</span>
@@ -8286,7 +8116,7 @@ Moraleja: cualquier modelo serio debe superar PR-AUC = 0.056
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [9]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">preproc</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span>
@@ -8379,7 +8209,7 @@ Moraleja: cualquier modelo serio debe superar PR-AUC = 0.056
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestClassifier</span>
@@ -8443,7 +8273,7 @@ Dummy (azar)     0.0560 0.0000           NaN             NaN
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>C:\Users\Usuario\AppData\Local\Temp\ipykernel_1368\1929200201.py:36: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+<pre>C:\Users\Usuario\AppData\Local\Temp\ipykernel_20372\1929200201.py:36: FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
   res = pd.concat([pd.DataFrame(filas), pd.DataFrame(ref)], ignore_index=True)
 </pre>
 </div>
@@ -8467,7 +8297,7 @@ Dummy (azar)     0.0560 0.0000           NaN             NaN
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">lightgbm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">lgb</span>
@@ -8528,7 +8358,7 @@ Dummy (azar)     0.0560 0.0000           NaN             NaN
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>Best trial: 13. Best value: 0.123528: 100%|██████████| 20/20 [1:10:10&lt;00:00, 210.52s/it]</pre>
+<pre>Best trial: 13. Best value: 0.123528: 100%|██████████| 20/20 [1:18:12&lt;00:00, 234.63s/it]</pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -8549,8 +8379,59 @@ Mejores params: {'n_estimators': 684, 'learning_rate': 0.019696412975698033, 'nu
 </div>
 </div>
 </div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e56c3285">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2c9c7722">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># R4 — Variabilidad entre folds del modelo elegido (media ± std), lo que pide Terán.</span>
+<span class="c1"># NO re-corre Optuna: una sola CV (5 folds) con los best_params ya hallados (~4-5 min).</span>
+<span class="c1"># Requiere en memoria X_it, y_it, cv (de §4/§5). Si reiniciaste el kernel, corre §1,§4,§5</span>
+<span class="c1"># (carga + features + muestra, ~2 min) — NO hace falta §8 (Optuna).</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lightgbm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">lgb</span>  
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_val_score</span>
+
+<span class="n">BEST_R4</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">684</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.019696412975698033</span><span class="p">,</span> <span class="n">num_leaves</span><span class="o">=</span><span class="mi">211</span><span class="p">,</span>
+               <span class="n">max_depth</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">min_child_samples</span><span class="o">=</span><span class="mi">197</span><span class="p">,</span> <span class="n">subsample</span><span class="o">=</span><span class="mf">0.9246803266602427</span><span class="p">,</span>
+               <span class="n">colsample_bytree</span><span class="o">=</span><span class="mf">0.8085840730822341</span><span class="p">,</span> <span class="n">reg_lambda</span><span class="o">=</span><span class="mf">0.835852168204342</span><span class="p">)</span>
+<span class="n">spw_r4</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_it</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_it</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">gbm_best</span> <span class="o">=</span> <span class="n">lgb</span><span class="o">.</span><span class="n">LGBMClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">BEST_R4</span><span class="p">,</span> <span class="n">scale_pos_weight</span><span class="o">=</span><span class="n">spw_r4</span><span class="p">,</span>
+                              <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">folds</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">gbm_best</span><span class="p">,</span> <span class="n">X_it</span><span class="p">,</span> <span class="n">y_it</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">"average_precision"</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"PR-AUC por fold:"</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">s</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">folds</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"MODELO ELEGIDO (LightGBM+Optuna): media = </span><span class="si">{</span><span class="n">folds</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  ±  std = </span><span class="si">{</span><span class="n">folds</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">  (5 folds)"</span><span class="p">)</span>
+
+<span class="c1"># Opcional: si 'study' sigue en memoria, muestra que el ganador no es un máximo aislado</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">top5</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">trials</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Top-5 trials (media CV):"</span><span class="p">,</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">top5</span><span class="p">],</span>
+          <span class="sa">f</span><span class="s2">"| rango </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">top5</span><span class="p">)</span><span class="o">-</span><span class="nb">min</span><span class="p">(</span><span class="n">top5</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>PR-AUC por fold: ['0.1234', '0.1261', '0.1236', '0.1220', '0.1225']
+MODELO ELEGIDO (LightGBM+Optuna): media = 0.1235  ±  std = 0.0014  (5 folds)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=599cf9a6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8569,7 +8450,7 @@ Mejores params: {'n_estimators': 684, 'learning_rate': 0.019696412975698033, 'nu
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">best</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">best_params</span><span class="p">);</span> <span class="n">best</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scale_pos_weight</span><span class="o">=</span><span class="n">spw</span><span class="p">,</span>
@@ -8662,7 +8543,7 @@ Brier (test):  0.0515
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reporta</span><span class="p">(</span><span class="n">nombre</span><span class="p">,</span> <span class="n">yt</span><span class="p">,</span> <span class="n">pt</span><span class="p">):</span>
@@ -8711,10 +8592,15 @@ Test SOLO BF       | n=  838,543 | tasa=0.0613 | PR-AUC=0.1287 | Brier=0.0559
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="11.-Umbral-operativo-(no-0.5)">11. Umbral operativo (no 0.5)<a class="anchor-link" href="#11.-Umbral-operativo-(no-0.5)">¶</a></h2><p>El modelo entrega probabilidad continua; el <strong>corte es decisión de negocio</strong>, no 0.5. En la gráfica: a medida que subes el umbral, la precisión sube pero el recall baja.</p>
-<blockquote>
-<p>Si intervenir es barato (un email, un banner) → umbral bajo, capturas más compradores con menor precisión. Si la intervención es costosa (un cupón, un agente) → umbral alto, solo los más probables. El valor óptimo depende del costo de la intervención vs. el valor de una compra capturada.</p>
-</blockquote>
+<h2 id="11.-Umbral-operativo-(no-0.5)">11. Umbral operativo (no 0.5)<a class="anchor-link" href="#11.-Umbral-operativo-(no-0.5)">¶</a></h2><p>El modelo entrega una probabilidad continua; convertirla en decisión ("intervenir / no") requiere un <strong>corte</strong>, que es una <strong>palanca de negocio</strong>, no 0.5. Como solo ~6% compra, las probabilidades están comprimidas hacia abajo: el rango útil de operación es <strong>0.05–0.15</strong>, no 0.5 (con 0.5 no se marcaría casi a nadie).</p>
+<p><strong>Punto de equilibrio (F1-óptimo): umbral ≈ 0.092.</strong> Marca el <strong>15% de las sesiones</strong>, captura el <strong>32% de los compradores</strong> (recall) con <strong>precisión 12.1%</strong> — frente a la base de 5.6%, es un <strong>lift de ~2.2×</strong> (el grupo marcado compra más del doble que el promedio). En términos de negocio: con el 15% del esfuerzo se atrapa un tercio de las compras.</p>
+<p><strong>El trade-off (tabla de alternativas):</strong> subir el umbral cambia <strong>alcance por precisión</strong>. A 0.20 la precisión sube a 30% pero solo se marca el 0.4% (recall 2%); a 0.30, precisión 50% pero solo 1.2% de los compradores. Bajarlo amplía el alcance a costa de más falsos positivos.</p>
+<p><strong>Cómo se elige según la intervención:</strong></p>
+<ul>
+<li><strong>Barata</strong> (banner, email): umbral bajo (~0.09–0.10) → más alcance, capturas más compradores.</li>
+<li><strong>Costosa</strong> (cupón, agente): umbral alto (≥0.20) → solo los más probables, proteges el presupuesto.</li>
+</ul>
+<p>Para el <strong>A/B test</strong>, el umbral define a quién se le muestra el incentivo <em>dentro del segmento de electrónica</em> (C3/C4); el F1-óptimo es el default balanceado y el valor final se ajusta con Yeison según el costo y la capacidad de la campaña. El modelo no es un oráculo perfecto: da un <strong>lift de ~2×</strong>, suficiente para priorizar de forma rentable.</p>
 </div>
 </div>
 </div>
@@ -8723,7 +8609,7 @@ Test SOLO BF       | n=  838,543 | tasa=0.0613 | PR-AUC=0.1287 | Brier=0.0559
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">prec</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">thr</span> <span class="o">=</span> <span class="n">precision_recall_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">p_test</span><span class="p">)</span>
@@ -8758,6 +8644,51 @@ Test SOLO BF       | n=  838,543 | tasa=0.0613 | PR-AUC=0.1287 | Brier=0.0559
 </div>
 </div>
 </div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fb387ae4">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Umbral operativo concreto: F1-óptimo como default balanceado + alternativas de negocio</span>
+<span class="n">prec</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">thr</span> <span class="o">=</span> <span class="n">precision_recall_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">p_test</span><span class="p">)</span>
+<span class="n">f1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">prec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">rec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">prec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">rec</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">f1</span><span class="p">);</span> <span class="n">umbral_f1</span> <span class="o">=</span> <span class="n">thr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Umbral F1-óptimo: </span><span class="si">{</span><span class="n">umbral_f1</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> → precision </span><span class="si">{</span><span class="n">prec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> · recall </span><span class="si">{</span><span class="n">rec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> · F1 </span><span class="si">{</span><span class="n">f1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  marca el </span><span class="si">{</span><span class="p">(</span><span class="n">p_test</span><span class="o">&gt;=</span><span class="n">umbral_f1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% de las sesiones</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Alternativas según política de campaña:"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="p">[</span><span class="mf">0.10</span><span class="p">,</span> <span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.30</span><span class="p">]:</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="n">p_test</span> <span class="o">&gt;=</span> <span class="n">u</span>
+    <span class="n">precision_emp</span> <span class="o">=</span> <span class="n">y_test</span><span class="p">[</span><span class="n">sel</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="n">sel</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="n">recall_emp</span>    <span class="o">=</span> <span class="n">y_test</span><span class="p">[</span><span class="n">sel</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">y_test</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  umbral </span><span class="si">{</span><span class="n">u</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> → marca </span><span class="si">{</span><span class="n">sel</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2">% sesiones | precision </span><span class="si">{</span><span class="n">precision_emp</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> | recall </span><span class="si">{</span><span class="n">recall_emp</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Umbral F1-óptimo: 0.092 → precision 0.121 · recall 0.324 · F1 0.176
+  marca el 15.0% de las sesiones
+
+Alternativas según política de campaña:
+  umbral 0.10 → marca  12.1% sesiones | precision 0.128 | recall 0.277
+  umbral 0.20 → marca   0.4% sesiones | precision 0.299 | recall 0.022
+  umbral 0.30 → marca   0.1% sesiones | precision 0.503 | recall 0.012
+</pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f303dded">
 <div class="jp-Cell-inputWrapper" tabindex="0">
@@ -8765,8 +8696,17 @@ Test SOLO BF       | n=  838,543 | tasa=0.0613 | PR-AUC=0.1287 | Brier=0.0559
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="12.-Diagn%C3%B3stico-%E2%80%94-importancia-por-permutaci%C3%B3n">12. Diagnóstico — importancia por permutación<a class="anchor-link" href="#12.-Diagn%C3%B3stico-%E2%80%94-importancia-por-permutaci%C3%B3n">¶</a></h2><p>Las features que más mueven la predicción son <strong><code>max_price_viewed</code> (+0.038)</strong>, <strong><code>electronics_view_share</code> (+0.030)</strong> y <strong><code>avg_price_viewed</code> (+0.024)</strong>. Lo que predice la compra es el <strong>nivel de precio y el foco en electrónica</strong>, no cuánto navega la persona. El modelo redescubrió por su cuenta el hallazgo del EDA (el dinero está en electrónica de alto valor).</p>
-<p>El engagement (<code>total_views</code>, <code>revisit_intensity</code>) aporta de forma moderada. <code>sin_navegacion_previa</code> aporta exactamente −0.0000 → ese flag no agrega poder predictivo; puedes quitarlo sin costo medible en PR-AUC.</p>
+<h2 id="12.-Diagn%C3%B3stico-%E2%80%94-importancia-de-features-(built-in-vs-permutaci%C3%B3n)">12. Diagnóstico — importancia de features (built-in vs permutación)<a class="anchor-link" href="#12.-Diagn%C3%B3stico-%E2%80%94-importancia-de-features-(built-in-vs-permutaci%C3%B3n)">¶</a></h2><p>Reportamos dos lecturas y mostramos por qué confiamos en una.</p>
+<p><strong>Built-in de LightGBM</strong> (<code>split</code> = nº de cortes, <code>gain</code> = ganancia): rápida pero sesgada. Favorece variables continuas (muchos puntos de corte) y se calcula sobre el train.
+<strong>Permutación</strong>: revuelve cada feature en el <strong>test</strong> y mide la caída del PR-AUC. Mide impacto predictivo real, sin sesgo de cardinalidad.</p>
+<p><strong>Por qué hicimos las dos — el contraste es el argumento:</strong></p>
+<ul>
+<li><code>electronics_view_share</code> queda <strong>casi al fondo en split count (0.042)</strong> pero es la <strong>#2 en permutación (0.203)</strong> y alta en gain (0.195). Es de baja cardinalidad (pocos valores: 0/0.5/1), así que se usa en pocos cortes pero cada uno es muy informativo. <strong>Si nos hubiéramos quedado con el split count, habríamos descartado erróneamente la feature de electrónica.</strong></li>
+<li>Las features continuas de ritmo (<code>views_per_minute</code>, <code>avg_inter_event_sec</code>, <code>revisit_intensity</code>) están <strong>infladas en split count</strong> y caen en permutación — el sesgo de cardinalidad en acción.</li>
+<li><code>max_price_viewed</code> es #1 en las tres → señal robusta.</li>
+</ul>
+<p><strong>Por eso la lectura válida es la permutación.</strong></p>
+<h3 id="Resultado-(permutaci%C3%B3n)">Resultado (permutación)<a class="anchor-link" href="#Resultado-(permutaci%C3%B3n)">¶</a></h3><p>El poder predictivo se concentra en <strong>precio + electrónica</strong>: <code>max_price_viewed</code> (+0.038), <code>electronics_view_share</code> (+0.030), <code>avg_price_viewed</code> (+0.024). El engagement (<code>distinct_products_viewed</code>, <code>total_views</code>) aporta moderado; la hora (<code>hour_sin</code> +0.008) un poco; <code>sin_navegacion_previa</code> ≈ 0. Lo que predice la compra es <strong>cuán caro/electrónico es lo que mira la persona, no cuánto navega</strong> — coincide con el EDA y con el clustering (segmentos de electrónica = mayor conversión). Tres análisis independientes, un mismo insight.</p>
 </div>
 </div>
 </div>
@@ -8775,7 +8715,7 @@ Test SOLO BF       | n=  838,543 | tasa=0.0613 | PR-AUC=0.1287 | Brier=0.0559
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Permutación sobre una muestra del test (es costosa); usa el GBM ya calibrado</span>
@@ -8814,6 +8754,107 @@ sin_navegacion_previa        +0.0000 ± 0.0000
 is_weekend                   -0.0000 ± 0.0002
 day_of_week                  -0.0001 ± 0.0005
 categories_explored          -0.0001 ± 0.0004
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d247259f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># 1) Importancia BUILT-IN de LightGBM (split = nº de cortes, gain = ganancia total)</span>
+<span class="n">gbm_solo</span> <span class="o">=</span> <span class="n">lgb</span><span class="o">.</span><span class="n">LGBMClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">study</span><span class="o">.</span><span class="n">best_params</span><span class="p">,</span> <span class="n">scale_pos_weight</span><span class="o">=</span><span class="n">spw</span><span class="p">,</span>
+                              <span class="n">random_state</span><span class="o">=</span><span class="n">RANDOM_STATE</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">imp_split</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gbm_solo</span><span class="o">.</span><span class="n">booster_</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">(</span><span class="n">importance_type</span><span class="o">=</span><span class="s2">"split"</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">FEATURES</span><span class="p">)</span>
+<span class="n">imp_gain</span>  <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">gbm_solo</span><span class="o">.</span><span class="n">booster_</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">(</span><span class="n">importance_type</span><span class="o">=</span><span class="s2">"gain"</span><span class="p">),</span>  <span class="n">index</span><span class="o">=</span><span class="n">FEATURES</span><span class="p">)</span>
+<span class="n">imp_perm</span>  <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">importances_mean</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">FEATURES</span><span class="p">)</span>
+
+<span class="c1"># 2) Tabla comparativa normalizada (0-1) para comparar rankings de forma justa</span>
+<span class="n">comp</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s2">"built_in_split"</span><span class="p">:</span> <span class="n">imp_split</span> <span class="o">/</span> <span class="n">imp_split</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
+            <span class="s2">"built_in_gain"</span><span class="p">:</span>  <span class="n">imp_gain</span>  <span class="o">/</span> <span class="n">imp_gain</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span>
+            <span class="s2">"permutacion"</span><span class="p">:</span>    <span class="n">imp_perm</span>  <span class="o">/</span> <span class="n">imp_perm</span><span class="o">.</span><span class="n">sum</span><span class="p">()})</span>
+        <span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"permutacion"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>                          built_in_split  built_in_gain  permutacion
+max_price_viewed                   0.191          0.215        0.259
+electronics_view_share             0.042          0.195        0.203
+avg_price_viewed                   0.175          0.090        0.159
+distinct_products_viewed           0.042          0.016        0.090
+total_views                        0.043          0.045        0.085
+hour_sin                           0.046          0.072        0.051
+revisit_intensity                  0.065          0.095        0.043
+views_per_minute                   0.072          0.037        0.037
+avg_inter_event_sec                0.059          0.063        0.023
+browsing_duration_sec              0.085          0.045        0.021
+hour_cos                           0.048          0.026        0.012
+categories_explored_cid            0.027          0.067        0.009
+brands_compared                    0.036          0.020        0.008
+sin_navegacion_previa              0.000          0.000        0.000
+is_weekend                         0.008          0.002       -0.000
+day_of_week                        0.049          0.009       -0.001
+categories_explored                0.012          0.003       -0.001
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=180ee3da">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p>Lo que se exporta para trabajar en databricks</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3a3caaca">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">ruta_modelo</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"../../data/propension_model.joblib"</span><span class="p">)</span>
+<span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">modelo</span><span class="p">,</span> <span class="n">ruta_modelo</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Modelo guardado: </span><span class="si">{</span><span class="n">ruta_modelo</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">ruta_modelo</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span><span class="o">/</span><span class="mf">1e6</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB)"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Modelo guardado: ..\..\data\propension_model.joblib (47.1 MB)
 </pre>
 </div>
 </div>
