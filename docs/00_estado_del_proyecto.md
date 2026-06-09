@@ -44,6 +44,8 @@ calibrado/signature), scoring batch 19.71M sesiones, **Contrato 2**
 49.8 %, electronica_gama_media 29.5 %, electronica_premium 13.6 %, explorador 7.0 %,
 anómalo 0.05 %. **Frente de modelado CERRADO.**
 
+> **Actualización 9-jun (revisión Yeison + Claude Code):** (1) **Variabilidad reportada** — el modelo final da **PR-AUC CV 0.1235 ± 0.0014** (5 folds): no es un máximo aislado (R4). (2) **Calibración VERIFICADA en Databricks** — al recargar el modelo, el `06` reproduce **PR-AUC 0.1172 · Brier 0.0515 · prob media 0.059 ≈ tasa base**, tras corregir un **bug de orden de features** en el scoring (las 17 columnas iban permutadas → ranking revuelto; el Contrato 2 previo tenía probabilidades incorrectas y se **regenera** con el orden correcto). (3) Markdown **14–17** alineado · **R1** corregido (anti-fuga por features intra-sesión, no por disjunción de usuarios) · target A/B = **C3**.
+
 **En revisión (Yeison, chat aparte):** auditoría a prueba de balas contra el estándar del curso (ver `notebooks/modeling/revision_modelado_2026-06-07.md`). Ítems abiertos conocidos: R1 (texto "fuga a nivel de usuario" en `02` §3, aún incorrecto), Optuna selecciona por media máx / 20 trials, features redundantes (`categories_explored` vs `_cid`), outliers de duración. **Reconciliar k=5 al integrar `feat/modelo` a `main`.**
 
 ---
