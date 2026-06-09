@@ -8206,6 +8206,41 @@ cluster
 </div>
 </div>
 </div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c8d15d4b">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<p><strong>Cómo leer esta gráfica:</strong></p>
+<p>Cada burbuja es un cluster. El <strong>eje X</strong> es la tasa de conversión real del cluster
+(qué fracción de sus sesiones terminó en compra — esto es su <em>propensión empírica</em>,
+calculada directamente del dato, no del modelo). El <strong>eje Y</strong> es el valor del segmento,
+medido con el proxy <code>electronics_view_share × avg_price_viewed</code>: cuánto foco en
+electrónica tiene multiplicado por el precio que miran — una aproximación del valor
+económico que puede mover, dado que la Gold no tiene el monto de la compra, solo los
+precios vistos. El <strong>tamaño de la burbuja</strong> es proporcional al porcentaje de tráfico de
+ese cluster: una burbuja grande = mucha gente pasa por ahí.</p>
+<p>El segmento ideal para el A/B es el que combine las tres dimensiones a la vez:
+alta conversión (eje X), alto valor (eje Y) <strong>y</strong> volumen suficiente para que la campaña
+mueva la aguja (tamaño). Mirando la gráfica, <strong>C3</strong> (electrónica gama media) tiene la
+conversión más alta y buen tamaño; <strong>C4</strong> (electrónica premium) tiene el valor más alto
+y tamaño razonable. Juntos forman el bloque de electrónica (~43% del tráfico), que es
+el <strong>segmento objetivo del A/B</strong>. C0 es la burbuja más grande pero está abajo a la
+izquierda: mucho tráfico pero poca electrónica y bajo precio — darle el incentivo ahí
+tiene bajo retorno.</p>
+<blockquote>
+<p><strong>Nota sobre "propensión":</strong> la conversión por cluster que muestra esta gráfica es la
+<em>propensión empírica del segmento</em> — un promedio grueso que dice "en este grupo, X% compra".
+El <strong>modelo de propensión del notebook 02</strong> añade la granularidad individual: dentro de C3,
+hay sesiones con 5% y sesiones con 40% de probabilidad. La unión de los dos ocurre en el
+notebook 06 (scoring + Contrato 2): el segmento dice <em>dónde</em> enfocar el incentivo, el modelo
+dice <em>a quién exactamente</em> dentro de ese segmento.</p>
+</blockquote>
+</div>
+</div>
+</div>
+</div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=72a5d8a6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
