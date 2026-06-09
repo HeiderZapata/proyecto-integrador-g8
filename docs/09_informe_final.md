@@ -157,7 +157,7 @@ La propuesta original prometía un modelo de *uplift* (efecto incremental de un 
 - **Prueba:** comparación de dos proporciones (z-test) sobre la métrica primaria; intervalo de confianza sobre el *lift*.
 
 #### 3.5.3 Población objetivo y targeting con el modelo
-El experimento se restringe al **segmento C0** ("comprador de electrónica de alto valor": 42.6 % del tráfico, conversión 7.5 %, el único que combina propensión + valor + volumen — §3.3.4). Dentro de C0, el **modelo de propensión** define el subconjunto elegible (los de probabilidad calibrada por encima del umbral operativo), de modo que el incentivo se gasta donde hay intención real y no en toda la base. *(Matiz honesto y defendible: targetear por alta propensión puede incluir "compradores seguros" que habrían comprado igual; el A/B mide el efecto **promedio** sobre el grupo tratado, y son justamente sus datos los que después permitirían distinguir a los persuadibles vía uplift. No invertimos el orden.)*
+El experimento se restringe al **segmento C3** —"comprador de electrónica de precio medio": **29.3 % del tráfico**, **conversión 8.4 %** (la más alta de todos los clusters), foco casi total en electrónica (~99 %) y ticket ~$257, que decide rápido (mediana ~12 min) (§3.3.4)—. Es el objetivo de mayor prioridad porque combina **la mayor propensión** con **volumen accionable**; el cluster vecino C4 ("electrónica de alto valor", ~$1,024, conversión 5.8 %) queda como segmento secundario para un incentivo de mayor valor. La oportunidad es grande: **el 91.6 % de C3 no compra**, un pool amplio de compradores potenciales de alto valor recuperable. Dentro de C3, el **modelo de propensión** define el subconjunto elegible (probabilidad calibrada por encima del umbral operativo), de modo que el incentivo se gasta donde hay intención real y no en toda la base. *(Matiz honesto y defendible: targetear por alta propensión puede incluir "compradores seguros" que habrían comprado igual; el A/B mide el efecto **promedio** sobre el grupo tratado, y son justamente sus datos los que después permitirían distinguir a los persuadibles vía uplift. No invertimos el orden.)*
 
 #### 3.5.4 Unidad de aleatorización y asignación
 - **Unidad = visitante** (asignación "pegajosa" por `user_id`/cookie), no la sesión, para evitar que una misma persona vea ambas experiencias (contaminación) entre visitas.
@@ -170,17 +170,17 @@ El experimento se restringe al **segmento C0** ("comprador de electrónica de al
 - **Guardarraíl (no negociables):** **margen/utilidad por visitante** (un descuento puede subir conversión y destruir margen) y tasa de devoluciones. El experimento solo "gana" si sube la primaria **sin** romper el guardarraíl.
 
 #### 3.5.6 Tamaño de muestra, MDE y duración
-Línea base de C0: conversión **p₀ = 7.5 %**. Con **α = 0.05 (bilateral)** y **potencia = 80 %**, el tamaño por brazo según el efecto mínimo detectable (MDE) es:
+Línea base de C3: conversión **p₀ = 8.4 %**. Con **α = 0.05 (bilateral)** y **potencia = 80 %**, el tamaño por brazo según el efecto mínimo detectable (MDE) es:
 
 | MDE | p₀ → p₁ | n por brazo | n total |
 |---|---|---|---|
-| +1.0 pp (absoluto) | 7.5 % → 8.5 % | ~11,600 | ~23,200 |
-| +10 % (relativo) | 7.5 % → 8.25 % | ~20,300 | ~40,600 |
-| +0.5 pp (absoluto) | 7.5 % → 8.0 % | ~44,900 | ~89,800 |
+| +1.0 pp (absoluto) | 8.4 % → 9.4 % | ~12,700 | ~25,400 |
+| +10 % (relativo) | 8.4 % → 9.24 % | ~17,900 | ~35,800 |
+| +0.5 pp (absoluto) | 8.4 % → 8.9 % | ~49,600 | ~99,200 |
 
 *(Fórmula de dos proporciones: n ≈ (z_{α/2}+z_β)²·[p₀(1−p₀)+p₁(1−p₁)] / (p₁−p₀)².)*
 
-**Duración.** C0 ≈ 42.6 % de ~346 k sesiones/día → del orden de **10⁵ visitantes-C0 elegibles por día**, así que el tamaño de muestra se alcanza en **pocos días** incluso para el MDE exigente de +0.5 pp. El cuello de botella no es el volumen sino la **validez temporal**: se corre un mínimo de **2 semanas** para cubrir ≥2 ciclos semanales completos y se **excluyen periodos anómalos** (Black Friday y la ventana 14–17 nov) para no confundir el efecto del incentivo con estacionalidad.
+**Duración.** C3 ≈ 29.3 % de ~346 k sesiones/día → del orden de **10⁵ visitantes-C3 elegibles por día**, así que el tamaño de muestra se alcanza en **pocos días** incluso para el MDE exigente de +0.5 pp. El cuello de botella no es el volumen sino la **validez temporal**: se corre un mínimo de **2 semanas** para cubrir ≥2 ciclos semanales completos y se **excluyen periodos anómalos** (Black Friday y la ventana 14–17 nov) para no confundir el efecto del incentivo con estacionalidad.
 
 #### 3.5.7 Regla de decisión y análisis
 Análisis por **intención de tratar**. Se declara ganador el Tratamiento si el *lift* de conversión es **estadísticamente significativo** (IC al 95 % que excluye 0) **y** el guardarraíl de margen no se deteriora; en ese caso se despliega al segmento. Como extensiones: reducción de varianza (CUPED) y análisis de heterogeneidad del efecto dentro de C0 (primer paso hacia el uplift de segunda fase).
