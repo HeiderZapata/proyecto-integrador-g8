@@ -62,7 +62,7 @@ La **capa de datos** está hecha, pero **modelo y tablero todavía no están fin
 | mié 3 | ✅ | Reunión — Fase 3 cerrada, roles firmes |
 | jue 4 | ✅ | Onboarding + **Gold congelada** + EDA oficial |
 | vie 5 | ✅ | Auditoría capa de datos (sin bloqueantes, `auditoria_capa_datos_2026-06-05.md`) → empalmes Sara/Kelly → arranque de modelo y tablero |
-| sáb 6 | ✅ | `03_gold_agregada_bi` migrado a Spark SQL puro (Heider) |
+| sáb 6 | ✅ | `03_gold_agregada_bi` migrado a Spark SQL puro (Heider) — **validado: 12 CSV ≡ versión PySpark** |
 | **dom 7 (hoy)** | 🔄 | **Pipeline sellado** (`readStream`/Kappa) + **12 CSV BI** + **EDA refrescado** (cuarentena 14–17) + **modelado** (split C, propensión, clustering) + **tablero v1 publicado**; cierre nocturno |
 | **lun 8 (mañana)** | 🎯 | **ENTREGA** — **modelo final** (scoring/Contrato 2) + **tablero final** (Kelly) + **informe consolidado** + **PPTX** + ensayo de defensa; **sin cargas pesadas de datos** (regla de cuota) |
 | mar 9 (5–9 pm) | 🎤 | **EXPOSICIÓN** ante los tres profesores |
@@ -139,10 +139,10 @@ Estados: **Hecho · Revisión (v1 existe, requiere ajustes) · En curso · Pendi
 | Entrenamiento + evaluación del modelo | Sara | Pendiente | PR-AUC, calibración (no accuracy). Arranca con la Gold congelada (§13). **Plan de arranque detallado en §18** |
 | Clustering de visitantes | Sara | Pendiente | Con metodología propia; el **cruce clasificador × clustering** es el insight. Encuadre en §18 |
 | Tablero Power BI ejecutivo | Kelly | **v1 Hecho (7-jun) · v2 en curso** | 4 páginas publicadas en Power BI Service, sobre la Gold **agregada** (**12 CSV** en `reports/data/`). Insumos nuevos (7-jun): toggle día↔hora, embudo, heatmap hora×día, día×categoría, marca-electronics-diaria. Pendiente: conectar scores de Sara (Contrato 2) + matriz de oportunidad |
-| Diseño del A/B test | Yeison | Pendiente | Cierre: medir un incentivo sobre el segmento de mayor intención |
+| Diseño del A/B test | Yeison | **Diseño redactado** | **Diseño completo en el informe §3.5** (en `main`): hipótesis, targeting con el modelo sobre C0, aleatorización por visitante, métricas + guardarraíl de margen, tamaño de muestra/MDE/potencia y duración. Cierre del alcance (responde al revisor: uplift→A/B) |
 | Rehacer Ilustración 2 (diagramas de arquitectura de datos) | Heider construye · Yeison revisa (co-responsables) | **En revisión** | Heider añadió **Ilustración 2 (implementada, Kappa) e Ilustración 3 (referencia)** en doc 03 (Mermaid). ⚠️ **3 ajustes pendientes para Heider** antes de la entrega — ver el callout debajo de esta tabla |
 | Q&A de defensa por profesor | Equipo | Pendiente | Insumo: `08_feedback_exposiciones_pregrado.md` §5 |
-| Documento consolidado del PI | Equipo | Pendiente | |
+| Documento final del PI (informe) | Equipo | **Esqueleto casi completo (NO consolidado aún)** | `docs/09_informe_final.md` (en `main`), estructura alineada a la rúbrica. **Redactados: §1 Intro, §2 Marco teórico, §3.2 EDA, §3.5 A/B, §4 Tecnología, §5 Viz.** Falta solo **§3.3–§3.4 (números del modelo de Sara)** y cierres cortos (§3.1, §6 conclusiones, §7 referencias) que dependen de los resultados. Flujo: (1) Yeison cierra el esqueleto con insumos de Sara/Kelly; (2) Heider lo **lleva a Word**; (3) **completar de inicio a fin robusteciendo redacción, estilo y narrativa** |
 | Presentación (PPTX) | Equipo | Pendiente | Incluir narrativa del recorrido |
 
 > **📐 Para Heider — Ilustración 2: 3 ajustes + verificación final antes de la entrega (revisión de Yeison).** Heider integró en `docs/03_propuesta_corregida.md` dos diagramas Mermaid: **Ilustración 2** (arquitectura implementada, estilo Kappa) e **Ilustración 3** (de referencia). Muy buena base; **la Ilustración 3 está correcta**. La **Ilustración 2** tiene 3 detalles que **no coinciden con lo congelado el 4-jun** y conviene alinear para que el diagrama defienda lo que de verdad hicimos (el jurado de HPC pregunta esto):
@@ -422,7 +422,7 @@ Reanclado al cierre del dom 7: el **núcleo técnico ya está** (pipeline sellad
 | **mié 3** | Reunión — Fase 3 cerrada | **HECHO.** Roles aceptados (§11 firme), avances y pasos a seguir presentados. Heider con instrucción de expirar la credencial Kaggle. |
 | **jue 4** | ✅ HECHO | **Onboarding del equipo + Gold congelada + EDA oficial (HITO).** **Kelly, Sara, Heider:** entendieron repo + docs y estudiaron su tema (ML, Viz, ingeniería). **Yeison + Claude Code:** ejecutaron la secuencia §2.3.1 completa (separar Medallion/EDA, validar `join`, pasada 1, organizar `eda_ecommerce.ipynb`, pasada 2) → **esquema Gold CONGELADO** (§13) + **Gold agregada exportada** a `reports/data/`. **Heider:** llave Kaggle expirada + apoyo a la Ilustración 2. |
 | **vie 5** | ✅ Auditoría → empalmes → arranque | Auditoría de la capa de datos (sin bloqueantes) → empalmes con Sara/Kelly → arranque de modelo y tablero. |
-| **sáb 6** | ✅ Spark SQL | **Heider:** `03_gold_agregada_bi` migrado a Spark SQL puro (pendiente de ejecutar). |
+| **sáb 6** | ✅ Spark SQL | **Heider:** `03_gold_agregada_bi` migrado a Spark SQL puro — **ejecutado y validado**: 12 CSV idénticos a la versión PySpark (solo ±0.01 en `ticket_medio` por redondeo de un promedio). |
 | **dom 7** (hoy) | 🔄 Sellado + modelado + tablero v1 | **Pipeline sellado** (`readStream`/Kappa, `user_id` determinista, cuarentena 14–17) + **12 CSV BI** + **EDA refrescado** + **modelado** (split C, propensión PR-AUC test 0.118, clustering k=4) + **tablero v1 publicado** (Kelly). Cierre nocturno. |
 | **lun 8** | 🎯 **ENTREGA** | **Sara:** terminar de configurar/correr/comparar modelos → modelo final + `06_scoring_mlflow_databricks` (MLflow + scoring batch + **Contrato 2**). **Kelly:** **tablero final** (ajustes de hoy + nuevos CSV + scores del modelo + matriz de oportunidad). **Yeison:** **diseño del A/B** + **informe consolidado**. **Equipo:** **PPTX** + ensayo de defensa (filtrado en vivo) + Q&A por profesor (doc 08 §5). **No correr cargas pesadas de datos hoy** (regla de cuota). |
 | **mar 9** (5–9 pm) | 🎤 **EXPOSICIÓN** | Ante los tres profesores. |
