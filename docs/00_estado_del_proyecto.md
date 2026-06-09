@@ -37,7 +37,12 @@
 
 **Clustering** (`04_clustering`): **k=5** (por accionabilidad). Target A/B = **C3 "electrónica precio medio"** (29.3%, conv **8.4%**, el de mayor conversión; 91.6% no compra); C4 alto valor/premium (13.8%, $1,024, conv 5.8%), C0 general bajo valor (49.8%), C1 explorador (7%), C2 anómalo. **DBSCAN real** (eps adaptativo p95≈0.40 → 1 masa/gradiente + 3.7% ruido, no islas) + **arquetipos de comprador** (§10). *(El informe §3.5 ya quedó actualizado a C3.)*
 
-**Pendiente:** `06_scoring_mlflow_databricks` — MLflow + scoring batch + Contrato 2 (`user_session`, prob. calibrada, segmento) en Delta.
+✅ **`06_scoring_mlflow_databricks` COMPLETO** — MLflow (params/métricas/modelo
+calibrado/signature), scoring batch 19.71M sesiones, **Contrato 2**
+(`workspace.default.contrato2`: 19,711,743 filas · `user_session`, `prob_calibrada`,
+`segmento`, `segmento_nombre`) materializado en Delta. Distribución: general_bajo_valor
+49.8 %, electronica_gama_media 29.5 %, electronica_premium 13.6 %, explorador 7.0 %,
+anómalo 0.05 %. **Frente de modelado CERRADO.**
 
 **En revisión (Yeison, chat aparte):** auditoría a prueba de balas contra el estándar del curso (ver `notebooks/modeling/revision_modelado_2026-06-07.md`). Ítems abiertos conocidos: R1 (texto "fuga a nivel de usuario" en `02` §3, aún incorrecto), Optuna selecciona por media máx / 20 trials, features redundantes (`categories_explored` vs `_cid`), outliers de duración. **Reconciliar k=5 al integrar `feat/modelo` a `main`.**
 
