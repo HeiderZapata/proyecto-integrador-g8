@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Paleta de Colores — Tablero Grupo 8</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #F8F8F8; color: #2D2D2D; padding: 32px; }
+  h1 { font-size: 20px; font-weight: 500; color: #2D2D2D; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #555555; margin-bottom: 32px; }
+  h2 { font-size: 14px; font-weight: 500; color: #2D2D2D; margin-bottom: 12px; margin-top: 28px; border-bottom: 1px solid #DDDDDD; padding-bottom: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 8px; }
+  .swatch { background: #FFFFFF; border: 0.5px solid #DDDDDD; border-radius: 10px; overflow: hidden; }
+  .swatch-color { height: 64px; }
+  .swatch-info { padding: 10px 12px; }
+  .swatch-name { font-size: 13px; font-weight: 500; color: #2D2D2D; margin-bottom: 2px; }
+  .swatch-hex { font-size: 12px; color: #555555; font-family: monospace; margin-bottom: 4px; }
+  .swatch-use { font-size: 11px; color: #888888; line-height: 1.4; }
+  .row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .dot { width: 24px; height: 24px; border-radius: 50%; border: 0.5px solid #DDDDDD; flex-shrink: 0; }
+  .row-info .name { font-size: 13px; font-weight: 500; color: #2D2D2D; }
+  .row-info .desc { font-size: 12px; color: #555555; }
+  .example { background: #FFFFFF; border: 0.5px solid #DDDDDD; border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; }
+  .example-title { font-size: 12px; color: #888888; margin-bottom: 10px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .kpi { border-radius: 8px; padding: 12px; }
+  .kpi-label { font-size: 11px; margin-bottom: 4px; }
+  .kpi-value { font-size: 20px; font-weight: 500; }
+  .bar-row { display: flex; flex-direction: column; gap: 6px; }
+  .bar-item { display: flex; align-items: center; gap: 8px; }
+  .bar-label { font-size: 12px; color: #555555; width: 90px; text-align: right; }
+  .bar-track { flex: 1; height: 16px; background: #F0F0F0; border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .bar-val { font-size: 12px; font-weight: 500; width: 48px; }
+  .nav-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 500; cursor: default; }
+  .btn-active { background: #2D2D2D; color: #FFFFFF; }
+  .btn-inactive { background: #FFFFFF; border: 0.5px solid #DDDDDD; color: #555555; }
+  .header-strip { background: #DDDDDD; border-radius: 8px; padding: 8px 14px; margin-bottom: 8px; }
+  .header-text { font-size: 14px; font-weight: 500; color: #2D2D2D; }
+  .note { font-size: 12px; color: #888888; margin-top: 4px; font-style: italic; }
+</style>
+</head>
+<body>
+
+<h1>Paleta de Colores · Tablero Power BI Grupo 8</h1>
+<p class="subtitle">Sistema de diseño para el proyecto integrador — Maestría en Ciencia de Datos y Analítica · EAFIT · Junio 2026</p>
+
+<h2>Colores estructurales</h2>
+<div class="grid">
+  <div class="swatch">
+    <div class="swatch-color" style="background:#2D2D2D;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Título / Texto principal</div>
+      <div class="swatch-hex">#2D2D2D</div>
+      <div class="swatch-use">Títulos de página, texto principal, botón de navegación activo</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#DDDDDD; border-bottom: 0.5px solid #CCCCCC;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Header de página</div>
+      <div class="swatch-hex">#DDDDDD</div>
+      <div class="swatch-use">Franja superior de cada página del tablero</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#F8F8F8; border-bottom: 0.5px solid #EEEEEE;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Fondo de página</div>
+      <div class="swatch-hex">#F8F8F8</div>
+      <div class="swatch-use">Fondo de todos los lienzos del tablero</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#FFFFFF; border-bottom: 0.5px solid #EEEEEE;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Tarjetas y gráficas</div>
+      <div class="swatch-hex">#FFFFFF</div>
+      <div class="swatch-use">Fondo de tarjetas KPI y gráficas. Borde: #DDDDDD, esquinas: 10px</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#555555;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Texto secundario</div>
+      <div class="swatch-hex">#555555</div>
+      <div class="swatch-use">Etiquetas de ejes, subtítulos, footer, textos de apoyo</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#BBBBBB;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Contexto / Neutro</div>
+      <div class="swatch-hex">#BBBBBB</div>
+      <div class="swatch-use">Barras de contexto, categorías sin destacar, datos de referencia</div>
+    </div>
+  </div>
+</div>
+
+<h2>Semáforo de datos — verde = oportunidad · rojo = pérdida</h2>
+<div class="grid">
+  <div class="swatch">
+    <div class="swatch-color" style="background:#3B6D11;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Verde — positivo</div>
+      <div class="swatch-hex">#3B6D11</div>
+      <div class="swatch-use">Alta conversión, oportunidad, segmento recurrente, próximos pasos</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#EAF3DE; border-bottom: 0.5px solid #C0DD97;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Verde claro — fondo</div>
+      <div class="swatch-hex">#EAF3DE</div>
+      <div class="swatch-use">Fondo de tarjetas positivas, tarjeta "Intención de compra"</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#97C459;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Verde medio — proyección</div>
+      <div class="swatch-hex">#97C459</div>
+      <div class="swatch-use">Datos proyectados o hipotéticos (ej. conversión 10% en Sankey)</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#A32D2D;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Rojo — alerta</div>
+      <div class="swatch-hex">#A32D2D</div>
+      <div class="swatch-use">Abandono, ganancias perdidas, KPIs de problema, categorías críticas</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#FCEBEB; border-bottom: 0.5px solid #F7C1C1;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Rojo claro — fondo</div>
+      <div class="swatch-hex">#FCEBEB</div>
+      <div class="swatch-use">Fondo de tarjetas de alerta, KPIs de la portada</div>
+    </div>
+  </div>
+  <div class="swatch">
+    <div class="swatch-color" style="background:#791F1F;"></div>
+    <div class="swatch-info">
+      <div class="swatch-name">Rojo oscuro — texto sobre fondo rojo</div>
+      <div class="swatch-hex">#791F1F</div>
+      <div class="swatch-use">Etiquetas dentro de tarjetas con fondo #FCEBEB</div>
+    </div>
+  </div>
+</div>
+
+<h2>Tipografía</h2>
+<div class="example">
+  <div class="example-title">Jerarquía de texto — fuente Segoe UI en todas las páginas</div>
+  <div style="margin-bottom: 8px;">
+    <span style="font-size: 20px; font-weight: 500; color: #2D2D2D;">Título de página — 20px, 500, #2D2D2D</span>
+  </div>
+  <div style="margin-bottom: 8px;">
+    <span style="font-size: 14px; font-weight: 500; color: #2D2D2D;">Título de gráfica — 14px, 500, #2D2D2D</span>
+  </div>
+  <div style="margin-bottom: 8px;">
+    <span style="font-size: 12px; color: #555555;">Etiqueta de eje / subtítulo — 12px, regular, #555555</span>
+  </div>
+  <div style="margin-bottom: 8px;">
+    <span style="font-size: 11px; color: #555555;">Footer / texto de apoyo — 11px, regular, #555555</span>
+  </div>
+  <div>
+    <span style="font-size: 13px; font-weight: 500; color: #2D2D2D;">Mensaje de cierre — 13px, 500, negrita, #2D2D2D</span>
+  </div>
+</div>
+
+<h2>Ejemplos de aplicación</h2>
+
+<div class="example">
+  <div class="example-title">Header de página</div>
+  <div class="header-strip">
+    <div class="header-text">Análisis por categoría · ¿Dónde se fuga la conversión?</div>
+  </div>
+  <p class="note">Rectángulo #DDDDDD · texto #2D2D2D · 14px negrita · alto ~40px</p>
+</div>
+
+<div class="example">
+  <div class="example-title">Tarjetas KPI — portada y páginas</div>
+  <div class="kpi-row">
+    <div class="kpi" style="background:#FCEBEB; border: 0.5px solid #F7C1C1;">
+      <div class="kpi-label" style="color:#791F1F;">Tasa de conversión</div>
+      <div class="kpi-value" style="color:#A32D2D;">2.27%</div>
+    </div>
+    <div class="kpi" style="background:#FCEBEB; border: 0.5px solid #F7C1C1;">
+      <div class="kpi-label" style="color:#791F1F;">Abandono carrito</div>
+      <div class="kpi-value" style="color:#A32D2D;">41.19%</div>
+    </div>
+    <div class="kpi" style="background:#FFFFFF; border: 0.5px solid #DDDDDD;">
+      <div class="kpi-label" style="color:#555555;">Ticket promedio</div>
+      <div class="kpi-value" style="color:#3B6D11;">$412</div>
+    </div>
+    <div class="kpi" style="background:#EAF3DE; border: 0.5px solid #3B6D11;">
+      <div class="kpi-label" style="color:#27500A;">Intención de compra</div>
+      <div class="kpi-value" style="color:#3B6D11;">9.9%</div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:8px;">Esquinas redondeadas 8-10px en todas las tarjetas</p>
+</div>
+
+<div class="example">
+  <div class="example-title">Barras horizontales — semáforo verde/gris/rojo</div>
+  <div class="bar-row">
+    <div class="bar-item">
+      <span class="bar-label">electronics</span>
+      <div class="bar-track"><div class="bar-fill" style="width:85%; background:#3B6D11;"></div></div>
+      <span class="bar-val" style="color:#3B6D11;">85.5%</span>
+    </div>
+    <div class="bar-item">
+      <span class="bar-label">appliances</span>
+      <div class="bar-track"><div class="bar-fill" style="width:6%; background:#BBBBBB;"></div></div>
+      <span class="bar-val" style="color:#888888;">6.4%</span>
+    </div>
+    <div class="bar-item">
+      <span class="bar-label">computers</span>
+      <div class="bar-track"><div class="bar-fill" style="width:5%; background:#BBBBBB;"></div></div>
+      <span class="bar-val" style="color:#888888;">5.4%</span>
+    </div>
+    <div class="bar-item">
+      <span class="bar-label">apparel</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0.4%; background:#A32D2D;"></div></div>
+      <span class="bar-val" style="color:#A32D2D;">0.4%</span>
+    </div>
+  </div>
+  <p class="note" style="margin-top:8px;">Verde #3B6D11 = líder · Gris #BBBBBB = contexto · Rojo #A32D2D = crítico</p>
+</div>
+
+<div class="example">
+  <div class="example-title">Botones de navegación entre páginas</div>
+  <div class="nav-row">
+    <div class="btn btn-active">① Análisis por Categoría</div>
+    <div class="btn btn-inactive">② Detalle Electronics</div>
+    <div class="btn btn-inactive">③ Análisis de Cliente</div>
+    <div class="btn btn-inactive">④ Contexto temporal</div>
+    <div class="btn btn-inactive">⑤ Cierre</div>
+  </div>
+  <p class="note" style="margin-top:8px;">Activo: fondo #2D2D2D · texto #FFFFFF · Inactivo: fondo #FFFFFF · borde #DDDDDD · texto #555555</p>
+</div>
+
+<h2>Reglas de diseño clave</h2>
+<div class="example">
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div class="row">
+      <div class="dot" style="background:#3B6D11;"></div>
+      <div class="row-info">
+        <div class="name">Verde = oportunidad / positivo</div>
+        <div class="desc">Alta conversión, segmento objetivo, próximos pasos, proyecciones favorables</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="dot" style="background:#A32D2D;"></div>
+      <div class="row-info">
+        <div class="name">Rojo = alerta / pérdida</div>
+        <div class="desc">Abandono, ganancias perdidas, KPIs del problema, categorías críticas</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="dot" style="background:#BBBBBB;"></div>
+      <div class="row-info">
+        <div class="name">Gris = contexto / neutro</div>
+        <div class="desc">Categorías de referencia, datos secundarios — nunca el insight</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="dot" style="background:#2D2D2D;"></div>
+      <div class="row-info">
+        <div class="name">Negro/gris oscuro = estructura</div>
+        <div class="desc">Títulos, headers, botón activo — nunca para datos</div>
+      </div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px;">Principio rector: el color solo va en el elemento más importante. Todo lo demás en gris.</p>
+</div>
+
+</body>
+</html>
