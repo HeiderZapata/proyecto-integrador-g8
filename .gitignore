@@ -35,3 +35,6 @@ notebooks/analysis/_build/
 __pycache__/
 .vscode/
 .idea/
+
+# Office lock/temp files
+~$*
