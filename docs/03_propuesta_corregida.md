@@ -161,9 +161,7 @@ La **estrategia de particionamiento se define por capa** según los patrones de 
 El **consumo y despliegue**, en el alcance académico, consiste en consultas analíticas con **Spark SQL** sobre la Gold, la persistencia del modelo y su *scoring* batch a una tabla Delta (gestionados con MLflow), y un tablero en **Power BI** conectado a la **Gold agregada** (no a las decenas de millones de filas crudas), que materializa el diagnóstico para la decisión de negocio. La gobernanza se apoya en Unity Catalog y Volumes, con separación de las zonas cruda (Bronze), curada (Silver) y de consumo (Gold). Todo el diseño está pensado para escalar: el mismo código Spark/Delta operaría sobre cómputo mayor y una fuente en streaming, de modo que la arquitectura implementada es una versión acotada —no distinta— de la de referencia.
 
 *Ilustración 2. Arquitectura de datos implementada para E-commerce (Estilo Kappa en Databricks Free).*
-
 ```mermaid
-
 flowchart TB
  subgraph subGraph0["1. Ingesta Batch"]
         B[("fa:fa-database Volume: ecommerce_raw<br>Unity Catalog")]
@@ -174,10 +172,10 @@ flowchart TB
   end
  subgraph subGraph2["3. Almacenamiento Lakehouse & ELT Medallion"]
         D[("🥉 Bronze: Delta<br>Partición: fecha")]
-        E[("🥈 Silver: Delta<br>Eventos limpios/sesiones<br>Partición: fecha+categoría")]
-        F[("🥇 Gold: Delta<br>Matriz por sesión y Agregados")]
-        F1["Train: Datos Octubre"]
-        F2["Test: Datos Noviembre"]
+        E[("🥈 Silver: Delta<br>Eventos limpios/sesiones<br>Partición por fecha · ZORDER categoría")]
+        F[("🥇 Gold: Delta<br>Matriz por sesión<br>Data-skipping por session_date<br>(Cuarentena 14-17 nov)")]
+        F1["Train<br>(Corte por fecha)"]
+        F2["Test<br>(Corte por fecha)"]
   end
  subgraph subGraph3["4. Consumo y Analítica"]
         G("fa:fa-tree Modelos de Árboles<br>XGBoost/LightGBM")
@@ -194,7 +192,7 @@ flowchart TB
     C -- Escritura --> D
     D -- ELT PySpark Serverless --> E
     E -- Ingeniería de Features --> F
-    F -. Split Temporal visible .-> F1 & F2
+    F -. Split Temporal (corte por fecha) .-> F1 & F2
     F1 -- Entrenamiento --> G
     G <-- Gestión de ciclo de vida --> H
     F2 -- Scoring Batch --> I
@@ -220,6 +218,7 @@ flowchart TB
     classDef bi fill:#F2C811,stroke:#fff,stroke-width:2px,color:#333
     classDef mlflow fill:#0194E2,stroke:#fff,stroke-width:2px,color:#fff
 ```
+
 
 *Ilustración 3. Arquitectura de referencia para E-commerce (Producción en Tiempo Real).*
 
