@@ -82,7 +82,7 @@ Trabajamos con **una rama por frente**, no por persona. ¿Por qué? Porque la ta
 | `feat/ab-test` | Yeison | `docs/` (un `.md` de diseño) | Diseño del A/B test. |
 | `feat/doc` | Yeison + equipo | `docs/`, `reports/` | Documento consolidado del PI, PPTX. |
 
-> Estructura completa de carpetas: ver `docs/00_estado_del_proyecto.md` §12. La regla de fondo: **cada frente toca su carpeta**. Eso, más que el nombre de la rama, es lo que evita el 90% de los conflictos.
+> La regla de fondo: **cada frente toca su carpeta**. Eso, más que el nombre de la rama, es lo que evita el 90% de los conflictos.
 
 ---
 
@@ -134,7 +134,7 @@ Luego abres el PR en la web y le avisas a Yeison para el merge (§6). Y cuando o
    - `viz: tablero v1 conectado a Gold agregada`
    - `docs: actualizar §15 plan con fechas`
 5. **Cada quien en su carpeta.** Si necesitas tocar la carpeta de otro frente, avísale primero en el chat.
-6. **Archivos compartidos = avisar antes.** El doc `00_estado_del_proyecto.md` y los contratos (esquema Gold, salida del modelo, datos del dashboard) los tocamos todos. Antes de editarlos: avisa en el chat, haz commits chiquitos, y `pull` justo antes.
+6. **Archivos compartidos = avisar antes.** La documentación consolidada y los contratos (esquema Gold, salida del modelo, datos del dashboard) los tocamos todos. Antes de editarlos: avisa en el chat, haz commits chiquitos, y `pull` justo antes.
 7. **Archivos binarios no se fusionan.** El `.pbix` de Power BI, imágenes (`.png`), Excel (`.xlsx`) y el PPTX **no se pueden mezclar automáticamente**: si dos personas editan el mismo `.pbix`, una pierde su trabajo. Regla: **un solo editor a la vez** para esos archivos; coordínalo en el chat.
 8. **Nunca uses `git push --force`** sobre una rama que comparten dos personas (como `feat/pipeline`). Borra el trabajo del otro.
 
@@ -149,7 +149,7 @@ Luego abres el PR en la web y le avisas a Yeison para el merge (§6). Y cuando o
 5. **Antes de pedir el merge, sincroniza tu rama con `main`** (paso 4 del bucle): `git pull origin main`, resuelve cualquier conflicto en *tu* rama (§7) y vuelve a hacer `push`. El PR debe quedar **sin conflictos / "Able to merge"** (GitHub lo muestra en verde). Esto es responsabilidad tuya, no de Yeison: así él recibe un PR limpio.
 6. **El merge a `main` lo hace una sola persona: Yeison** (suplente: Heider si no está disponible, para que nadie quede bloqueado). Cuando tu PR esté en verde, avísale en el chat ("PR de modelo listo para merge"). **Nadie más toca el botón de merge.**
    - Esto centraliza el control de qué entra a `main` y evita que cuatro novatos fusionen a la vez. A cambio, Yeison se compromete a **no dejar PRs represados**.
-   - Para archivos **compartidos** (doc 00, contratos) o la **Gold** (afecta a todos), Yeison revisa con más cuidado antes de fusionar; para cambios en tu propia carpeta, el merge es casi un trámite.
+   - Para archivos **compartidos** (documentación consolidada, contratos) o la **Gold** (afecta a todos), Yeison revisa con más cuidado antes de fusionar; para cambios en tu propia carpeta, el merge es casi un trámite.
 7. Yeison da clic en **"Merge pull request"** —**este clic es el único momento en que `main` se actualiza**—, luego **"Delete branch"**, y avisa en el chat: "fusioné X a main, hagan `pull`".
 
 ---
