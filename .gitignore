@@ -54,3 +54,7 @@ __pycache__/
 /entrega_final/dump_pptx.py
 /entrega_final/revision.md
 /notebooks/modeling/revision_modelado_2026-06-07.md
+
+# --- Archivos que delatan tooling de IA (ocultos por decisión de equipo) ---
+/CLAUDE.md
+/docs/01_configuracion_proyecto_ia.md
