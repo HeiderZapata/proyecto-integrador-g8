@@ -3,7 +3,7 @@
 Maestría en Ciencia de Datos y Analítica — Universidad EAFIT
 
 > **Qué es este archivo:** la **guía de puesta en marcha** del entorno (cómo configurarte y correr el proyecto).
-> - Para *qué hace* el proyecto y las decisiones → `docs/00_estado_del_proyecto.md` (documento maestro).
+> - Para *qué hace* el proyecto y las decisiones → el **informe final** en `entrega_final/`.
 > - Para *cómo colaborar en Git* (ramas, PRs, merges) → `CONTRIBUTING.md` (en la raíz).
 
 ---
@@ -151,9 +151,9 @@ proyecto-integrador-g8/
     └── data/                ← Gold agregada (pequeña) para Power BI
 ```
 
-Detalle y el principio **exploración ≠ producción**: `docs/00_estado_del_proyecto.md` §12.
+El principio detrás de la estructura: **exploración ≠ producción** (el pipeline reproducible vive separado del análisis exploratorio).
 
-> **Nota:** el pipeline está separado del análisis (principio *exploración ≠ producción*): `02_medallion.ipynb` (Bronze/Silver/Gold) y `03_gold_agregada_bi.ipynb` viven en `pipeline/`; el EDA entregable (`eda_ecommerce.ipynb`) en `analysis/`. La separación se completó el 4-jun (doc 00 §2.3.1 paso 1).
+> **Nota:** el pipeline está separado del análisis (principio *exploración ≠ producción*): `02_medallion.ipynb` (Bronze/Silver/Gold) y `03_gold_agregada_bi.ipynb` viven en `pipeline/`; el EDA entregable (`eda_ecommerce.ipynb`) en `analysis/`. La separación se completó el 4-jun.
 
 ---
 
@@ -166,7 +166,7 @@ Detalle y el principio **exploración ≠ producción**: `docs/00_estado_del_pro
 | Kelly | [@usuario] | Visualización + narrativa (EDA-funnel, tablero) |
 | Yeison | [@usuario] | Integración + Gold (con Heider) + A/B + documento |
 
-*(Reparto **firme** — aceptado en la reunión del 3-jun; doc 00 §11.)*
+*(Reparto **firme** — aceptado en la reunión del 3-jun.)*
 
 ---
 

@@ -61,7 +61,7 @@ La estrategia de particionamiento se define **por capa**, según los **patrones 
 
 > **Evidencia medida (4-jun · `DESCRIBE DETAIL`):** **Silver = 6.41 GB en 61 particiones por fecha** (~105 MB/partición, dentro del rango 128 MB–1 GB). **Gold de sesión = 1.33 GB, sin particionar, 6 archivos** (~220 MB) con `ZORDER (session_date, user_id)`. Particionar esa Gold por fecha habría dado ~22 MB/partición → el anti-patrón de archivos pequeños, confirmado con números. *(Esto es la regla 5 "medir, no por intuición" en acción.)*
 
-> *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma, y cierra el GAP marcado en `08_feedback_exposiciones_pregrado.md` §5 (el doc no la detallaba).*
+> *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma.*
 
 ---
 
@@ -81,7 +81,7 @@ Databricks Free Edition es **solo cómputo serverless** y está sujeta a una pol
 > `mlflow.set_experiment(...)` falla con `CONFIG_NOT_AVAILABLE: spark.mlflow.modelRegistryUri` porque ese
 > config no viene seteado y Spark Connect bloquea su lectura. **Fix:** antes de `set_experiment`, llamar
 > `mlflow.set_tracking_uri("databricks")` y `mlflow.set_registry_uri("databricks-uc")`. Es un problema conocido
-> de Databricks, **no del código**. El **logging de experimento** (params/métricas/modelo, §18.4 del doc 00) **no
+> de Databricks, **no del código**. El **logging de experimento** (params/métricas/modelo) **no
 > requiere** el model registry; el fix solo evita que la línea de *setup* se caiga. Verificado con smoke test el
 > 5-jun (notebook `notebooks/analysis/_verif_post_audit.ipynb`); cierra el "MLflow setup" del riesgo 3. *(Insumo
 > directo para Sara.)*
