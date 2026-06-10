@@ -38,3 +38,23 @@ __pycache__/
 
 # Office lock/temp files
 ~$*
+
+# --- Material interno de preparación de la defensa (backstage, NO entregable) ---
+# Quitados del árbol con `git rm --cached`; siguen en disco local e historial.
+/docs/00_estado_del_proyecto.md
+/docs/prompt_ppt_defensa.md
+/docs/guion_ppt_defensa.md
+/docs/guia_estudio_modelado.md
+/docs/guia_estudio_modelado.pdf
+/docs/05_contexto_aprendizaje_automatico.md
+/docs/06_contexto_grandes_datos.md
+/docs/07_contexto_visualizacion.md
+/docs/08_feedback_exposiciones_pregrado.md
+/entrega_final/build_pptx.py
+/entrega_final/dump_pptx.py
+/entrega_final/revision.md
+/notebooks/modeling/revision_modelado_2026-06-07.md
+
+# --- Archivos que delatan tooling de IA (ocultos por decisión de equipo) ---
+/CLAUDE.md
+/docs/01_configuracion_proyecto_ia.md
