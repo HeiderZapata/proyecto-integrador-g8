@@ -57,7 +57,7 @@ La estrategia de particionamiento se define **por capa**, según los **patrones 
 
 **Frontera train/test en el pipeline.** El **split temporal octubre/noviembre** (octubre entrena, noviembre prueba) debe quedar **visible en el diagrama del pipeline** (Ilustración 2): como Bronze/Silver/Gold están particionadas por fecha, la separación entrenamiento/prueba se materializa como un corte sobre la columna de partición, no como una mezcla aleatoria de filas. Esto refuerza el argumento anti-fuga del componente de Aprendizaje Automático.
 
-> *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma, y cierra el GAP marcado en `08_feedback_exposiciones_pregrado.md` §5 (el doc no la detallaba).*
+> *Nota: esta sección sincroniza el doc con la estrategia de particionamiento que el Curso 2 de la propuesta corregida ya firma.*
 
 ---
 
